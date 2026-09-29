@@ -1,0 +1,26 @@
+{
+  "name": "بوابة آل علام | معاينة رمزية",
+  "short_name": "معاينة رمزية",
+  "description": "نسخة تجريبية ببيانات رمزية — التسجيل غير متاح حاليًا",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#14261d",
+  "theme_color": "#1b382b",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "assets/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "social",
+    "utilities",
+    "productivity"
+  ],
+  "scope": "./"
+}

@@ -1,0 +1,2013 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#103b32">
+  <meta name="description" content="نسخة معاينة رمزية لواجهة بوابة العائلة الافتراضية وشجرة ثلاثية الأبعاد">
+  <title>بوابة العائلة الافتراضية | معاينة رمزية</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
+  <link rel="apple-touch-icon" href="assets/icon.svg">
+  <link rel="stylesheet" href="styles.css?v=4.2">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./assets/vendor/three/three.module.js",
+      "three/addons/controls/OrbitControls.js": "./assets/vendor/three/OrbitControls.js",
+      "three/addons/loaders/GLTFLoader.js": "./assets/vendor/three/GLTFLoader.js",
+      "three/addons/loaders/DRACOLoader.js": "./assets/vendor/three/DRACOLoader.js"
+    }
+  }
+  </script>
+  <!-- Architectural 3D Genealogy Subsystems -->
+  <script defer src="js/genealogy-graph.js?v=4.0"></script>
+  <script defer src="js/member-layout-engine.js?v=3.9"></script>
+  <script defer src="js/tree-visual-adapter.js?v=4.2"></script>
+  <script defer src="js/member-node-renderer.js?v=4.1"></script>
+  <script defer src="js/tree-leaf-label-overlay.js?v=1.8"></script>
+  <script defer src="js/camera-navigation-controller.js?v=4.0"></script>
+  <script defer src="js/tree-engine.js?v=4.4"></script>
+  <!-- Interactive 3D Royal Heritage Seal & Medallion Engine (Three.js PBR + Relief Calligraphy) -->
+  
+  <!-- Shared Cloud Database Engine (Firebase Firestore v11 + Real-Time Sync) -->
+  <!-- model-viewer kept as fallback (hidden by default when Three.js loads) -->
+  <script type="module" src="assets/model-viewer.min.js"></script>
+  <script defer src="app.js?v=3.8"></script>
+<style>html{overflow-x:clip}</style></head>
+<body>
+  <a class="skip-link" href="#main">انتقل إلى المحتوى الرئيسي</a>
+
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar" aria-label="التنقل الرئيسي">
+      <a class="brand" href="#home" data-page="home" aria-label="بوابة معاينة رمزية - الرئيسية">
+        <span class="brand-mark" aria-hidden="true">ع</span>
+        <span>
+          <strong>بوابة العائلة الافتراضية</strong>
+          <small>جذور تجمعنا وأثر يمتد</small>
+        </span>
+      </a>
+
+      <div class="nav-label">مساحة الأسرة</div>
+      <nav class="main-nav" aria-label="مساحة الأسرة">
+        <button class="nav-item active" data-page="home"><span class="nav-icon">⌂</span>الرئيسية</button>
+        <button class="nav-item" data-page="members"><span class="nav-icon">👥</span>دليل الأعضاء</button>
+        <button class="nav-item" data-page="tree"><span class="nav-icon">🌳</span>شجرة النسب 3D</button>
+        <button class="nav-item" data-page="meetings"><span class="nav-icon">📅</span>اللقاءات ومساحة الإعداد</button>
+        <button class="nav-item" data-page="contributions"><span class="nav-icon">📸</span>أخبار العائلة والوسائط</button>
+        <button class="nav-item" data-page="fund"><span class="nav-icon">🛡</span>صندوق العائلة</button>
+      </nav>
+      <div class="nav-label admin-nav-label">الإدارة المقترحة · غير مفعّلة</div>
+      <nav class="main-nav admin-nav" aria-label="الإدارة المقترحة، للعرض فقط">
+        <button class="nav-item" data-page="council"><span class="nav-icon">🏛</span>مجلس العائلة الافتراضية (مقترح)</button>
+        <button class="nav-item" data-page="requests"><span class="nav-icon">👥</span>الحسابات والأدوار</button>
+        <button class="nav-item" data-page="reports"><span class="nav-icon">📊</span>التقارير والمؤشرات</button>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <div class="privacy-note">
+          <span aria-hidden="true">☁️</span>
+          <div>
+            <b>الحسابات والمزامنة</b>
+            <small>غير مفعّلة في نسخة العرض</small>
+          </div>
+        </div>
+        <button class="profile-button" id="profile-button" aria-label="إعدادات ملفي والخصوصية">
+          <span class="avatar" id="sidebar-user-avatar">ع</span>
+          <span>
+            <b id="sidebar-user-name">تسجيل دخول العضو</b>
+            <small id="sidebar-user-role">نسخة عرض — لا يوجد تسجيل موثوق</small>
+          </span>
+          <span class="chevron">⚙</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content Column -->
+    <div class="main-column">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" aria-label="فتح القائمة" aria-controls="sidebar" aria-expanded="false">☰</button>
+        <div class="crumb">
+          <span>بوابة العائلة الافتراضية</span>
+          <span class="crumb-dot">/</span>
+          <b id="page-crumb">الرئيسية</b>
+        </div>
+        <div class="top-actions">
+          <button class="button button-primary" id="btn-user-account-top" type="button" title="تسجيل الدخول غير مفعّل في نسخة المعاينة" style="padding:6px 13px; font-size:12px; border-radius:999px;">👤 <span id="topbar-user-label">الحساب (غير مفعّل)</span></button>
+          <button class="demo-pill" id="btn-drive-archive-top" type="button" hidden style="cursor:pointer; border:1px solid rgba(234,134,0,0.45); background:rgba(234,134,0,0.08); color:#b06000; font-weight:700;" title="أرشيف ومستودع وثائق العائلة الافتراضية في Google Drive">📁 <span>أرشيف Drive</span></button>
+          <button class="demo-pill" id="btn-cloud-sync-top" type="button" hidden style="cursor:pointer; border:1px solid rgba(180,83,9,0.38); background:rgba(180,83,9,0.07); color:#92400e; font-weight:700;" title="المزامنة السحابية متوقفة في نسخة العرض"><span id="cloud-sync-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#b45309; margin-left:5px;"></span>☁️ <span id="cloud-sync-status-text">المزامنة متوقفة</span></button>
+          <button class="demo-pill" id="btn-family-vault-gate" type="button" style="cursor:pointer; border:1px solid rgba(191,161,95,0.45);" title="السجل التفصيلي غير متاح في نسخة العرض"><i></i> <span id="vault-status-text">معاينة رمزية</span></button>
+          <button class="icon-button" id="help-button" title="معلومات النموذج والأمان" aria-label="معلومات عن النموذج">؟</button>
+        </div>
+      </header>
+
+      <main id="main" tabindex="-1">
+        <div role="status" class="preview-safety-banner" style="margin:10px 0;padding:10px 14px;border:1px solid #d7c79e;border-radius:12px;background:#fff9e9;color:#3e392c;font-size:13px;font-weight:700;text-align:center">نسخة تجريبية ببيانات رمزية — التسجيل غير متاح حاليًا</div>
+        <!-- 1. HOME PAGE -->
+        <section class="page active" id="page-home" aria-labelledby="welcome-title">
+          <div class="welcome-row">
+            <div>
+              <div class="eyebrow"><span class="eyebrow-line"></span> معاينة بوابة العائلة الافتراضية</div>
+              <h1 id="welcome-title">مرحبًا بكم في المعاينة الرمزية <span class="wave">✦</span></h1>
+              <p class="lead">معاينة محلية لتصميم البوابة ومساراتها؛ لا تتضمن حسابات أو مزامنة أو سجلات نسب معتمدة.</p>
+            </div>
+            <button class="button button-primary" data-page="meetings"><span>📅</span> تفاصيل اللقاء التأسيسي القادم</button>
+          </div>
+
+          <!-- Hero section -->
+          <div class="hero-card">
+            <div class="hero-copy">
+              <span class="hero-kicker">جذورٌ ثابتة، وفروعٌ زاهرة</span>
+              <h2>تصورٌ رمزي لشجرة العائلة.</h2>
+              <p>مجسم توضيحي يضم ثمانية فروع مرقّمة. الأسماء والروابط هنا رمزية ولا تمثل سجلًا حقيقيًا.</p>
+              <div class="hero-actions">
+                <button class="button button-light" data-page="tree">استكشف شجرة النسب 3D <span>←</span></button>
+                <button class="button button-outline" style="color:#fff; border-color:rgba(255,255,255,0.4)" data-page="members">دليل الأعضاء</button>
+              </div>
+            </div>
+
+            <!-- 3D Showcase -->
+            <div class="hero-3d-showcase">
+              <div class="hero-3d-wrapper" id="hero-3d-box">
+                <model-viewer
+                  id="hero-model-viewer"
+                  src="assets/models/allam_tree_master_v2.glb"
+                  poster="assets/renders/render_01_front.png"
+                  alt="مجسم ثلاثي الأبعاد لشجرة بأوراق خضراء وجذور ظاهرة"
+                  camera-controls
+                  shadow-intensity="1.5"
+                  shadow-softness="0.5"
+                  exposure="1.2"
+                  camera-orbit="0deg 75deg 9.5m"
+                  min-camera-orbit="auto auto 2.2m"
+                  max-camera-orbit="auto auto 8.5m"
+                  style="width: 100%; height: 100%; background: transparent;">
+                </model-viewer>
+                <canvas id="hero-3d-canvas" style="display:none;" aria-label="مجسم شجرة العائلة الافتراضية ثلاثية الأبعاد"></canvas>
+                <img id="tree-render-img" class="tree-render-fallback" src="assets/renders/render_01_front.png" alt="صورة معاينة لمجسم الشجرة" style="display:none;">
+              </div>
+              <div class="hero-3d-controls">
+                <span class="badge-3d">شجرة ثلاثية الأبعاد للمعاينة</span>
+                <span class="badge-3d" style="background:rgba(212,175,55,0.2); color:#ffe699; border:1px solid rgba(212,175,55,0.4)">🌳 شجرة معمّرة</span>
+                <button class="control-pill-btn" id="btn-replay-cinematic" title="تشغيل حركة النمو السينمائية لشجرة العائلة الافتراضية">🎬 حركة النمو</button>
+                <button class="control-pill-btn" id="btn-toggle-render" title="التبديل بين العارض التفاعلي وصور المعاينة" style="display:none" aria-hidden="true" tabindex="-1">عرض صور المعاينة</button>
+                <button class="control-pill-btn" id="btn-reset-hero-3d" title="إعادة ضبط الكاميرا">إعادة توسيط ↺</button>
+              </div>
+              <div class="tree-angle-selector" id="hero-angle-selector" style="display:none">
+                <span class="angle-label">صور زوايا الشجرة المرجعية للمعاينة:</span>
+                <button class="angle-btn active" data-angle="assets/renders/render_01_front.png">المنظور الأمامي الشامل</button>
+                <button class="angle-btn" data-angle="assets/renders/render_02_three_quarter_left.png">منظور 3/4 يسار</button>
+                <button class="angle-btn" data-angle="assets/renders/render_03_three_quarter_right.png">منظور 3/4 يمين</button>
+                <button class="angle-btn" data-angle="assets/renders/render_04_closeup_bark.png">ماكرو اللحاء البري</button>
+                <button class="angle-btn" data-angle="assets/renders/render_05_closeup_leaves.png">ماكرو الأوراق والضوء (SSS)</button>
+                <button class="angle-btn" data-angle="assets/renders/render_06_roots_base.png">ماكرو الجذور والجرانيت</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5 Interactive Identity Pillars -->
+          <div class="identity-pillars-row" aria-label="أركان هوية ونظام عائلة افتراضي">
+            <div class="pillar-card" data-page="fund" title="التعليم والمنح">
+              <span class="pillar-icon">🎓</span>
+              <div class="pillar-info">
+                <b>التعليم والمنح</b>
+                <small>واجهة توضيحية • بيانات غير حقيقية</small>
+              </div>
+            </div>
+            <div class="pillar-card" data-page="fund" title="التكافل والدعم">
+              <span class="pillar-icon">🤝</span>
+              <div class="pillar-info">
+                <b>التكافل والدعم</b>
+                <small>تصور تجريبي • لا توجد سجلات</small>
+              </div>
+            </div>
+            <div class="pillar-card" data-page="tree" title="شجرة النسب 3D">
+              <span class="pillar-icon">🌳</span>
+              <div class="pillar-info">
+                <b>شجرة النسب 3D</b>
+                <small>ثمانية فروع مرسومة للمعاينة</small>
+              </div>
+            </div>
+            <div class="pillar-card" data-page="council" title="مجلس الأسرة">
+              <span class="pillar-icon">🏛</span>
+              <div class="pillar-info">
+                <b>مجلس الأسرة</b>
+                <small>محتوى توضيحي • غير معتمد</small>
+              </div>
+            </div>
+            <div class="pillar-card" data-page="contributions" title="تاريخ الأجداد">
+              <span class="pillar-icon">📖</span>
+              <div class="pillar-info">
+                <b>تاريخ ومجالس الأجداد</b>
+                <small>مواد توضيحية • بيانات رمزية</small>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Cards -->
+          <div class="quick-nav-grid">
+            <a href="#members" data-page="members" class="quick-nav-card">
+              <span class="quick-icon">👥</span>
+              <div class="quick-body">
+                <b>دليل الأعضاء</b>
+                <small>بيانات وتواصل مع أفراد الفروع</small>
+              </div>
+            </a>
+            <a href="#tree" data-page="tree" class="quick-nav-card gold-border">
+              <span class="quick-icon gold">🌳</span>
+              <div class="quick-body">
+                <b>شجرة النسب 3D</b>
+                <small>استكشاف هرمي وتتبع الفروع</small>
+              </div>
+            </a>
+            <a href="#meetings" data-page="meetings" class="quick-nav-card rose-border">
+              <span class="quick-icon rose">📅</span>
+              <div class="quick-body">
+                <b>اللقاء التأسيسي</b>
+                <small>جدول اللقاء وكلمات ممثلي الفروع</small>
+              </div>
+            </a>
+            <a href="#council" data-page="council" class="quick-nav-card sand-border">
+              <span class="quick-icon sand">🏛</span>
+              <div class="quick-body">
+                <b>مجلس العائلة الافتراضية</b>
+                <small>مقترح التشكيل ومبادئ الحوكمة</small>
+              </div>
+            </a>
+          </div>
+
+          <!-- Family News & Quick Requests -->
+          <div class="grid-2">
+            <section class="card">
+              <div class="section-head" style="margin:0 0 14px">
+                <div>
+                  <span class="eyebrow">أخبار ومستجدات</span>
+                  <h3 style="margin:4px 0 0">أخبار العائلة واللقاءات</h3>
+                </div>
+                <button class="text-button" data-page="meetings">كل اللقاءات ←</button>
+              </div>
+              <article class="news-item">
+                <span class="news-mark">✦</span>
+                <div>
+                  <b>التحضير للقاء التأسيسي الأول لالعائلة الافتراضية</b>
+                  <p>يجري الإعداد للقاء التأسيسي لجمع كلمة الأسرة، مناقشة اللائحة، وترتيب مواعيد اللقاء الشهري ولقاء العيد.</p>
+                  <small>تاريخ افتراضي • مثال توضيحي</small>
+                </div>
+              </article>
+              <article class="news-item">
+                <span class="news-mark gold">⌑</span>
+                <div>
+                  <b>إطلاق شجرة النسب ثلاثية الأبعاد ببيانات تجريبية</b>
+                  <p>تعرض الصفحة مجسم الشجرة والفروع الرمزية؛ وهذا لا يثبت صلات النسب أو اعتمادها.</p>
+                  <small>ميزة جديدة • التوثيق الرقمي</small>
+                </div>
+              </article>
+            </section>
+
+            <section class="card">
+              <div class="section-head" style="margin:0 0 14px">
+                <div>
+                  <span class="eyebrow">متابعة محلية</span>
+                  <h3 style="margin:4px 0 0">طلباتي والمشاركات</h3>
+                </div>
+                <button class="text-button" data-page="requests">عرض الكل ←</button>
+              </div>
+              <div id="home-requests" class="home-request-list"></div>
+              <div style="display:flex; gap:8px; margin-top:12px">
+                <button class="button button-outline" style="flex:1" data-page="contributions">✍ شارك كتابة أو هواية</button>
+                <button class="button button-primary" style="flex:1" data-request="طلب دعم عائلي">＋ طلب جديد</button>
+              </div>
+            </section>
+          </div>
+
+          <!-- Photographic Family Gallery Section -->
+          <div class="card" style="margin-top: 24px;">
+            <div class="section-head" style="margin: 0 0 16px;">
+              <div>
+                <span class="eyebrow">ذاكرة وتاريخ الأسرة</span>
+                <h3 style="margin: 4px 0 0">معرض الأصالة ومجالس الأجداد</h3>
+              </div>
+              <small class="lead" style="margin: 0">صور ومجسمات توضيحية لا تمثل أشخاصًا أو وقائع حقيقية</small>
+            </div>
+            
+            <div class="photo-gallery-grid">
+              <div class="photo-card">
+                <img src="assets/renders/concept_01_heritage_photoreal.png" alt="تصور رمزي للشجرة" class="photo-card-img" loading="lazy">
+                <div class="photo-card-body">
+                  <b>مجالس الألفة وصلة الرحم</b>
+                  <p>اجتماع الأجيال في ديوانية العائلة وتوارث القيم الكريمة وحلقات الحديث بين الأجداد والأحفاد.</p>
+                </div>
+              </div>
+
+              <div class="photo-card">
+                <img src="assets/renders/render_06_roots_base.png" alt="مخطوط رمزي غير معتمد" class="photo-card-img" loading="lazy">
+                <div class="photo-card-body">
+                  <b>أرشيف توضيحي رمزي</b>
+                  <p>حفظ وتوثيق شجرة عائلة الجذور الرمزية وسير الأجداد بأمانة ومسؤولية تاريخية للأجيال القادمة.</p>
+                </div>
+              </div>
+
+              <div class="photo-card">
+                <img src="assets/renders/concept_02_luxury_photoreal.png" alt="مشهد توضيحي رمزي" class="photo-card-img" loading="lazy">
+                <div class="photo-card-body">
+                  <b>مجلس الأسرة والتخطيط المؤسسي</b>
+                  <p>رؤية تجمع الحكمة والخبرة لخدمة أبناء وبنات الأسرة وتنظيم الصندوق والتكافل الاجتماعي.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <footer class="page-footer">
+            <span>بوابة العائلة الافتراضية © ٢٠٢٦ — معاينة محلية، ولا تمثل شهادة امتثال نظامي.</span>
+          </footer>
+        </section>
+
+        <!-- 2. MEMBERS DIRECTORY PAGE -->
+        <section class="page" id="page-members" aria-labelledby="members-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">صلة الرحم والتعارف</span>
+              <h1 id="members-title">دليل أفراد العائلة</h1>
+              <p class="lead">قائمة رمزية لشرح الواجهة فقط؛ لا تحتوي سجلًا عائليًا أو بيانات أفراد.</p>
+            </div>
+            <button class="button button-outline" id="btn-open-my-profile">⚙ إعدادات خصوصية ملفي</button>
+          </div>
+
+          <div class="notice-box">
+            <span>🔒</span>
+            <p><b>حماية البيانات الشخصية:</b> جميع السجلات في هذا العرض مصطنعة بالكامل ومخصصة للتطوير المحلي. في النظام النهائي، تطبق إعدادات الخصوصية بدقة ولا تُنشر وسائل التواصل أو التواريخ الدقيقة للعامة.</p>
+          </div>
+
+          <!-- Filter & Search Bar -->
+          <div class="filter-bar">
+            <div class="search-input-wrap">
+              <span class="search-icon">🔍</span>
+              <input type="search" id="member-search" class="search-input" placeholder="ابحث بالاسم، التخصص، أو الهواية..." aria-label="بحث في دليل الأعضاء">
+            </div>
+            <label class="sr-only" for="member-branch-filter">تصفية حسب الفرع</label>
+            <select id="member-branch-filter" class="filter-select">
+              <option value="all">جميع الفروع (٨ فروع)</option>
+              <option value="الفرع 1">الفرع 1</option>
+              <option value="الفرع 2">الفرع 2</option>
+              <option value="الفرع 3">الفرع 3</option>
+              <option value="الفرع 4">الفرع 4</option>
+              <option value="الفرع 5">الفرع 5</option>
+              <option value="الفرع 6">الفرع 6</option>
+              <option value="الفرع 7">الفرع 7</option>
+              <option value="الفرع 8">الفرع 8</option>
+            </select>
+            <span id="member-count-badge" class="badge-3d" style="background:#eaf2ed; color:var(--green)">جارٍ التحميل...</span>
+          </div>
+
+          <!-- Members Grid Container -->
+          <div id="members-container" class="grid-3"></div>
+        </section>
+
+        <!-- 3. FAMILY TREE 3D & 2D PAGE -->
+        <section class="page" id="page-tree" aria-labelledby="tree-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">أصولنا المباركة وامتدادنا</span>
+              <h1 id="tree-title">شجرة النسب ثلاثية الأبعاد</h1>
+              <p class="lead">معاينة تفاعلية للمجسم وتوزيع رمزي للفروع؛ لا تمثل نقاطها سجل نسب موثقًا.</p>
+            </div>
+            <div class="tree-mode-toggle">
+              <button class="toggle-btn active" id="btn-tree-mode-3d">🌿 شجرة النسيج والأوراق</button>
+              <button class="toggle-btn" id="btn-tree-mode-graph">🕸️ مخطط شبكة الأنساب</button>
+              <button class="toggle-btn" id="btn-tree-mode-photo" style="display:none" aria-hidden="true" tabindex="-1">🎨 صور الشجرة</button>
+              <button class="toggle-btn" id="btn-tree-mode-list">📋 جدول المعاينة</button>
+              <button class="toggle-btn" id="btn-tree-print" title="طباعة أو تصدير سجل شجرة النسب PDF">🖨️ طباعة / تصدير PDF</button>
+              <button class="toggle-btn" id="btn-export-gedcom" title="تصدير ملف الأنساب العالمي القياسي GEDCOM 5.5.1">📜 تصدير GEDCOM</button>
+            </div>
+          </div>
+
+          <aside class="tree-visibility-note" role="note" aria-label="سياسة ظهور الأسماء في الشجرة">
+            <strong>من يظهر اسمه في الشجرة؟</strong>
+            <span>تُعرض أسماء الفروع الرئيسية فقط قبل توثيق العضوية. لا يضيف التسجيل اسمك تلقائيًا؛ يظهر اسمك بعد التحقق من العضوية ومراجعة صلة النسب، وبموافقتك على عرضه.</span>
+            <small>هذه سياسة مقترحة؛ التسجيل والتوثيق غير متاحين في نسخة العرض الحالية.</small>
+          </aside>
+
+          <!-- Printable Sovereign Header (Only visible in Print) -->
+          <div class="tree-print-banner" aria-hidden="true">
+            <div class="print-crest">🌳 المعاينة الرمزية — وثيقة نسب استرشادية</div>
+            <h2>سجل شجرة النسب والأجيال المباركة</h2>
+            <p>من جذور افتراضية للتوضيح — الفروع الثمانية: 1، 2، 3، 4، 5، 6، 7، 8</p>
+            <small>وثيقة معاينة فقط؛ لا تمثل سجل نسب معتمدًا أو شهادة امتثال نظامي.</small>
+          </div>
+
+          <!-- Prominent 3D Fast Member Search Bar -->
+          <div class="tree-search-bar-container" style="display:flex; gap:10px; align-items:center; margin-bottom:14px; background:rgba(255, 255, 255, 0.95); border:1.5px solid rgba(191, 161, 95, 0.45); border-radius:14px; padding:10px 16px; box-shadow:0 3px 12px rgba(27, 75, 62, 0.08);">
+            <span style="font-size:16px;">🔍</span>
+            <input
+              type="text"
+              id="tree-3d-search-input"
+              placeholder="ابحث في سجلات نسخة العرض الرمزية..."
+              style="flex:1; background:transparent; border:none; color:var(--ink); font-family:inherit; font-size:13.5px; font-weight:500; outline:none;"
+              aria-label="بحث فوري في شجرة الأنساب 3D"
+            />
+            <span id="tree-3d-search-count" style="font-size:12px; font-weight:600; color:var(--green); background:rgba(27, 75, 62, 0.08); padding:4px 10px; border-radius:12px; white-space:nowrap;">نسخة رمزية</span>
+            <button id="tree-3d-search-clear" style="background:none; border:none; color:#888; cursor:pointer; font-size:14px; display:none; padding:2px 6px;" title="مسح">✕</button>
+          </div>
+
+          <!-- 3D Viewport: Three.js WebGL Engine (Primary) + model-viewer (Fallback) -->
+          <div id="tree-3d-wrapper" class="tree-canvas-container" style="height: 580px; position: relative;">
+
+            <!-- ① Three.js WebGL Canvas: woven tree and interactive member leaves -->
+            <canvas
+              id="three-canvas"
+              aria-label="مجسم شجرة ثلاثي الأبعاد مع افتراضيات تفاعلية لسجلات المعاينة الرمزية"
+              style="width:100%; height:100%; display:block; border-radius: 18px;"
+            ></canvas>
+
+            <!-- Arabic labels and display-only leaders projected from the 3D leaves -->
+            <svg id="tree-leaf-connectors" class="tree-leaf-connectors" aria-hidden="true"></svg>
+            <div id="tree-leaf-labels" class="tree-leaf-labels" aria-label="بطاقات أسماء ورقية قابلة للفصل عن المجسم"></div>
+
+            <!-- ② model-viewer fallback (hidden once Three.js loads) -->
+            <model-viewer
+              id="tree-3d-model-viewer"
+              src="assets/models/allam_tree_master_v2.glb"
+              poster="assets/renders/render_01_front.png"
+              alt="مجسم ثلاثي الأبعاد لشجرة بأوراق خضراء وجذور ظاهرة"
+              camera-controls
+              shadow-intensity="1.5"
+              shadow-softness="0.5"
+              exposure="1.2"
+              camera-orbit="0deg 75deg 6m"
+              min-camera-orbit="auto auto 3.8m"
+              max-camera-orbit="auto auto 9m"
+              style="width: 100%; height: 100%; background: transparent; display: none; position: absolute; top:0; left:0;">
+              
+              <!-- 8 Master Branch 3D Hotspot Pins Floating in 3D Space -->
+              <button class="tree-hotspot-pin" slot="hotspot-hussein" data-position="-1.45 3.25 -0.75" data-normal="0 1 0" data-branch="الفرع 1" data-orbit="-45deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 1</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-khalid" data-position="-1.65 3.32 0.52" data-normal="0 1 0" data-branch="الفرع 2" data-orbit="-90deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 2</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-kamal" data-position="-1.08 3.45 1.48" data-normal="0 1 0" data-branch="الفرع 3" data-orbit="-135deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 3</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-jamal" data-position="0.85 3.62 1.38" data-normal="0 1 0" data-branch="الفرع 4" data-orbit="145deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 4</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-muhammad" data-position="1.68 3.38 0.18" data-normal="0 1 0" data-branch="الفرع 5" data-orbit="90deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 5</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-mastoora" data-position="1.42 3.58 -1.05" data-normal="0 1 0" data-branch="الفرع 6" data-orbit="45deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 6</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-najiya" data-position="-0.42 3.92 -1.45" data-normal="0 1 0" data-branch="الفرع 7" data-orbit="10deg 75deg 5.4m" data-target="0 2.2 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 7</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-huda" data-position="0.35 4.45 -0.42" data-normal="0 1 0" data-branch="الفرع 8" data-orbit="0deg 60deg 5.4m" data-target="0 2.4 0">
+                <span class="hotspot-dot"></span>
+                <span class="hotspot-title">الفرع 8</span>
+              </button>
+              <button class="tree-hotspot-pin" slot="hotspot-roots" data-position="0 0.5 0" data-normal="0 1 0" data-branch="الجذور الرمزية" data-orbit="0deg 85deg 4.8m" data-target="0 0.8 0">
+                <span class="hotspot-dot roots"></span>
+                <span class="hotspot-title">الجذور الرمزية</span>
+              </button>
+            </model-viewer>
+
+            <!-- Canvas 2D Graph (network view — kept, toggled by btn-tree-mode-graph) -->
+            <canvas id="tree-interactive-canvas" style="display:none; position:absolute; top:0; left:0; width:100%; height:100%;" aria-label="مخطط شجرة النسب ثلاثية الأبعاد"></canvas>
+
+            <!-- ③ Dynamic 3D Floating Name Badge (Anchored directly in 3D Space) -->
+            <div id="tree-3d-floating-badge" class="tree-3d-floating-badge" aria-live="polite">
+              <div class="floating-badge-header">
+                <span class="floating-badge-title" id="badge-person-name">الاسم</span>
+                <span class="floating-badge-gen" id="badge-person-gen">الجيل</span>
+              </div>
+              <div class="floating-badge-body" id="badge-person-desc">الصلة والفرع</div>
+              <div class="floating-badge-footer">
+                <span id="badge-person-branch">الفرع</span>
+                <span>انقر للتفاصيل ✦</span>
+              </div>
+            </div>
+            
+            <div class="tree-overlay-controls">
+              <button class="tree-control-btn" id="btn-tree-zoom-in" title="تقريب">+</button>
+              <button class="tree-control-btn" id="btn-tree-zoom-out" title="إبعاد">−</button>
+              <button class="tree-control-btn" id="btn-tree-reset" title="إعادة الكاميرا">↺</button>
+              <button class="tree-control-btn" id="btn-tree-toggle-branches" title="تبديل إظهار الفروع">🌿</button>
+            </div>
+
+            <div class="tree-status-indicator">
+              <span>● اختر ورقة أو بطاقة اسم لعرض التفاصيل</span>
+              <span style="opacity:0.5">|</span>
+              <span id="tree-hover-name">اسحب للتدوير 360° في الفضاء ثلاثي الأبعاد</span>
+            </div>
+
+            <!-- Safe Info Drawer -->
+            <div id="safe-drawer" class="safe-drawer">
+              <button class="drawer-close" id="drawer-close" aria-label="إغلاق">×</button>
+              <span class="member-branch-badge" id="drawer-badge">فرع العائلة</span>
+              <h3 class="drawer-title" id="drawer-name">اسم الشخص</h3>
+              <span class="drawer-branch" id="drawer-gen">الجيل الثالث</span>
+
+              <div class="drawer-section">
+                <h5>حالة التوثيق</h5>
+                <p id="drawer-status">حالة رابط النسب تظهر عند اختيار السجل</p>
+              </div>
+
+              <div class="drawer-section">
+                <h5>الصلة العائلية</h5>
+                <p id="drawer-relation">الابن / الابنة</p>
+              </div>
+
+              <div class="drawer-section">
+                <h5>المعلومات المصرح بها</h5>
+                <p id="drawer-bio">المعلومات تظهر فقط بناءً على إعدادات الخصوصية وموافقة صاحب الملف.</p>
+              </div>
+
+              <div style="margin-top:auto; padding-top:14px; display:flex; flex-direction:column; gap:8px;">
+                <button class="button button-gold" style="width:100%" id="btn-highlight-ancestry" type="button">
+                  <span class="icon">✦</span> إضاءة مسار النسب في الشجرة 3D
+                </button>
+                <button class="button button-primary" style="width:100%; background:#0f6856;" id="btn-login-as-drawer-member" type="button">
+                  🔑 هذا أنا — الدخول بحساب هذا الفرد
+                </button>
+                <button class="button button-outline" style="width:100%" id="btn-request-correction" type="button" disabled>تعديل السجلات غير متاح في المعاينة</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive 8 Branches Quick Navigator Pills -->
+          <div class="tree-branch-pills-bar" id="tree-branch-pills" aria-label="اختيار وتكبير الفروع الثمانية">
+            <button class="branch-pill-chip active" data-branch="all">
+              <span>🌳</span> معاينة الفروع الثمانية
+            </button>
+              <button class="branch-pill-chip" data-branch="الفرع 1" data-orbit="-45deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 1
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 2" data-orbit="-90deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 2
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 3" data-orbit="-135deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 3
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 4" data-orbit="145deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 4
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 5" data-orbit="90deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 5
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 6" data-orbit="45deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 6
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 7" data-orbit="10deg 75deg 5.4m" data-target="0 2.2 0">
+              <span>🌿</span> الفرع 7
+            </button>
+            <button class="branch-pill-chip" data-branch="الفرع 8" data-orbit="0deg 60deg 5.4m" data-target="0 2.4 0">
+              <span>🌿</span> الفرع 8
+            </button>
+            <button class="branch-pill-chip" data-branch="الجذور الرمزية" data-orbit="0deg 85deg 4.8m" data-target="0 0.8 0">
+              <span>✨</span> الجذور الرمزية
+            </button>
+          </div>
+
+          <!-- Generation Filter Pills Bar -->
+          <div class="tree-branch-pills-bar tree-gen-pills-bar" id="tree-gen-pills" hidden style="margin-top:-6px; margin-bottom:12px; gap:6px;">
+            <span style="font-size:11px; font-weight:700; color:var(--green); align-self:center; margin-left:6px;">تصفية الأجيال:</span>
+            <button class="gen-pill-chip active" data-gen="all">معاينة جميع الأجيال</button>
+            <button class="gen-pill-chip" data-gen="1">الجيل الأول (الجذور)</button>
+            <button class="gen-pill-chip" data-gen="2">الجيل الثاني (الأبناء)</button>
+            <button class="gen-pill-chip" data-gen="3">الجيل الثالث (الأحفاد)</button>
+            <button class="gen-pill-chip" data-gen="4">الجيل الرابع (أبناء الأحفاد)</button>
+          </div>
+
+          <!-- Registration-Gated Tree Visibility & 8-Branch Activation Gamification Card -->
+          <div class="card" id="tree-registration-gamification-card" style="margin-top:14px; border:1.5px solid rgba(15,104,86,0.38); background:linear-gradient(135deg, #0d261d 0%, #14382b 100%); color:#f8fafc; box-shadow:0 10px 28px rgba(10,30,22,0.16);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
+              <div>
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <span style="background:rgba(218,178,94,0.22); border:1px solid #dab25e; color:#ffd97d; font-size:11px; font-weight:800; padding:3px 10px; border-radius:99px;">🛡️ نسخة عرض رمزية</span>
+                  <span id="tree-reg-progress-badge" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.35); color:#f8fafc; font-size:11.5px; font-weight:800; padding:3px 10px; border-radius:99px;">التسجيل غير مفعّل</span>
+                </div>
+                <h3 style="margin:6px 0 3px; font-size:16px; color:#ffd97d;">التسجيل وإحصاءات التفعيل غير متاحة في نسخة العرض</h3>
+                <p style="margin:0; font-size:12px; color:#cbd5e1; line-height:1.55;">لن نربط الأسماء أو نعرض ترتيبًا للفروع قبل إعداد مصادقة موثوقة والتحقق من سجلات النسب.</p>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button type="button" class="button" id="btn-tree-google-auth-cta" hidden style="background:#ffffff; color:#1f2937; border:1.5px solid #dab25e; font-weight:800; font-size:12px; padding:7px 13px; display:inline-flex; align-items:center; gap:6px; border-radius:10px; cursor:pointer;">
+                  <span style="color:#4285F4; font-weight:900; font-size:14px;">G</span> تسجيل الدخول عبر Google
+                </button>
+                <button type="button" class="button button-gold" id="btn-copy-whatsapp-invite" hidden style="font-size:12px; padding:7px 12px; font-weight:800;">
+                  📲 نسخ رسالة تحفيز لواتساب العائلة
+                </button>
+              </div>
+            </div>
+
+            <!-- 3-Mode Registration Visibility Switcher -->
+            <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; padding:8px 11px; border-radius:10px; background:rgba(255,255,255,0.06); border:1px solid rgba(218,178,94,0.28); margin-bottom:12px;">
+              <span style="font-size:12px; font-weight:700; color:#fde68a;">👁️ نمط ظهور الأسماء في الشجرة:</span>
+              <div style="display:flex; gap:6px; flex-wrap:wrap;" id="tree-reg-mode-pills" hidden>
+                <button type="button" class="button button-gold" id="btn-reg-mode-masked" data-reg-mode="gamified_masked" style="font-size:11.5px; padding:5px 11px; font-weight:800;">
+                  🎯 وضع التحفيز (المسجلون يظهر اسمهم • غير المسجل مقعد محجوز 🔒)
+                </button>
+                <button type="button" class="button button-quiet" id="btn-reg-mode-strict" data-reg-mode="strict_registered" style="background:rgba(255,255,255,0.1); color:#e2e8f0; font-size:11.5px; padding:5px 11px;">
+                  🌱 المسجلون فقط (إخفاء غير المسجلين)
+                </button>
+                <button type="button" class="button button-quiet" id="btn-reg-mode-full" data-reg-mode="full_registry" style="background:rgba(255,255,255,0.1); color:#e2e8f0; font-size:11.5px; padding:5px 11px;">
+                  👑 السجل الكامل غير متاح
+                </button>
+              </div>
+            </div>
+
+            <!-- 8-Branch Registration Competition Leaderboard -->
+            <div id="branch-registration-leaderboard" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:8px;"></div>
+          </div>
+
+          <!-- Interactive Kinship & Lowest Common Ancestor Calculator (Inspired by GitHub Family-Chart & Topola) -->
+          <div class="card" id="kinship-calculator-card" style="margin-top:16px; border:1px solid rgba(197,160,89,0.45); background:linear-gradient(135deg, #fffdf8 0%, #f4faf7 100%);">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div>
+                <span class="eyebrow" style="color:#7a5510;">🧬 محرك استكشاف القرابات والجد الجامع (LCA Kinship Path)</span>
+                <h3 style="margin:3px 0 0; font-size:16px; color:var(--primary);">حاسبة صلة القرابة ومسار النسب بين أي فردين في العائلة</h3>
+              </div>
+              <button type="button" class="button button-outline" id="btn-kinship-use-me" style="font-size:11.5px; padding:5px 12px;">👤 ضع اسمي كطرف أول</button>
+            </div>
+            <datalist id="kinship-members-datalist"></datalist>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:10px; align-items:end;">
+              <div>
+                <label style="display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:4px;">الطرف الأول (اكتب الاسم أو اختر من القائمة):</label>
+                <input type="text" id="kinship-input-a" list="kinship-members-datalist" class="input" placeholder="مثال: اسم تجريبي غير حقيقي" style="width:100%; padding:8px 12px; font-size:13px;">
+              </div>
+              <div>
+                <label style="display:block; font-size:11.5px; font-weight:700; color:var(--muted); margin-bottom:4px;">الطرف الثاني (اكتب الاسم أو اختر من القائمة):</label>
+                <input type="text" id="kinship-input-b" list="kinship-members-datalist" class="input" placeholder="مثال: مثال بحث رمزي" style="width:100%; padding:8px 12px; font-size:13px;">
+              </div>
+              <div style="display:flex; gap:8px;">
+                <button type="button" class="button button-primary" id="btn-calc-kinship" style="width:100%; padding:9px 16px; font-weight:700;">🔗 احسب صلة القرابة وأضئ المسار</button>
+              </div>
+            </div>
+            <div id="kinship-result-panel" style="display:none; margin-top:12px; padding:14px 16px; border-radius:12px; background:linear-gradient(135deg, #0d261d 0%, #14382b 100%); border:1.5px solid rgba(218,178,94,0.55); box-shadow:0 8px 22px rgba(10,28,20,0.18);"></div>
+          </div>
+
+          <!-- Visual Lineage & Detailed Family Hierarchy Tree Explorer -->
+          <div class="card" id="tree-branch-detail-view" style="margin-top: 24px;">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow" id="hierarchy-branch-badge">الفرع 1 للجذور الرمزية</span>
+                <h3 id="hierarchy-branch-title" style="margin:4px 0 6px">أفراد الفرع في سجل العرض</h3>
+                <small class="lead" id="hierarchy-branch-desc">سجلات للتصفح؛ تثبت روابط القرابة المعتمدة وحدها في الشجرة</small>
+              </div>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <span class="badge" id="hierarchy-count-badge">السجلات قيد التحميل</span>
+                <button class="button button-outline" id="btn-print-tree">طباعة مشجر النسب</button>
+              </div>
+            </div>
+
+            <!-- Branch & Sub-Family Filter Chips -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+              <div class="sub-family-chips-bar" id="sub-family-chips-bar" style="margin-bottom:0; flex:1;">
+                <!-- Dynamically populated sub-family chips (e.g. الكل، اسم تجريبي، اسم تجريبي، اسم تجريبي، اسم تجريبي، اسم تجريبي، اسم تجريبي) -->
+              </div>
+              <div style="min-width:240px;">
+                <input type="search" id="hierarchy-search-input" class="input" placeholder="🔍 بحث سريع في هذا الفرع..." style="padding:6px 12px; font-size:12px;" aria-label="بحث في شجرة الفرع">
+              </div>
+            </div>
+
+            <!-- Dynamic Hierarchy Tree Container -->
+            <div class="hierarchy-tree-container" id="hierarchy-tree-container" aria-live="polite">
+              <!-- Dynamically populated cards for each sub-family -->
+            </div>
+          </div>
+
+          <!-- Tree preview image gallery -->
+          <div id="tree-photo-wrapper" class="tree-photo-view" style="display:none">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow">صور معاينة لمجسم الشجرة</span>
+                <h3>معرض صور الشجرة</h3>
+              </div>
+              <small class="lead">صور مرجعية للمعاينة؛ إعدادات الرندر والخامات غير موثقة هنا.</small>
+            </div>
+
+            <div class="photo-tree-display">
+              <div class="photo-tree-main">
+                <img id="tree-photo-featured" src="assets/renders/render_01_front.png" alt="المنظور الأمامي الشامل للشجرة البرية المعمرة" class="photo-tree-large">
+                <video id="tree-video-featured" class="photo-tree-large" autoplay loop muted playsinline style="display:none; width:100%; object-fit:cover; border-radius:var(--radius-md);" src="assets/allam_tree_cinematic.mp4"></video>
+                <div class="photo-tree-caption" id="tree-photo-caption">
+                  <b>المنظور الأمامي — مجسم الشجرة (Concept C)</b>
+                  <p>تأطير كامل للشجرة بمظلتها الواسعة ذات المستويات المتدرجة، وجذعها العتيق المحفور، وجذورها العشرة الضخمة المتشابكة في قاعدة صخور الجرانيت الطبيعية.</p>
+                </div>
+              </div>
+
+              <div class="photo-tree-thumbs">
+                <div class="photo-thumb active" data-type="image" data-src="assets/renders/render_01_front.png" data-title="المنظور الأمامي الشامل (Cam_01_Front)" data-desc="تأطير كامل للشجرة بمظلتها الواسعة ذات المستويات المتدرجة، وجذعها العتيق المحفور، وجذورها العشرة الضخمة المتشابكة في قاعدة صخور الجرانيت الطبيعية.">
+                  <img src="assets/renders/render_01_front.png" alt="المنظور الأمامي">
+                  <span>المنظور الأمامي الشامل</span>
+                </div>
+                <div class="photo-thumb" data-type="image" data-src="assets/renders/render_02_three_quarter_left.png" data-title="منظور 3/4 يسار (Cam_02_ThreeQuarterLeft)" data-desc="إبراز عمق التفرعات العضوية وتدرج المستويات الفراغية وتداخل الجذور الدعامية حول صخرة الجرانيت.">
+                  <img src="assets/renders/render_02_three_quarter_left.png" alt="منظور يسار">
+                  <span>منظور 3/4 يسار</span>
+                </div>
+                <div class="photo-thumb" data-type="image" data-src="assets/renders/render_03_three_quarter_right.png" data-title="منظور 3/4 يمين (Cam_03_ThreeQuarterRight)" data-desc="إظهار الجانب الشرقي للمظلة وتناسق الأغصان العلوية وامتدادها العريض بأسلوب الأشجار الصحراوية المعمرة.">
+                  <img src="assets/renders/render_03_three_quarter_right.png" alt="منظور يمين">
+                  <span>منظور 3/4 يمين</span>
+                </div>
+                <div class="photo-thumb" data-type="image" data-src="assets/renders/render_04_closeup_bark.png" data-title="ماكرو اللحاء البري العتيق (عدسة 85mm)" data-desc="لقطة مقربة ترصد التجاويف العميقة والتصدعات الطولية للحاء، مما يمنح الشجرة هيبة وواقعية الشيخوخة الطبيعية.">
+                  <img src="assets/renders/render_04_closeup_bark.png" alt="ماكرو اللحاء">
+                  <span>ماكرو اللحاء البري</span>
+                </div>
+                <div class="photo-thumb" data-type="image" data-src="assets/renders/render_05_closeup_leaves.png" data-title="ماكرو الأوراق والضوء (عدسة 85mm)" data-desc="عدسة ماكرو توضح نفاذية الضوء عبر الأوراق وتأثير تشتت الضوء الباطني (Subsurface Scattering) بظلال ناعمة.">
+                  <img src="assets/renders/render_05_closeup_leaves.png" alt="ماكرو الأوراق">
+                  <span>ماكرو الأوراق الشفافة</span>
+                </div>
+                <div class="photo-thumb" data-type="image" data-src="assets/renders/render_06_roots_base.png" data-title="ماكرو الجذور وصخور الجرانيت (عدسة 65mm)" data-desc="عدسة 65mm ترصد الجذور العشرة الضخمة وهي تلتف وتتشبث بالصخور الجرانيتية لتمثيل رسوخ الجذور العائلية.">
+                  <img src="assets/renders/render_06_roots_base.png" alt="ماكرو الجذور">
+                  <span>الجذور وصخور الجرانيت</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Accessible Table Alternative View -->
+          <div id="tree-list-wrapper" class="tree-accessible-view" style="display:none">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow">عرض نصي وجدولي متكامل</span>
+                <h3>سجل الأنساب والفروع الثمانية</h3>
+              </div>
+              <small class="lead">مكافئ بالكامل لقارئات الشاشة والأجهزة التي لا تدعم WebGL</small>
+            </div>
+            <table class="tree-data-table" aria-label="جدول شجرة النسب لالعائلة الافتراضية">
+              <thead>
+                <tr>
+                  <th scope="col">الاسم التجريبي</th>
+                  <th scope="col">الفرع</th>
+                  <th scope="col">الجيل</th>
+                  <th scope="col">الصلة بالفرع</th>
+                  <th scope="col">حالة التوثيق</th>
+                </tr>
+              </thead>
+              <tbody id="tree-table-body"></tbody>
+            </table>
+          </div>
+
+          <p class="privacy-inline">نسخة عرض محلية من سجلات الأسرة؛ الروابط المؤكدة مميزة، وبقية القرابات تحتاج مراجعة قبل الاعتماد أو النشر.</p>
+        </section>
+
+        <!-- 4. MEETINGS & PREP SPACE PAGE -->
+        <section class="page" id="page-meetings" aria-labelledby="meetings-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">نجتمع على البر وصلة الرحم</span>
+              <h1 id="meetings-title">اللقاءات العائلية ومساحة الإعداد</h1>
+              <p class="lead">تنظيم اللقاء الشهري، لقاء العيد السنوي، ومساحة مسودة اللقاء التأسيسي الأول.</p>
+            </div>
+            <button class="button button-primary" id="btn-open-rsvp">تسجيل حضور / اعتذار (RSVP)</button>
+          </div>
+
+          <!-- Section A: Upcoming Meetings -->
+          <div class="grid-2">
+            <article class="card">
+              <span class="eyebrow">اللقاء القادم</span>
+              <h2 style="font-size:18px; margin:6px 0 8px; color:var(--green)">اللقاء التأسيسي الأول لالعائلة الافتراضية</h2>
+              <p style="font-size:12px; color:var(--muted); line-height:1.7">
+                نص افتراضي لتوضيح شكل بطاقة الخبر؛ لا يصف اجتماعًا حقيقيًا.
+              </p>
+              <div style="background:var(--paper); padding:12px; border-radius:8px; margin:12px 0; font-size:11px">
+                <div>📅 <b>الموعد المقترح:</b> السبت، ربيع الآخر ١٤٤٨هـ (تاريخ تقريبي)</div>
+                <div style="margin-top:4px">📍 <b>المكان:</b> مكان افتراضي / مع رابط افتراضي لمن هم خارج المنطقة</div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px">
+                <span class="status review">قيد التحضير والتنسيق</span>
+                <button class="button button-outline" id="btn-quick-rsvp-1">تأكيد الاهتمام بالحضور</button>
+              </div>
+            </article>
+
+            <article class="card">
+              <span class="eyebrow">المناسبات الدورية</span>
+              <h2 style="font-size:18px; margin:6px 0 8px; color:var(--green)">لقاء العيد السنوي واللقاء الشهري</h2>
+              <p style="font-size:12px; color:var(--muted); line-height:1.7">
+                يهدف اللقاء الشهري إلى تواصل دوري خفيف، بينما يمثل لقاء العيد التجمع السنوي الأكبر لكافة الأجيال والاحتفاء بالمتميزين.
+              </p>
+              <div style="background:var(--paper); padding:12px; border-radius:8px; margin:12px 0; font-size:11px">
+                <div>☕ <b>اللقاء الشهري:</b> السبت الأول من كل شهر هجري بعد صلاة العشاء.</div>
+                <div style="margin-top:4px">🎉 <b>لقاء العيد:</b> ثاني أيام عيد الفطر المبارك وثاني أيام عيد الأضحى.</div>
+              </div>
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px">
+                <span class="status">جدول مقترح للنقاش</span>
+                <button class="text-button" id="btn-subscribe-reminders">تفعيل التذكير ←</button>
+              </div>
+            </article>
+          </div>
+
+          <!-- Section A.2: Google Services Suite (Google Meet, Drive, Calendar, Maps) -->
+          <div class="card google-services-card" style="margin-bottom:24px; border:1px solid #d2e3fc; background:linear-gradient(135deg, #f8fafd 0%, #ffffff 100%)">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow" style="color:#1a73e8">منظومة الترابط السحابي</span>
+                <h3 style="color:#103b32">خدمات Google الرقمية لالعائلة الافتراضية (Meet • Drive • Calendar • Maps)</h3>
+              </div>
+              <button class="button button-outline" id="btn-config-google-services" style="font-size:12px; padding:6px 12px" title="تخصيص روابط Google Meet و Drive">⚙️ إعدادات الروابط</button>
+            </div>
+            
+            <div class="grid-3" style="gap:14px; margin-top:8px">
+              <!-- 1. Google Meet -->
+              <div class="google-service-card" style="background:#fff; border:1px solid #e0e0e0; border-radius:10px; padding:16px; display:flex; flex-direction:column; justify-content:space-between">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                    <span style="font-size:22px">🎥</span>
+                    <div>
+                      <b style="font-size:14px; color:#137333">Google Meet</b>
+                      <small style="display:block; color:var(--muted); font-size:11px">الاتصال المرئي والاجتماعات الافتراضية</small>
+                    </div>
+                  </div>
+                  <p style="font-size:12px; color:#444; line-height:1.6; margin:0 0 12px">
+                    غرفة الاجتماع الافتراضية للقاء التأسيسي ولقاءات الفروع الثمانية لمن هم خارج منطقة مدينة افتراضية أو خارج المملكة.
+                  </p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="button button-primary" id="btn-join-meet" style="background:#137333; border-color:#137333; text-align:center; text-decoration:none">
+                    <span>🎥</span> فتح Google Meet (الرابط العائلي غير مُعد)
+                  </a>
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="button button-outline" id="btn-new-meet" style="font-size:11px; text-align:center; text-decoration:none">
+                    <span>＋</span> بدء لقاء مرئي فوري
+                  </a>
+                </div>
+              </div>
+
+              <!-- 2. Google Calendar & Maps -->
+              <div class="google-service-card" style="background:#fff; border:1px solid #e0e0e0; border-radius:10px; padding:16px; display:flex; flex-direction:column; justify-content:space-between">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                    <span style="font-size:22px">📅</span>
+                    <div>
+                      <b style="font-size:14px; color:#1a73e8">Google Calendar & Maps</b>
+                      <small style="display:block; color:var(--muted); font-size:11px">تقويم المناسبات العائلية وموقع القاعة</small>
+                    </div>
+                  </div>
+                  <p style="font-size:12px; color:#444; line-height:1.6; margin:0 0 12px">
+                    إضافة مواعيد اللقاء التأسيسي، اللقاء الشهري، ولقاء العيد مباشرة إلى تقويم هاتفك (Google / Apple / Outlook).
+                  </p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <button type="button" class="button button-outline" id="btn-add-to-gcal" style="border-color:#1a73e8; color:#1a73e8; font-weight:600">
+                    <span>📅</span> حفظ في تقويم Google
+                  </button>
+                  <button type="button" class="button button-outline" id="btn-download-ics" style="font-size:11px;">
+                    <span>📥</span> تحميل ملف التقويم (.ics) لجوالك
+                  </button>
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="text-button" id="link-gmaps" style="text-align:center; font-size:11px">
+                    📍 فتح موقع القاعة في خرائط Google ←
+                  </a>
+                </div>
+              </div>
+
+              <!-- 3. Google Drive & Family Document Archive -->
+              <div class="google-service-card" style="background:#fff; border:1px solid #e0e0e0; border-radius:10px; padding:16px; display:flex; flex-direction:column; justify-content:space-between">
+                <div>
+                  <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px">
+                    <span style="font-size:22px">📁</span>
+                    <div>
+                      <b style="font-size:14px; color:#ea8600">Google Drive</b>
+                      <small style="display:block; color:var(--muted); font-size:11px">لا يوجد مجلد عائلي مشترك مضبوط</small>
+                    </div>
+                  </div>
+                  <p style="font-size:12px; color:#444; line-height:1.6; margin:0 0 12px">
+                    الزر يفتح Drive الخاص بحسابك؛ لا يرفع ملفات من البوابة ولا يثبت وجود مستودع عائلي مشترك.
+                  </p>
+                </div>
+                <div style="display:flex; flex-direction:column; gap:6px">
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="button button-outline" id="btn-open-gdrive" style="border-color:#ea8600; color:#b06000; font-weight:600; text-align:center; text-decoration:none">
+                    <span>📁</span> فتح حسابك في Google Drive
+                  </a>
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="button button-outline" id="btn-upload-gdrive" style="font-size:11px; text-align:center; text-decoration:none">
+                    <span>📤</span> إضافة ملف لمعاينة هذا المتصفح
+                  </a>
+                  <a href="#" target="_blank" rel="noopener noreferrer" class="text-button" id="link-external-gdrive" style="text-align:center; font-size:11px">
+                    ↗ فتح مجلد Google Drive الخارجي مباشرة ←
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section B: First Meeting Agenda -->
+          <div class="card" style="margin-bottom:24px">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow">تنظيم الحوار</span>
+                <h3>جدول أعمال اللقاء التأسيسي الأول (مسودة ٩٠–١٢٠ دقيقة)</h3>
+              </div>
+              <small class="lead">مسودة تنظيمية مطروحة لمراجعة العائلة</small>
+            </div>
+            <table class="meeting-agenda-table">
+              <thead>
+                <tr>
+                  <th scope="col">الفقرة والهدف</th>
+                  <th scope="col">الزمن المقدر</th>
+                  <th scope="col">المسؤول / المتحدث</th>
+                  <th scope="col">المخرج المتوقع</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>الافتتاح والترحيب:</b> تلاوة وتذكير بفضل صلة الرحم</td>
+                  <td>١٠ دقائق</td>
+                  <td>الميسر</td>
+                  <td>افتتاح اللقاء وضبط الوقت</td>
+                </tr>
+                <tr>
+                  <td><b>كلمة منسق المبادرة:</b> عرض غرض البوابة الرقمية وحدودها</td>
+                  <td>٥ دقائق</td>
+                  <td>منسق المبادرة التقنية</td>
+                  <td>إيضاح خصوصية المنصة وعدم جمع أموال</td>
+                </tr>
+                <tr>
+                  <td><b>كلمات ممثلي الفروع الثمانية:</b> رؤى واقتراحات الفروع</td>
+                  <td>٣٠ دقيقة</td>
+                  <td>ممثلو الفروع (٣-٤ د لكل فرع)</td>
+                  <td>مشاركة الجميع وصياغة التطلعات</td>
+                </tr>
+                <tr>
+                  <td><b>مناقشة أهداف اللقاءات الدورية:</b> تحديد أولويات السنة الأولى</td>
+                  <td>١٥ دقيقة</td>
+                  <td>حوار مفتوح</td>
+                  <td>٣-٥ أهداف ملموسة</td>
+                </tr>
+                <tr>
+                  <td><b>مقترح مجلس العائلة الافتراضية:</b> بحث الرئاسة والتمثيل والمدة</td>
+                  <td>٢٠ دقيقة</td>
+                  <td>كبار الأسرة والحضور</td>
+                  <td>مسودة تشكيل للمصادقة العائلية</td>
+                </tr>
+                <tr>
+                  <td><b>صندوق العائلة:</b> توضيح الاشتراطات النظامية والترخيص</td>
+                  <td>١٥ دقيقة</td>
+                  <td>مستشار / منسق تنظيمي</td>
+                  <td>تأكيد عدم التحصيل قبل الترخيص الرسمي</td>
+                </tr>
+                <tr>
+                  <td><b>تدوين القرارات والمحضر:</b> تكليف المسؤولين وموعد اللقاء التالي</td>
+                  <td>١٠ دقائق</td>
+                  <td>كاتب المحضر والمجلس</td>
+                  <td>محضر رسمي موقع وموجز معتمد</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Section C: Branch Speech Drafts (Editable) -->
+          <div class="card">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow">مشاركة الفروع الثمانية</span>
+                <h3>مسودات كلمات ممثلي الفروع (نصوص تفاعلية قابلة للتعديل محليًا)</h3>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap">
+                <button class="button button-outline" id="btn-save-speeches">💾 حفظ في المتصفح</button>
+                <button class="button button-primary" id="btn-export-agenda">📄 تصدير مسودة اللقاء والمحضر</button>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted); margin-bottom:18px">
+              الأسماء والصفات هنا مسودات استرشادية، وتحدد العائلة من يمثل كل فرع ومن يتحدث وترتيب الكلمات. يمكنك تعديل النصوص وحفظها محليًا لتجهيز محضر اللقاء.
+            </p>
+
+            <div class="branch-speech-grid">
+              <!-- Branch 1: Hussein -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 1</span>
+                  <span class="speech-speaker">ممثل الفرع (محدد عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-hussein" aria-label="كلمة الفرع 1">بسم الله الرحمن الرحيم، نرحب بجميع الإخوة والأخوات. الفرع 1 يؤكد دعمه الكامل لمسيرة الألفة وصلة الرحم، ونقترح التركيز على رعاية كبار السن ودعم شباب العائلة المبتدئين في مسارهم المهني.</textarea>
+              </div>
+
+              <!-- Branch 2: Khalid -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 2</span>
+                  <span class="speech-speaker">ممثل الفرع (محدد عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-khalid" aria-label="كلمة الفرع 2">السلام عليكم ورحمة الله، نشد على أيدي القائمين على هذا اللقاء المبارك. نرى أهمية أن يكون اللقاء الشهري دوريًا ومبسطًا لتعزيز الترابط بين أحفاد الجيل الرابع والخامس.</textarea>
+              </div>
+
+              <!-- Branch 3: Kamal -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 3</span>
+                  <span class="speech-speaker">ممثل الفرع (محدد عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-kamal" aria-label="كلمة الفرع 3">مساء الخير للجميع، نبارك هذه الخطوة المباركة في توثيق الأنساب وحفظ تاريخ الأسرة، ونوصي باعتماد آلية واضحة وموثقة للتحقق من شجرة النسب بالتعاون مع كبار العائلة.</textarea>
+              </div>
+
+              <!-- Branch 4: Jamal -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 4</span>
+                  <span class="speech-speaker">ممثل الفرع (محدد عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-jamal" aria-label="كلمة الفرع 4">أهلاً بجميع الأهل والأحبة. نؤيد مسار حوكمة صندوق العائلة بما يضمن الشفافية والامتثال للأنظمة، مع إعطاء الأولوية القصوى للمنح التعليمية وتشجيع التفوق الدراسي.</textarea>
+              </div>
+
+              <!-- Branch 5: Muhammad -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 5</span>
+                  <span class="speech-speaker">ممثل الفرع (محدد عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-muhammad" aria-label="كلمة الفرع 5">الحمد لله الذي جمعنا على الخير. نشكر الجميع على هذا التفاعل الإيجابي ونتطلع أن يكون مجلس العائلة الافتراضية مظلة جامعة لكل أبناء وأحفاد الأسرة دون استثناء.</textarea>
+              </div>
+
+              <!-- Branch 6: Mastoora -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 6</span>
+                  <span class="speech-speaker">ممثلة الفرع (محددة عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-mastoora" aria-label="كلمة الفرع 6">نبارك هذا الاجتماع الأخوي الطيب، ونؤكد على دور بنات وأمهات الأسرة في تنظيم الفعاليات الاجتماعية، وحلقات التعريف الموجهة للأطفال والناشئة لترسيخ الهوية العائلية.</textarea>
+              </div>
+
+              <!-- Branch 7: Najiya -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 7</span>
+                  <span class="speech-speaker">ممثلة الفرع (محددة عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-najiya" aria-label="كلمة الفرع 7">سعداء بهذا اللقاء المبارك. نقترح إنشاء لجنة تطوعية شبابية من أبناء وبنات العائلة لإدارة المنصة الرقمية وتنظيم الأنشطة واللقاءات بكفاءة.</textarea>
+              </div>
+
+              <!-- Branch 8: Huda -->
+              <div class="speech-card">
+                <div class="speech-header">
+                  <span class="speech-branch-name">كلمة الفرع 8</span>
+                  <span class="speech-speaker">ممثلة الفرع (محددة عائليًا)</span>
+                </div>
+                <textarea class="speech-textarea" id="speech-branch-huda" aria-label="كلمة الفرع 8">تحية طيبة لكل أفراد الأسرة الكريمة. نوصي بأن يخصص جزء من كل لقاء سنوي للاحتفاء بإنجازات المبدعين وحفظة القرآن الكريم وأصحاب المبادرات من أبناء العائلة.</textarea>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. COUNCIL PAGE -->
+        <section class="page" id="page-council" aria-labelledby="council-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">حوكمة وتنظيم العمل الأسري</span>
+              <h1 id="council-title">مجلس العائلة الافتراضية بالمملكة العربية السعودية (مقترح)</h1>
+              <p class="lead">هيكل تنظيمي مقترح لقيادة وتنسيق المبادرات الأسرية وتمثيل الفروع الثمانية.</p>
+            </div>
+          </div>
+
+          <!-- Strict Legal & Family Status Alert -->
+          <div class="alert-banner">
+            <span class="alert-banner-icon">⚖</span>
+            <div>
+              <h4>إيضاح نظامي وتنظيمي حاسم</h4>
+              <p>
+                <b>جميع المناصب والتشكيلات الواردة في هذه الصفحة هي مقترحات أولية</b> مطروحة للنقاش في اللقاء التأسيسي الأول. لا يكتسب أي منصب صفة رسمية أو ملزمة إلا بعد اتفاق صريح من عموم العائلة وصدور محضر معتمد وموقع حسب الأصول.
+              </p>
+            </div>
+          </div>
+
+          <!-- Council Proposed Structure -->
+          <div class="council-hero">
+            <span class="hero-kicker">رؤية المجلس المقترح</span>
+            <h2>مجلس جامع يُعلي الشفافية ويخدم أجيال الأسرة</h2>
+            <p>يهدف المجلس المقترح إلى رعاية مصالح الأسرة، تيسير التواصل وصلة الرحم، الإشراف على اللقاءات الدورية، وتأسيس صندوق العائلة ومتابعة ترخيصه الرسمي لدى الجهات المختصة في المملكة.</p>
+          </div>
+
+          <div class="section-head" style="margin:20px 0 14px">
+            <div>
+              <span class="eyebrow">التشكيل المقترح</span>
+              <h3>هيكل مجلس العائلة المقترح</h3>
+            </div>
+          </div>
+
+          <div class="council-grid">
+            <article class="council-card president">
+              <span class="council-role-badge primary">رئاسة المجلس (مقترح)</span>
+              <h3>العم 5 افتراضي</h3>
+              <span class="council-status-tag">مرشح لرئاسة المجلس بالتوافق العائلي</span>
+              <p>قيادة المجلس وتوجيه أعماله، تمثيل الأسرة في المبادرات العامة، ورعاية التوافق بين كافة الفروع.</p>
+            </article>
+
+            <article class="council-card">
+              <span class="council-role-badge">نائب الرئيس (مقترح)</span>
+              <h3>يُحدد بالتشاور والتوافق</h3>
+              <span class="council-status-tag">يُنتخب أو يُسمى بمحضر الاجتماع التأسيسي</span>
+              <p>معاونة رئيس المجلس، تولي المهام التنفيذية، وإدارة اجتماعات اللجان وفرق العمل الأسرية.</p>
+            </article>
+
+            <article class="council-card">
+              <span class="council-role-badge">أمانة المجلس</span>
+              <h3>أمين عام المجلس ومسؤول الاتصال</h3>
+              <span class="council-status-tag">تكليف إداري محدد بمدة</span>
+              <p>توثيق المحاضر، متابعة تنفيذ القرارات، والتنسيق الدوري مع ممثلي الفروع الثمانية.</p>
+            </article>
+
+            <article class="council-card">
+              <span class="council-role-badge">تمثيل الفروع</span>
+              <h3>ممثلو الفروع الثمانية (1، 2، 3، 4)</h3>
+              <span class="council-status-tag">يختار كل فرع ممثله بتوافق داخلي</span>
+              <p>نقل تطلعات واقتراحات أفراد الفرع، ومتابعة مشاركتهم في اللقاءات والمبادرات.</p>
+            </article>
+
+            <article class="council-card">
+              <span class="council-role-badge">تمثيل الفروع</span>
+              <h3>ممثلو الفروع الثمانية (5، 6، 7، 8)</h3>
+              <span class="council-status-tag">يختار كل فرع ممثله بتوافق داخلي</span>
+              <p>ضمان شمولية التمثيل والمشاركة الفاعلة لكافة أبناء وبنات الأسرة في اتخاذ القرار.</p>
+            </article>
+
+            <article class="council-card">
+              <span class="council-role-badge">المسؤولية النظامية</span>
+              <h3>دور الخصوصية المقترح</h3>
+              <span class="council-status-tag">دور رقابي وتطوعي متخصص</span>
+              <p>متابعة متطلبات الخصوصية مع مختص؛ لا تمثل هذه المعاينة تقييمًا أو اعتمادًا للامتثال.</p>
+            </article>
+          </div>
+        </section>
+
+        <!-- 6. CONTRIBUTIONS, NEWS & MULTIMEDIA FEED PAGE -->
+        <section class="page" id="page-contributions" aria-labelledby="contributions-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">📰 أخبار الأسرة • مقولات • صور وفيديو</span>
+              <h1 id="contributions-title">منبر أخبار العائلة، المقولات، والوسائط المرئية</h1>
+              <p class="lead">معاينة محلية للمنبر فقط؛ النشر ورفع الوسائط والمزامنة غير مفعّلة.</p>
+            </div>
+            <button class="button button-primary" id="btn-open-contribution-modal" type="button" disabled>النشر غير متاح في المعاينة</button>
+          </div>
+
+          <!-- Inline Multimedia News & Post Composer -->
+          <div class="card" style="margin-bottom: 18px; border: 1px solid rgba(15,104,86,0.22); background: linear-gradient(180deg, #ffffff 0%, #f9fbf9 100%);">
+            <div class="alert-banner" role="status" style="margin:0;">
+              <span class="alert-banner-icon">ℹ️</span>
+              <div><b>النشر غير متاح في نسخة المعاينة.</b><br><span>لا تُدخل أخبارًا أو أسماء أو مرفقات؛ لا توجد مصادقة أو مزامنة أو رفع ملفات.</span></div>
+            </div>
+            <form id="inline-post-form" hidden style="display:flex; flex-direction:column; gap:10px;">
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+                <strong style="color:var(--primary); font-size:14.5px;">✍️ شارك خبراً عائلياً، مقولة، أو لحظة مصوّرة (صورة / فيديو)</strong>
+                <span id="inline-post-author-badge" class="tag-pill" style="background:#e6f4f1; color:#0f6856; font-weight:700;">ينشر باسم حسابك الشخصي فوراً</span>
+              </div>
+              <div class="responsive-post-fields-grid" style="display:grid; gap:8px;">
+                <select id="inline-post-category" required style="padding:9px 12px; border-radius:10px; border:1px solid var(--border); font-family:inherit; font-weight:600;">
+                  <option value="أخبار العائلة والمناسبات">📰 أخبار العائلة والمناسبات</option>
+                  <option value="صور وفيديو اللقاءات">📸 صور وفيديو اللقاءات</option>
+                  <option value="كتابات ومقالات">✒️ مقولات وكتابات</option>
+                  <option value="ذكريات عائلية">🏛️ ذكريات وقصص الأجداد</option>
+                  <option value="هوايات ومواهب">🏆 هوايات وإنجازات</option>
+                </select>
+                <input id="inline-post-title" type="text" placeholder="عنوان الخبر أو المقولة (مثال: تهنئة بمولود جديد / لقطات من مجلس العائلة)..." required maxlength="100" style="padding:9px 12px; border-radius:10px; border:1px solid var(--border); font-family:inherit;">
+              </div>
+              <textarea id="inline-post-body" rows="2" placeholder="اكتب تفاصيل الخبر أو المقولة هنا لتصل لجميع أفراد الأسرة..." required maxlength="500" style="padding:10px 12px; border-radius:10px; border:1px solid var(--border); font-family:inherit;"></textarea>
+
+              <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; padding-top:4px;">
+                <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                  <label class="button button-outline" style="cursor:pointer; margin:0; font-size:12.5px; padding:7px 14px; display:inline-flex; align-items:center; gap:6px;">
+                    <span>📷 🎬 إرفاق صورة أو فيديو من جهازك</span>
+                    <input type="file" id="inline-post-media-file" accept="image/*,video/*" style="display:none;">
+                  </label>
+                  <span id="inline-post-media-status" style="font-size:12px; color:var(--muted);">يدعم الصور (JPG, PNG, WebP) والفيديو (MP4, WebM)</span>
+                </div>
+                <button type="submit" class="button button-primary" style="padding:8px 22px; font-weight:700;">🚀 نشر الخبر / المنشور فوراً</button>
+              </div>
+              <div id="inline-post-media-preview" style="display:none; margin-top:6px; position:relative; max-width:340px; border-radius:10px; overflow:hidden; border:1px solid var(--border);"></div>
+            </form>
+          </div>
+
+          <!-- Category Filter Bar -->
+          <div id="contributions-filter-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+            <button type="button" class="branch-pill-chip active" data-contrib-filter="all">🌟 كل المنشورات والأخبار</button>
+            <button type="button" class="branch-pill-chip" data-contrib-filter="أخبار العائلة والمناسبات">📰 أخبار العائلة والمناسبات</button>
+            <button type="button" class="branch-pill-chip" data-contrib-filter="صور وفيديو اللقاءات">📸 صور وفيديو اللقاءات</button>
+            <button type="button" class="branch-pill-chip" data-contrib-filter="كتابات ومقالات">✒️ مقولات وكتابات</button>
+            <button type="button" class="branch-pill-chip" data-contrib-filter="ذكريات عائلية">🏛️ ذكريات الأجداد</button>
+            <button type="button" class="branch-pill-chip" data-contrib-filter="هوايات ومواهب">🏆 هوايات وإنجازات</button>
+          </div>
+
+          <div id="contributions-container" class="grid-3">
+            <!-- Dynamically populated multimedia news & post cards -->
+          </div>
+          <div class="card" style="margin-top:24px"><p>مشهد توضيحي رمزي. التخصيص والحفظ غير متاحين في المعاينة.</p></div>
+
+        </section>
+
+        <!-- 7. FAMILY FUND (INFO ONLY - STRICT NO PAYMENT) PAGE -->
+        <section class="page" id="page-fund" aria-labelledby="fund-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">التكافل والمساندة الأخوية</span>
+              <h1 id="fund-title">صندوق عائلة افتراضي</h1>
+              <p class="lead">تعريف أولي بالأهداف المقترحة؛ لا يعرض لوائح معتمدة ولا يجمع أموالًا أو تبرعات.</p>
+            </div>
+          </div>
+
+          <!-- Strictest No-Financial-Activity Notice -->
+          <div class="alert-banner" style="border-right:5px solid #a83232; background:#fdf4f4">
+            <span class="alert-banner-icon" style="color:#a83232">🚫</span>
+            <div>
+              <h4 style="color:#781c1c">تنبيه نظامي قطعي: لا يوجد تحصيل مالي أو دفع إلكتروني</h4>
+              <p style="color:#781c1c">
+                <b>لا تجمع هذه البوابة أي أموال أو تبرعات أو اشتراكات مالية إطلاقًا.</b><br>
+                صندوق العائلة مسار نظامي مستقل يخضع للأنظمة السارية في المملكة العربية السعودية والمركز الوطني لتنمية القطاع غير الربحي (NCNP). لا يجوز فتح حسابات أو تحصيل أموال إلا بعد استكمال المتطلبات النظامية وتحديد الكيان المرخص والحسابات البنكية المعتمدة رسميًا.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <span class="quick-icon sand" style="margin-bottom:12px">♡</span>
+              <span class="card-subtitle">المسار الأول</span>
+              <h3 class="card-title">التكافل والدعم الاجتماعي</h3>
+              <p style="font-size:12px; color:var(--muted); line-height:1.8">
+                مساندة الأسر المتعففة والحالات الطارئة بسرية تامة ومراجعة إنسانية مباشرة من لجنة مخصصة مكلفة من المجلس دون معالجة آلية.
+              </p>
+              <button class="button button-outline" style="margin-top:auto" data-request="طلب دعم عائلي">تجربة طلب دعم محلي ←</button>
+            </article>
+
+            <article class="card">
+              <span class="quick-icon gold" style="margin-bottom:12px">✧</span>
+              <span class="card-subtitle">المسار الثاني</span>
+              <h3 class="card-title">المنح وتشجيع التعليم</h3>
+              <p style="font-size:12px; color:var(--muted); line-height:1.8">
+                دعم أبناء وبنات العائلة المتميزين في دراستهم الجامعية، ورعاية المبتكرين وأصحاب الإنجازات الأكاديمية والمهنية.
+              </p>
+              <button class="button button-outline" style="margin-top:auto" data-request="منحة تعليمية">تجربة طلب منحة محلي ←</button>
+            </article>
+
+            <article class="card">
+              <span class="quick-icon" style="margin-bottom:12px; background:#f1f2ef; color:#859089">⚖</span>
+              <span class="card-subtitle">الاشتراكات المالية</span>
+              <h3 class="card-title">حالة التحصيل المالي</h3>
+              <p style="font-size:12px; color:var(--muted); line-height:1.8">
+                معطل بالكامل في هذه البوابة. ستُنشر القنوات البنكية واللوائح فقط بعد صدور الترخيص الرسمي والاعتماد القانوني للمؤسسة الأهلية.
+              </p>
+              <button class="button button-disabled" disabled style="margin-top:auto">التحصيل معطل نظاميًا</button>
+            </article>
+          </div>
+
+          <div class="card" style="margin-top:20px">
+            <div class="section-head" style="margin-top:0">
+              <div>
+                <span class="eyebrow">المرجع النظامي السعودي</span>
+                <h3>لوائح المركز الوطني لتنمية القطاع غير الربحي (NCNP)</h3>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--muted); line-height:1.8">
+              يستند مقترح الصندوق الاسترشادي إلى الدليل الصادر عن المركز الوطني لتنمية القطاع غير الربحي لتأسيس الصناديق العائلية كمؤسسات أهلية، بما يشمل:
+            </p>
+            <ul style="font-size:12px; color:var(--ink); line-height:1.8; padding-right:20px">
+              <li>إعداد اللائحة الأساسية الاسترشادية واعتمادها من المؤسسين.</li>
+              <li>فصل الحساب البنكي للصندوق عن الحسابات الشخصية للأفراد.</li>
+              <li>الشفافية في التقارير المحاسبية السنوية ومراجعتها من محاسب قانوني معتمد.</li>
+              <li>حصر الاستفادة في الأغراض التكافلية والتعليمية المعتمدة في اللائحة.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- 8. MEMBERSHIP, ACCOUNTS & PERMISSIONS PAGE -->
+        <section class="page" id="page-requests" aria-labelledby="requests-title">
+          <div class="page-heading">
+            <div>
+              <h1 id="requests-title">الحسابات والأدوار</h1>
+              <p class="lead">نسخة عرض توضيحية: لا يتاح التسجيل أو تعيين الأدوار أو حفظ التغييرات ومزامنتها.</p>
+            </div>
+          </div>
+
+          <section class="permissions-proposal" aria-labelledby="permissions-proposal-title">
+            <h2 id="permissions-proposal-title">ما الذي يتيحه كل دور؟</h2>
+            <p>التسجيل والصلاحيات غير مفعّلين. مستوى الجيل يحدد سقف الصلاحيات، والتكليف يحدد المهمة الفعلية.</p>
+            <div class="permissions-table-wrap" role="region" aria-label="مستويات الصلاحية المقترحة بحسب الجيل والتكليف" tabindex="0" style="margin-bottom:12px;">
+              <table class="permissions-table">
+                <thead><tr><th scope="col">المستوى</th><th scope="col">من يشمله وما الذي يحدده</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">المؤسس</th><td>صلاحية إدارة النظام والحسابات وتسمية الأعمام المخولين ومراجعة التفويضات؛ يثبت الحساب عند الإعداد ولا يُستنتج من الاسم أو الجيل.</td></tr>
+                  <tr><th scope="row">الأعمام المخولون</th><td>صلاحيات عائلية ضمن تكليفهم، مع تفويض مهام محددة لا تتجاوز صلاحياتهم.</td></tr>
+                  <tr><th scope="row">أبناء الفرعين 1 و2</th><td>سقف الصلاحيات الأعلى بين أفراد الفروع؛ لا تُمنح مهمة إدارية إلا بتكليف ونطاق واضحين.</td></tr>
+                  <tr><th scope="row">أبناء أبناء 1 و2</th><td>سقف أقل من آبائهم؛ لا تُمنح إدارة الحسابات أو اعتماد النسب لمجرد الجيل.</td></tr>
+                  <tr><th scope="row">أبناء أبنائهم</th><td>صلاحيات العضو الأساسية، ويمكن تكليفهم بمهمة محددة.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>يُحدد مستوى العضو بعد ربط حسابه بسجل موثّق ومراجعة صلة النسب. تطابق الاسم يقترح سجلًا للمراجعة فقط، ولا يمنح صلاحية وحده. بقية الفروع لا تحصل تلقائيًا على مستوى أبناء 1 و2.</p>
+            <p>الأدوار الوظيفية أدناه مقترحة وغير مفعّلة؛ كل دور يقتصر على مهمته والفرع أو السجل المصرّح به.</p>
+            <div class="permissions-table-wrap" role="region" aria-label="نطاق الأدوار المقترحة" tabindex="0">
+              <table class="permissions-table">
+                <thead>
+                  <tr><th scope="col">الفئة أو الدور</th><th scope="col">الصلاحية وحدودها</th></tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row">زائر</th><td>يشاهد معلومات التعريف وأسماء الفروع الرئيسية فقط؛ لا يرى دليل الأعضاء أو أسماء الأفراد.</td></tr>
+                  <tr><th scope="row">طلب عضوية قيد المراجعة</th><td>يتابع طلبه ويصحح بياناته؛ لا يظهر اسمه في الشجرة حتى تُراجع العضوية وصلة النسب ويوافق على عرض اسمه.</td></tr>
+                  <tr><th scope="row">عضو موثّق</th><td>يدير بياناته وتفضيلات ظهورها، ويشاهد ما أذن أصحابه بعرضه، ويرسل طلب تصحيح للنسب؛ لا يعدّل سجلات الآخرين.</td></tr>
+                  <tr><th scope="row">مراجع عضوية الفرع</th><td>يراجع طلبات الانتساب إلى فرعه ضمن تكليفه؛ لا يعتمد صلة النسب النهائية ولا يدير أدوار بقية الفروع.</td></tr>
+                  <tr><th scope="row">مراجع النسب</th><td>يراجع طلبات الروابط ومصادرها ويسجل قرار المراجعة؛ لا يرى بيانات الاتصال إلا عند حاجة مصرح بها.</td></tr>
+                  <tr><th scope="row">مشرف المحتوى</th><td>يراجع المشاركات والوسائط والبلاغات؛ لا يدير الحسابات أو بيانات النسب.</td></tr>
+                  <tr><th scope="row">مدير حسابات العائلة</th><td>يدير الدعوات والحسابات وتعيين الأدوار بتكليف عائلي؛ لا يعتمد النسب منفردًا ولا يرى البيانات الخاصة افتراضيًا.</td></tr>
+                  <tr><th scope="row">مسؤول تشغيل الموقع</th><td>يتابع الاستضافة والتحديثات التقنية؛ لا يملك صفة إدارية عائلية أو وصولًا اعتياديًا لملفات الأعضاء.</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="permissions-separation"><strong>المبرمج ليس مشرف العائلة تلقائيًا.</strong> للمؤسس صلاحية الإدارة العليا؛ والأعمام المخولون ومن يفوضونهم يعملون ضمن الصلاحيات والنطاق المعتمد. إدارة الموقع التقنية دور منفصل ومحدود.</p>
+          </section>
+
+          <section class="card account-directory-preview" id="role-management-section" aria-labelledby="account-directory-title">
+            <h2 id="account-directory-title">حسابات الأعضاء الموثّقة</h2>
+            <div id="roles-directory-list"></div>
+          </section>
+
+          <!-- Preserved Support / Fund Requests Section -->
+          <div class="card">
+            <div class="section-head" style="margin-top:0; margin-bottom:10px;">
+              <div>
+                <span class="eyebrow">طلبات برامج الصندوق والمنح</span>
+                <h3 style="margin:4px 0 0;">طلبات الدعم والمنح المسجلة</h3>
+              </div>
+              <button class="button button-outline" data-request="طلب دعم عائلي" style="font-size:12px;">＋ إنشاء طلب دعم / منحة</button>
+            </div>
+            <div id="request-list" class="request-list"></div>
+            <div class="empty-state" id="requests-empty" hidden>
+              <span>📋</span>
+              <b>لا توجد طلبات مسجلة حتى الآن</b>
+              <p>عند إنشاء طلب دعم أو منحة، سيظهر هنا مع حالته.</p>
+              <button class="button button-outline" data-page="fund">استكشف خدمات الصندوق</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- 9. REPORTS PAGE -->
+        <section class="page" id="page-reports" aria-labelledby="reports-title">
+          <div class="page-heading">
+            <div>
+              <span class="eyebrow">مؤشرات توضيحية مجمعة</span>
+              <h1 id="reports-title">التقارير والمؤشرات العامة</h1>
+              <p class="lead">بيانات إحصائية عامة لا تكشف هويات أو بيانات شخصية خاصة.</p>
+            </div>
+            <span class="demo-pill">إحصاءات توضيحية</span>
+          </div>
+
+          <div class="grid-3">
+            <article class="card">
+              <span class="card-subtitle">الفروع الظاهرة في نموذج المعاينة</span>
+              <h2 style="font-size:32px; color:var(--green); margin:4px 0">٨ فروع</h2>
+              <small style="color:var(--muted)">1، 2، 3، 4، 5، 6، 7، 8</small>
+            </article>
+
+            <article class="card">
+              <span class="card-subtitle">الطلبات المسجلة محليًا</span>
+              <h2 style="font-size:32px; color:var(--green); margin:4px 0" id="report-requests-count">٠</h2>
+              <small style="color:var(--muted)">محفوظة في التخزين المحلي فقط</small>
+            </article>
+
+            <article class="card">
+              <span class="card-subtitle">حالة الاعتماد والامتثال</span>
+              <h2 style="font-size:25px; color:var(--gold-dark); margin:8px 0">غير مُقيّمة</h2>
+              <small style="color:var(--muted)">هذه المعاينة لا تثبت اعتماد النسب أو الامتثال النظامي.</small>
+            </article>
+          </div>
+
+          <div class="card" style="margin-top:16px">
+            <h3 style="font-size:15px; margin-bottom:12px; color:var(--green)">المجالات التكافلية المستهدفة مستقبلاً (نسب تقديرية)</h3>
+            <div class="report-bars">
+              <div>
+                <span>المنح والتعليم</span>
+                <i><b style="width:45%"></b></i>
+                <small>٤٥٪ مستهدف</small>
+              </div>
+              <div>
+                <span>التكافل والمساندة</span>
+                <i><b style="width:35%"></b></i>
+                <small>٣٥٪ مستهدف</small>
+              </div>
+              <div>
+                <span>المناسبات واللقاءات</span>
+                <i><b style="width:20%"></b></i>
+                <small>٢٠٪ مستهدف</small>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: Request Dialog -->
+  <dialog id="request-dialog" class="modal">
+    <form method="dialog" id="request-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-request-dialog" aria-label="إغلاق">×</button>
+      <span class="eyebrow">نموذج محلي توضيحي</span>
+      <h2 id="dialog-title">تقديم طلب تجريبي</h2>
+      <p>لا تدخل أرقام هواتف أو بيانات حقيقية. النموذج مخصص لاختبار واجهة المستخدم ويحفظ محليًا فقط.</p>
+      
+      <label>نوع الطلب
+        <input id="request-type" readonly>
+      </label>
+
+      <label>ملاحظة توضيحية
+        <textarea id="request-note" rows="3" maxlength="200" placeholder="اكتب ملاحظة تجريبية لتجربة الإرسال..."></textarea>
+      </label>
+
+      <div class="form-error" id="form-error" role="alert"></div>
+
+      <div class="modal-actions">
+        <button class="button button-primary" id="submit-request" value="submit" type="submit">حفظ الطلب محليًا</button>
+        <button class="button button-quiet" value="cancel" type="button" id="btn-cancel-request">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Privacy & Profile Settings -->
+  <dialog id="profile-dialog" class="modal">
+    <form method="dialog" id="profile-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-profile-dialog" aria-label="إغلاق">×</button>
+      <span class="eyebrow">حماية البيانات والخصوصية</span>
+      <h2>إعدادات ملفي والظهور</h2>
+      <p>إعدادات توضيحية غير محفوظة؛ لا تتحكم في الوصول إلى البيانات ولا تثبت الامتثال للنظام.</p>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>الاسم الكامل</b>
+          <small>مطلوب للتعريف بالعضو في البوابة</small>
+        </div>
+        <select class="visibility-select" id="vis-name" disabled>
+          <option value="family" selected>أعضاء العائلة فقط</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>رقم الجوال</b>
+          <small>خاص افتراضيًا لأمان الاتصال</small>
+        </div>
+        <select class="visibility-select" id="vis-phone">
+          <option value="private" selected>خاص تمامًا (أنا فقط)</option>
+          <option value="branch">أفراد فرعي فقط</option>
+          <option value="family">كافة أفراد العائلة</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>البريد الإلكتروني</b>
+          <small>يُستخدم للإشعارات والتواصل الموثق</small>
+        </div>
+        <select class="visibility-select" id="vis-email">
+          <option value="private" selected>خاص تمامًا (أنا فقط)</option>
+          <option value="family">أعضاء العائلة</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>سنة الميلاد (سنة فقط)</b>
+          <small>دون إظهار اليوم والشهر ودون حساب عمر تلقائي</small>
+        </div>
+        <select class="visibility-select" id="vis-birth">
+          <option value="hidden" selected>مخفية</option>
+          <option value="branch">ظاهرة لفرعي فقط</option>
+          <option value="family">ظاهرة للجميع</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>التعليم ومجال العمل</b>
+          <small>لتعزيز تبادل الخبرات الأكاديمية والمهنية</small>
+        </div>
+        <select class="visibility-select" id="vis-work">
+          <option value="family" selected>أعضاء العائلة</option>
+          <option value="branch">فرعي فقط</option>
+          <option value="private">مخفي</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>صلة الزوج/الزوجة والأبناء</b>
+          <small>روابط مستقلة لا تنشر بيانات الغير دون موافقة</small>
+        </div>
+        <select class="visibility-select" id="vis-family-links">
+          <option value="family" selected>أعضاء العائلة المعتمدين</option>
+          <option value="branch">فرعي فقط</option>
+          <option value="private">خاص</option>
+        </select>
+      </div>
+
+      <div class="profile-field-row">
+        <div class="profile-field-info">
+          <b>الهوايات ونبذة شخصية</b>
+          <small>نبذة قصيرة مع تجنب أي بيانات حساسة</small>
+        </div>
+        <select class="visibility-select" id="vis-bio">
+          <option value="family" selected>أعضاء العائلة</option>
+          <option value="private">خاص</option>
+        </select>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px">
+        <button class="button button-primary" type="submit" id="btn-save-privacy">حفظ تفضيلات الخصوصية</button>
+        <button class="button button-quiet" type="button" id="btn-cancel-profile">إغلاق</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Add Contribution Dialog (Direct Publish Under User Account with Photo/Video Upload) -->
+  <dialog id="contribution-dialog" class="modal">
+    <form method="dialog" id="contribution-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-contrib-dialog" aria-label="إغلاق">×</button>
+      <span class="eyebrow">📰 مشاركة خبر / مقولة مع صور وفيديو</span>
+      <h2>انشر خبراً عائلياً، مقولة، أو وسائط مرئية</h2>
+      <p>النشر ورفع الصور والفيديو غير متاحين حتى تجهيز مصادقة وخدمة تخزين موثوقتين.</p>
+
+      <label>نوع المنشور
+        <select id="contrib-category" required>
+          <option value="أخبار العائلة والمناسبات">📰 أخبار العائلة والمناسبات</option>
+          <option value="صور وفيديو اللقاءات">📸 صور وفيديو اللقاءات</option>
+          <option value="كتابات ومقالات">✒️ مقولات وكتابات</option>
+          <option value="ذكريات عائلية">🏛️ ذكريات وقصص من تاريخ الأسرة</option>
+          <option value="هوايات ومواهب">🏆 هوايات ومواهب وإنجازات</option>
+        </select>
+      </label>
+
+      <label>عنوان الخبر أو المقولة
+        <input id="contrib-title" type="text" placeholder="مثال: تهنئة بمولود جديد / لقطات من مجلس العائلة الافتراضية" required maxlength="100">
+      </label>
+
+      <label>تفاصيل الخبر / نص المقولة
+        <textarea id="contrib-body" rows="3" placeholder="اكتب تفاصيل الخبر أو المقولة هنا..." required maxlength="500"></textarea>
+      </label>
+
+      <label>📷 🎬 إرفاق صورة أو فيديو من جهازك (اختياري)
+        <input type="file" id="contrib-media-file" accept="image/*,video/*" style="padding:8px; border:1px dashed var(--primary); border-radius:10px; background:rgba(15,104,86,0.04);">
+      </label>
+      <div id="contrib-media-preview" style="display:none; margin-top:4px; border-radius:10px; overflow:hidden; border:1px solid var(--border); max-height:220px;"></div>
+
+      <div class="modal-actions">
+        <button class="button button-primary" type="submit">🚀 نشر فوري باسم حسابي</button>
+        <button class="button button-quiet" type="button" id="btn-cancel-contrib">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Direct Tree Edit / Add Child or Spouse -->
+  <dialog id="correction-dialog" class="modal">
+    <form method="dialog" id="correction-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-correction-dialog" aria-label="إغلاق">×</button>
+      <span class="eyebrow">تحديث الشجرة المباشر (حسب صلاحية الحساب)</span>
+      <h2>تعديل بيانات السجل أو إضافة فرع مباشر</h2>
+      <p>التعديل وإضافة السجلات غير متاحين في المعاينة؛ هذه الواجهة لا تتحقق من هوية الأعضاء أو صلات النسب.</p>
+
+      <label>السجل المختار في الشجرة
+        <input id="correction-person-name" readonly>
+      </label>
+
+      <label>نوع العملية المباشرة
+        <select id="correction-action-type">
+          <option value="edit_self">✏️ تعديل بيانات هذا الفرد فوراً (المدينة / المهنة / النبذة)</option>
+          <option value="add_child_male">👦 إضافة ابن جديد تحت هذا الفرد مباشرة في الشجرة</option>
+          <option value="add_child_female">👧 إضافة ابنة جديدة تحت هذا الفرد مباشرة في الشجرة</option>
+          <option value="add_spouse">💍 إضافة زوج / زوجة مرتبط بهذا الفرد في الشجرة</option>
+        </select>
+      </label>
+
+      <div id="correction-add-relative-fields" style="display:none; background:rgba(15,104,86,0.06); padding:10px 12px; border-radius:10px; border:1px solid rgba(15,104,86,0.2); margin-bottom:8px;">
+        <label style="margin-bottom:6px;">اسم المولود / الفرد الجديد المراد إضافته للشجرة
+          <input id="correction-new-relative-name" type="text" placeholder="مثال: اسم تجريبي بن 5 افتراضي">
+        </label>
+        <label style="margin-bottom:0;">سنة الميلاد أو الجيل (اختياري)
+          <input id="correction-new-relative-year" type="text" placeholder="مثال: 2024">
+        </label>
+      </div>
+
+      <div id="correction-edit-self-fields" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+        <label>المدينة الحالية
+          <input id="correction-city-input" type="text" placeholder="مثال: مدينة افتراضية">
+        </label>
+        <label>المهنة / التخصص
+          <input id="correction-job-input" type="text" placeholder="مثال: مهندس / طبيب / أعمال حرة">
+        </label>
+      </div>
+
+      <label>النبذة التعريفية / تفاصيل التحديث الفوري
+        <textarea id="correction-details" rows="2" placeholder="اكتب النبذة الشخصية أو تفاصيل التحديث ليظهر فوراً في بطاقة العضو..." required maxlength="250"></textarea>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button-primary" type="submit">💾 حفظ وتحديث الشجرة فوراً</button>
+        <button class="button button-quiet" type="button" id="btn-cancel-correction">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Personal User Account Portal (Login / Register / 4-Tier Role Hierarchy & Direct Tree Manager) -->
+  <dialog id="user-account-dialog" class="modal" style="max-width:680px; width:95%;">
+    <div class="modal-form" style="position:relative;">
+      <button class="modal-close" type="button" id="btn-close-user-account" aria-label="إغلاق">×</button>
+      <span class="eyebrow">👤 نظام حسابات العائلة وتدرّج الصلاحيات (٤ مستويات)</span>
+      <h2 id="user-account-modal-title">حساب العضو الشخصي وصلاحياته</h2>
+      <p id="user-account-modal-subtitle" style="margin-bottom:12px;">تسجيل الدخول وتعديل سجلات الأفراد غير متاحين في نسخة العرض.</p>
+
+      <!-- VIEW 1: Login / Claim or Register New Account -->
+      <div id="user-auth-view">
+        <!-- Quick Unlock Bar when Encrypted Cloud Vault is still locked -->
+        <div id="user-dialog-vault-unlock-bar" hidden style="display:none; background:linear-gradient(135deg, #fef6e4, #fffdf8); border:1px solid #d4af37; border-radius:10px; padding:10px 12px; margin-bottom:10px; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <div style="font-size:12px; color:#5c4008;">
+            <b>السجل التفصيلي غير متاح في نسخة العرض.</b>
+          </div>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span>لن نطلب كلمة مرور أو نحمّل بيانات شخصية هنا.</span>
+          </div>
+        </div>
+
+        <!-- 1-CLICK GOOGLE SIGN-IN & AUTOMATIC ARABIC LINEAGE LINKER -->
+        <div id="google-auth-fast-card" hidden style="background:linear-gradient(135deg, #f8fafd 0%, #eef4ff 100%); border:1.5px solid #93c5fd; border-radius:12px; padding:12px 14px; margin-bottom:12px; box-shadow:0 4px 14px rgba(37,99,235,0.08);">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="width:28px; height:28px; border-radius:50%; background:#ffffff; border:1px solid #cbd5e1; display:inline-flex; align-items:center; justify-content:center; font-weight:900; font-size:15px; color:#4285F4; box-shadow:0 2px 5px rgba(0,0,0,0.06);">G</span>
+              <div>
+                <strong style="font-size:13.5px; color:#1e3a8a; display:block;">تسجيل Google غير متاح في نسخة المعاينة</strong>
+                <small style="font-size:11px; color:#475569;">لا توجد مصادقة أو ربط حساب بسجل شجرة.</small>
+              </div>
+            </div>
+            <button type="button" id="btn-google-oauth-popup" class="button" style="background:#ffffff; color:#1e293b; border:1.5px solid #3b82f6; font-weight:800; font-size:12px; padding:6px 12px; border-radius:9px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; box-shadow:0 2px 6px rgba(59,130,246,0.12);">
+              <span style="color:#EA4335; font-weight:900;">G</span> غير متاح
+            </button>
+          </div>
+
+          <form id="google-auth-inline-form" style="display:grid; grid-template-columns:1.15fr 1.25fr auto; gap:8px; align-items:end;">
+            <label style="margin:0; font-size:11.5px; font-weight:700; color:#1e3a8a;">بريدك في Google (Gmail)
+              <input type="email" id="google-auth-email-input" dir="ltr" placeholder="name@gmail.com" required style="margin-top:3px; background:#fff; border-color:#93c5fd; font-size:12.5px;">
+            </label>
+              <label style="margin:0; font-size:11.5px; font-weight:700; color:#1e3a8a;">اسمك بالعربية (للمراجعة مع طلب العضوية)
+              <input type="text" id="google-auth-arabic-name-input" placeholder="اسم تجريبي غير حقيقي" required style="margin-top:3px; background:#fff; border-color:#93c5fd; font-weight:700; font-size:12.5px;">
+            </label>
+            <button type="submit" class="button" id="btn-google-auth-submit" style="background:#1a73e8; color:#ffffff; border:none; padding:9px 14px; font-size:12.5px; font-weight:800; border-radius:9px; white-space:nowrap; cursor:pointer;">
+              🔵 التسجيل غير متاح
+            </button>
+          </form>
+          <div id="google-auth-match-preview" style="display:none; margin-top:8px; padding:7px 10px; border-radius:8px; background:#ffffff; border:1px solid #93c5fd; font-size:11.5px; color:#1e3a8a;"></div>
+        </div>
+
+        <!-- Registration preview: membership and genealogy require separate review. -->
+        <form id="smart-auth-form" hidden style="background:linear-gradient(135deg, rgba(15,104,86,0.08) 0%, rgba(197,160,89,0.12) 100%); border:1.5px solid rgba(15,104,86,0.32); border-radius:12px; padding:12px 14px; margin-bottom:12px;">
+          <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:6px; margin-bottom:6px;">
+            <strong style="font-size:13.5px; color:var(--primary);">طلب عضوية في بوابة العائلة</strong>
+            <span style="font-size:11px; font-weight:700; padding:2px 8px; border-radius:12px; background:#f1f2ef; color:#475569;">التسجيل غير متاح</span>
+          </div>
+          <p style="font-size:11.5px; color:var(--muted); margin:0 0 8px;">الاسم وحده لا يثبت الهوية أو صلة النسب. يبقى الطلب قيد المراجعة، ولا يظهر الاسم في الشجرة إلا بعد التحقق وموافقة صاحبه على عرضه.</p>
+          <div style="display:grid; grid-template-columns:1.6fr 0.8fr auto; gap:8px; align-items:end;">
+            <label style="margin:0; font-size:12px;">الاسم للمراجعة
+              <input type="text" id="smart-auth-name-input" placeholder="اسم تجريبي غير حقيقي" required style="margin-top:3px; font-weight:700;">
+            </label>
+            <label style="margin:0; font-size:12px;">رمز الدخول
+              <input type="password" id="smart-auth-pin-input" placeholder="غير متاح في نسخة العرض" required minlength="3" style="margin-top:3px;">
+            </label>
+            <button type="submit" class="button button-primary" id="btn-smart-auth-submit" disabled style="padding:9px 14px; font-size:12.5px; white-space:nowrap;">التسجيل غير متاح</button>
+          </div>
+
+          <!-- Live Smart Match Feedback Card -->
+          <div id="smart-match-result-card" style="display:none; margin-top:8px; padding:8px 11px; border-radius:9px; background:#fff; border:1px solid rgba(15,104,86,0.28); font-size:12px; line-height:1.55;"></div>
+        </form>
+
+        <div style="display:flex; gap:8px; margin-bottom:12px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+          <button type="button" class="button button-primary" id="tab-btn-login-existing" hidden style="flex:1; font-size:13px;">تسجيل الدخول غير متاح</button>
+          <button type="button" class="button button-outline" id="tab-btn-register-new" style="flex:1; font-size:13px;">طلب عضوية (غير متاح في المعاينة)</button>
+        </div>
+
+        <!-- Sub-form A: Login / Claim existing member from 393 -->
+        <form id="user-login-form" hidden style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>١. تصفية حسب الفرع
+              <select id="login-branch-filter">
+                <option value="all">معاينة الفروع</option>
+                <option value="الفرع 1">الفرع 1</option>
+                <option value="الفرع 2">الفرع 2</option>
+                <option value="الفرع 3">الفرع 3</option>
+                <option value="الفرع 4">الفرع 4</option>
+                <option value="الفرع 5">الفرع 5</option>
+                <option value="الفرع 6">الفرع 6</option>
+                <option value="الفرع 7">الفرع 7</option>
+                <option value="الفرع 8">الفرع 8</option>
+              </select>
+            </label>
+            <label>٢. ابحث عن اسمك سريعاً
+              <input type="search" id="login-member-search" placeholder="ابحث عن سجل مرشح للمراجعة؛ لا يتم ربطه تلقائيًا">
+            </label>
+          </div>
+
+            <label>٣. السجل المقترح (يخضع للتحقق؛ الاسم وحده لا يثبت الهوية)
+            <select id="login-member-select" required size="4" style="height:auto; min-height:98px; padding:6px; font-weight:600;"></select>
+          </label>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>٤. كلمة المرور الشخصية
+              <input type="password" id="login-user-pin" placeholder="رمزك الشخصي..." required minlength="3">
+            </label>
+            <label>٥. رقم الجوال (اختياري)
+              <input type="tel" id="login-user-phone" placeholder="05XXXXXXXX" dir="ltr">
+            </label>
+          </div>
+
+          <!-- Roles are assigned only after trusted membership review. -->
+          <div style="background:rgba(16,59,50,0.04); border:1px solid var(--border); border-radius:10px; padding:8px 12px; font-size:11.5px; line-height:1.6;">
+            <strong style="color:var(--primary); display:block; margin-bottom:3px;">تعيين الأدوار</strong>
+            <div>لا يختار العضو صلاحياته. تُسند الأدوار بعد توثيق العضوية، وتُحدّد بحسب المهمة والفرع، ولا يثبت الاسم وحده الاستحقاق.</div>
+          </div>
+
+          <div class="modal-actions" style="margin-top:4px;">
+            <button type="submit" class="button button-primary" style="width:100%;">🔓 دخول وتفعيل حسابي الشخصي الآن</button>
+          </div>
+        </form>
+
+        <!-- Sub-form B: Membership request; it does not create a tree node. -->
+        <form id="user-register-form" hidden style="display:none; flex-direction:column; gap:10px;">
+          <div id="reg-auto-link-banner" style="display:block; padding:8px 11px; border-radius:9px; background:#f4f5f2; border:1px solid var(--border); color:var(--ink); font-size:12px; line-height:1.6;">إرسال الطلب لا يضيف اسمك إلى الشجرة. يلزم التحقق من العضوية ومراجعة صلة النسب وموافقتك على عرض الاسم.</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>اسم مقدم الطلب (للمراجعة، ولا يظهر في الشجرة تلقائيًا)
+              <input type="text" id="reg-member-name" placeholder="اسم تجريبي غير حقيقي" required>
+            </label>
+            <label>الفرع الذي ينتسب إليه الطلب (يخضع للتحقق)
+              <select id="reg-member-branch" required>
+                <option value="" selected disabled>اختر الفرع</option>
+                <option value="الفرع 1">الفرع 1</option>
+                <option value="الفرع 2">الفرع 2</option>
+                <option value="الفرع 3">الفرع 3</option>
+                <option value="الفرع 4">الفرع 4</option>
+                <option value="الفرع 5">الفرع 5</option>
+                <option value="الفرع 6">الفرع 6</option>
+                <option value="الفرع 7">الفرع 7</option>
+                <option value="الفرع 8">الفرع 8</option>
+              </select>
+            </label>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>صلة النسب المقترحة (تخضع للمراجعة ولا تُعتمد تلقائيًا)
+              <select id="reg-member-parent" required><option value="" selected disabled>اختر شخصًا تقترح مراجعته</option></select>
+            </label>
+            <label>صفة مقدم الطلب
+              <select id="reg-member-gender">
+                <option value="M">ذكر (ابن)</option>
+                <option value="F">أنثى (ابنة)</option>
+              </select>
+            </label>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+            <label>المدينة
+              <input type="text" id="reg-member-city" placeholder="مدينة افتراضية" value="مدينة افتراضية">
+            </label>
+            <label>المهنة / التخصص
+              <input type="text" id="reg-member-job" placeholder="المهنة أو الدراسة">
+            </label>
+            <label>كلمة المرور لحسابك
+              <input type="password" id="reg-member-pin" placeholder="رمزك الشخصي" required minlength="3">
+            </label>
+          </div>
+
+          <div class="modal-actions" style="margin-top:6px;">
+            <button type="submit" class="button button-primary" disabled style="width:100%;">إرسال طلب عضوية (غير متاح في نسخة العرض)</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- VIEW 2: Logged-in Member Personal Dashboard (Role Hierarchy + Instant Profile Edit + Add Child/Spouse) -->
+      <div id="user-dashboard-view" style="display:none; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; background:linear-gradient(135deg, rgba(16,59,50,0.96), rgba(15,104,86,0.92)); color:#fff; padding:12px 16px; border-radius:12px;">
+          <div style="display:flex; align-items:center; gap:12px;">
+            <span id="dash-user-avatar" style="width:44px; height:44px; border-radius:50%; background:#c5a059; color:#102a24; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:18px;">ع</span>
+            <div>
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <strong id="dash-user-name" style="font-size:16px;">اسم العضو</strong>
+                <span id="dash-user-role-badge" style="background:#c5a059; color:#102a24; font-size:11px; font-weight:800; padding:2px 9px; border-radius:20px;">عضو موثّق</span>
+              </div>
+              <small id="dash-user-meta" style="color:#e8d3a3; font-size:12px; display:block; margin-top:2px;">الفرع • الجيل</small>
+            </div>
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button type="button" class="button button-quiet" id="btn-dash-locate-in-tree" style="background:rgba(255,255,255,0.14); color:#fff; font-size:12px; padding:6px 10px;">🌳 موقعي في الشجرة</button>
+            <button type="button" class="button button-quiet" id="btn-dash-open-privacy" style="background:rgba(255,255,255,0.14); color:#fff; font-size:12px; padding:6px 10px;">🔒 الخصوصية</button>
+            <button type="button" class="button button-quiet" id="btn-dash-logout" style="background:rgba(180,35,24,0.85); color:#fff; font-size:12px; padding:6px 10px;">خروج / تبديل الحساب</button>
+          </div>
+        </div>
+
+        <!-- Assigned role is displayed; members cannot assign themselves privileges. -->
+        <div style="background:rgba(197,160,89,0.1); border:1px solid rgba(197,160,89,0.4); border-radius:10px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+          <div style="flex:1; min-width:220px;">
+            <strong style="font-size:12.5px; color:#7a5510; display:block;">الدور المسند إلى الحساب</strong>
+            <span id="dash-permissions-summary" style="font-size:11.5px; color:var(--muted);">يُسند الدور بعد توثيق العضوية، ولا يستطيع العضو تغييره بنفسه.</span>
+          </div>
+        </div>
+
+        <!-- Direct Profile Edit Form -->
+        <form id="user-direct-profile-form" style="background:rgba(16,59,50,0.04); border:1px solid var(--border); border-radius:12px; padding:12px 14px;">
+          <h4 style="margin:0 0 8px; color:var(--primary); font-size:14px;">✏️ تعديل بياناتي الشخصية فوراً (يُحدّث الشجرة والبطاقة مباشرة)</h4>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <label>الاسم المعروض
+              <input type="text" id="dash-edit-name" required>
+            </label>
+            <label>المدينة الحالية
+              <input type="text" id="dash-edit-city" placeholder="مثال: مدينة افتراضية">
+            </label>
+            <label>المهنة / جهة العمل
+              <input type="text" id="dash-edit-job" placeholder="مثال: مهندس / طبيب / رائد أعمال">
+            </label>
+            <label>المؤهل العلمي / التخصص
+              <input type="text" id="dash-edit-edu" placeholder="مثال: بكالوريوس هندسة / ماجستير إدارة">
+            </label>
+          </div>
+          <label style="margin-top:6px;">النبذة الشخصية والتعريفية
+            <textarea id="dash-edit-bio" rows="2" placeholder="اكتب نبذة مختصرة عنك وعن اهتماماتك لتظهر لأفراد العائلة..."></textarea>
+          </label>
+          <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+            <button type="submit" class="button button-primary" style="font-size:13px; padding:7px 16px;">💾 حفظ بياناتي فوراً في الشجرة والدليل</button>
+          </div>
+        </form>
+
+        <!-- Direct Add Child / Spouse to Family Tree -->
+        <form id="user-direct-add-relative-form" style="background:rgba(197,160,89,0.08); border:1px solid rgba(197,160,89,0.35); border-radius:12px; padding:12px 14px;">
+          <h4 style="margin:0 0 8px; color:#8d6518; font-size:14px;">🌿 إضافة ابن / ابنة / زوج مباشرة تحت اسمي في الشجرة</h4>
+          <div style="display:grid; grid-template-columns:1.3fr 1fr 0.9fr; gap:8px;">
+            <label>اسم الابن / الابنة / الزوج
+              <input type="text" id="dash-add-rel-name" placeholder="مثال: عبدالإله" required>
+            </label>
+            <label>صلة القرابة بي
+              <select id="dash-add-rel-type">
+                <option value="son">👦 ابن</option>
+                <option value="daughter">👧 ابنة</option>
+                <option value="spouse">💍 زوج / زوجة</option>
+              </select>
+            </label>
+            <label>المدينة
+              <input type="text" id="dash-add-rel-city" placeholder="مدينة افتراضية" value="مدينة افتراضية">
+            </label>
+          </div>
+          <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+            <button type="submit" class="button button-gold" style="font-size:13px; padding:7px 16px;">➕ إضافة للشجرة الثلاثية الأبعاد ومخطط النسب فوراً</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: Google Services Configuration -->
+  <dialog id="google-config-dialog" class="modal">
+    <form method="dialog" id="google-config-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-google-config" aria-label="إغلاق">×</button>
+      <span class="eyebrow" style="color:#1a73e8">خدمات Google الرقمية</span>
+      <h2>تخصيص روابط Google لالعائلة الافتراضية</h2>
+      <p>يمكن لمسؤول البوابة تحديث روابط Google Meet وغرف الاجتماعات ومجلدات Google Drive المشتركة لحفظ الوثائق والمحاضر.</p>
+
+      <label>رابط غرفة Google Meet العائلية:
+        <input type="url" id="cfg-meet-url" placeholder="example.invalid" required>
+      </label>
+
+      <label>رابط مجلد Google Drive المشترك للأسرة:
+        <input type="url" id="cfg-drive-url" placeholder="example.invalid" required>
+      </label>
+
+      <label>رابط موقع القاعة على خرائط Google Maps:
+        <input type="url" id="cfg-maps-url" placeholder="example.invalid" required>
+      </label>
+
+      <div class="modal-actions">
+        <button class="button button-primary" type="submit">حفظ الإعدادات</button>
+        <button class="button button-quiet" type="button" id="btn-cancel-google-config">إلغاء</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Interactive Family Drive & Cloud Document Archive Hub -->
+  <dialog id="family-drive-archive-dialog" class="modal" style="max-width:740px; width:96%;">
+    <div class="modal-form" style="position:relative;">
+      <button class="modal-close" type="button" id="btn-close-drive-archive" aria-label="إغلاق">×</button>
+      <span class="eyebrow" style="color:#b06000;">📁 أرشيف ومستودع وثائق العائلة الافتراضية السحابي (Google Drive &amp; Cloud Archive)</span>
+      <h2 style="margin-bottom:4px;">مستودع وثائق وسجلات وصور عائلة العائلة الافتراضية</h2>
+      <p style="margin-bottom:10px; font-size:12.5px;">استعرض وحمّل الوثائق المعتمدة للأسرة (شجرة النسب للطباعة PDF، لائحة المجلس والصندوق، جدول أعمال اللقاء التأسيسي، والصور التاريخية)، أو ارفع وثيقة/صورة جديدة للأرشيف، أو افتح مجلد Google Drive الخارجي مباشرة.</p>
+
+      <!-- Top External Google Drive & Folder Config Bar -->
+      <div style="background:linear-gradient(135deg, #fff9ee 0%, #ffffff 100%); border:1px solid #f5d393; border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div>
+          <strong style="color:#945200; font-size:13px; display:block;">مستندات معاينة محلية</strong>
+          <small id="drive-archive-status-sub" style="color:var(--muted); font-size:11.5px;">الإضافات تبقى في هذا المتصفح ولا تُرفع أو تُزامن مع Google Drive.</small>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap;">
+          <a href="#" target="_blank" rel="noopener noreferrer" class="button button-primary" id="btn-external-gdrive-open" style="background:#ea8600; border-color:#ea8600; color:#fff; font-size:12px; padding:6px 12px; text-decoration:none;">
+            ↗ فتح حسابك على Google Drive
+          </a>
+          <button type="button" class="button button-outline" id="btn-drive-open-config" style="font-size:11.5px; padding:6px 10px;">
+            ⚙️ تخصيص رابط مجلد Drive
+          </button>
+        </div>
+      </div>
+
+      <!-- Category Filter Bar -->
+      <div id="drive-category-pills" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;">
+        <button type="button" class="button button-primary" data-drive-cat="all" style="font-size:11.5px; padding:5px 12px;">📁 الكل</button>
+        <button type="button" class="button button-outline" data-drive-cat="tree" style="font-size:11.5px; padding:5px 12px;">🌳 شجرة النسب والمشجرات</button>
+        <button type="button" class="button button-outline" data-drive-cat="charter" style="font-size:11.5px; padding:5px 12px;">📜 اللوائح ومحاضر المجلس</button>
+        <button type="button" class="button button-outline" data-drive-cat="photos" style="font-size:11.5px; padding:5px 12px;">🖼️ الصور والوثائق التاريخية</button>
+      </div>
+
+      <!-- Archive Files List -->
+      <div id="drive-archive-files-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:10px; max-height:280px; overflow-y:auto; padding:4px 2px; margin-bottom:12px;">
+        <!-- Populated dynamically by renderFamilyDriveArchive() -->
+      </div>
+
+      <!-- Local-only file preview and metadata; no Drive upload is performed. -->
+      <form id="drive-archive-upload-form" style="background:rgba(16,59,50,0.04); border:1px dashed var(--primary); border-radius:12px; padding:12px 14px;">
+        <strong style="font-size:13px; color:var(--primary); display:block; margin-bottom:8px;">إضافة ملف للمعاينة المحلية فقط (لا يتم رفعه إلى السحابة):</strong>
+        <div style="display:grid; grid-template-columns:1.3fr 1fr; gap:8px; margin-bottom:8px;">
+          <label style="margin:0; font-size:12px;">عنوان الوثيقة أو الصورة
+            <input type="text" id="drive-doc-title" placeholder="مثال: وثيقة تاريخية لالفرع 1 / صورة لقاء العيد" required maxlength="100" style="margin-top:3px;">
+          </label>
+          <label style="margin:0; font-size:12px;">المجلد / التصنيف في الأرشيف
+            <select id="drive-doc-category" style="margin-top:3px;">
+              <option value="photos">🖼️ الصور والوثائق التاريخية</option>
+              <option value="tree">🌳 شجرة النسب والمشجرات</option>
+              <option value="charter">📜 اللوائح ومحاضر المجلس</option>
+            </select>
+          </label>
+        </div>
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+          <input type="file" id="drive-doc-file" accept=".pdf,.doc,.docx,.xls,.xlsx,.md,.txt,.json,image/*" style="font-size:11.5px; flex:1; min-width:200px;">
+          <button type="submit" class="button button-primary" style="font-size:12px; padding:7px 16px;">حفظ محليًا في هذا المتصفح</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- MODAL: Informational notice; this static preview does not unlock family records. -->
+  <dialog id="family-vault-dialog" class="modal">
+    <form method="dialog" id="family-vault-form" class="modal-form">
+      <button class="modal-close" type="button" id="btn-close-vault-dialog" aria-label="إغلاق">×</button>
+      <span class="eyebrow">🔒 حماية خصوصية الأسرة</span>
+      <h2>السجل التفصيلي غير متاح في نسخة العرض</h2>
+      <p>هذه الصفحة تعرض شكل الشجرة والفروع فقط، ولا تحمّل أسماء أفراد العائلة أو بياناتهم. التشفير وحده لا يثبت هوية المستخدم؛ لذلك لن نطلب رمزًا عائليًا داخل هذه النسخة.</p>
+
+      <div class="modal-actions" style="flex-wrap:wrap; gap:8px;">
+        <button class="button button-primary" type="submit" id="btn-vault-demo">متابعة معاينة الشجرة الرمزية</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- MODAL: Cloud status preview; no connection is configured or enabled. -->
+  <dialog id="cloud-sync-dialog" class="modal" style="max-width:650px; width:95%;">
+    <div class="modal-form" style="position:relative;">
+      <button class="modal-close" type="button" id="btn-close-cloud-sync" aria-label="إغلاق">×</button>
+      <span class="eyebrow">☁️ حالة المزامنة</span>
+      <h2>المزامنة السحابية متوقفة</h2>
+      <p style="margin-bottom:10px;">لن تتصل هذه النسخة بقاعدة بيانات أو ترسل بيانات أفراد العائلة حتى تكتمل مصادقة موثوقة وصلاحيات خادمية ومراجعة النشر.</p>
+
+      <!-- Cloud Connection Status Banner -->
+      <div id="cloud-status-banner" style="background:rgba(15,104,86,0.08); border:1px solid rgba(15,104,86,0.28); border-radius:10px; padding:10px 14px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;">
+        <div>
+          <strong id="cloud-modal-status-title" style="color:var(--primary); font-size:13.5px; display:block;">المزامنة متوقفة</strong>
+          <small id="cloud-modal-status-sub" style="color:var(--muted); font-size:11.5px;">لا توجد مصادقة عائلية موثقة في نسخة العرض.</small>
+        </div>
+        <button type="button" class="button button-primary" id="btn-cloud-sync-now" style="font-size:12px; padding:6px 14px;" hidden disabled>المزامنة غير متاحة</button>
+      </div>
+
+      <!-- Firebase Project Configuration Form -->
+      
+
+      <!-- Cloud Snapshot controls are intentionally disabled in preview. -->
+      <div style="background:rgba(197,160,89,0.08); border:1px solid rgba(197,160,89,0.35); border-radius:10px; padding:12px 14px;">
+        <strong style="font-size:13px; color:#7a5510; display:block; margin-bottom:4px;">📦 النسخ والنقل بين الأجهزة غير مفعّل</strong>
+        <p id="cloud-snapshot-status" style="font-size:11.5px; color:var(--muted); margin:0 0 8px;">لا توجد مزامنة أو حساب موثق؛ لن تُنقل بيانات من هذه الشاشة.</p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="button button-gold" id="btn-export-cloud-snapshot" style="font-size:12px; padding:7px 14px;" disabled>التصدير غير متاح</button>
+          <label class="button button-outline" style="cursor:not-allowed; opacity:.6; pointer-events:none; margin:0; font-size:12px; padding:7px 14px;">
+            <span>الاستيراد غير متاح</span>
+            <input type="file" id="input-import-cloud-snapshot" accept=".json,application/json" style="display:none;" disabled>
+          </label>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- MODAL: Full-Resolution Media Lightbox -->
+  <dialog id="media-lightbox-dialog" class="modal" style="max-width:860px; width:95%; background:#0a1814; color:#fff; border:1px solid rgba(197,160,89,0.4);">
+    <div style="position:relative; padding:10px; text-align:center;">
+      <button class="modal-close" type="button" id="btn-close-media-lightbox" aria-label="إغلاق" style="background:rgba(255,255,255,0.18); color:#fff;">×</button>
+      <h3 id="lightbox-media-title" style="margin:4px 0 10px; font-size:15px; color:#f3e1b6;">معاينة الوسائط</h3>
+      <img id="lightbox-media-img" src="" alt="صورة من منبر أخبار العائلة" style="max-width:100%; max-height:74vh; border-radius:10px; object-fit:contain;">
+    </div>
+  </dialog>
+
+  <!-- Global Toast Notification -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<script>
+  document.addEventListener('submit', event => { event.preventDefault(); event.stopImmediatePropagation(); alert('الإرسال غير متاح في المعاينة الرمزية.'); }, true);
+  const demoSearchIds = new Set(['tree-3d-search-input', 'hierarchy-search-input', 'member-search']);
+  document.querySelectorAll('input, textarea, select').forEach(control => {
+    if (demoSearchIds.has(control.id) && control instanceof HTMLInputElement) return;
+    control.disabled = true;
+  });
+  document.querySelectorAll('[contenteditable="true"]').forEach(node => node.contentEditable = 'false');
+</script></body>
+</html>
