@@ -3,7 +3,7 @@
 // يعمل محلياً بالكامل لتخزين ملفات البوابة، والمجسمات والرندرات للتشغيل بدون إنترنت
 // ==============================================================================
 
-const CACHE_NAME = 'allam-portal-v4.2-github-pages-safe-preview';
+const CACHE_NAME = 'allam-portal-v4.3-github-pages-safe-preview';
 const STATIC_ASSETS = [
   './',
   './index.html',
