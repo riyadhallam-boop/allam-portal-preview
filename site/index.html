@@ -23,18 +23,18 @@
   <!-- Architectural 3D Genealogy Subsystems -->
   <script defer src="js/genealogy-graph.js?v=4.3"></script>
   <script defer src="js/member-layout-engine.js?v=4.3"></script>
-  <script defer src="js/tree-visual-adapter.js?v=4.3"></script>
+  <script defer src="js/tree-visual-adapter.js?v=4.4"></script>
   <script defer src="js/member-node-renderer.js?v=4.3"></script>
   <script defer src="js/tree-leaf-label-overlay.js?v=4.3"></script>
   <script defer src="js/camera-navigation-controller.js?v=4.3"></script>
-  <script defer src="js/tree-engine.js?v=4.3"></script>
+  <script defer src="js/tree-engine.js?v=4.4"></script>
   <!-- Interactive 3D Royal Heritage Seal & Medallion Engine (Three.js PBR + Relief Calligraphy) -->
   
   <!-- Shared Cloud Database Engine (Firebase Firestore v11 + Real-Time Sync) -->
   <!-- model-viewer kept as fallback (hidden by default when Three.js loads) -->
   <script type="module" src="assets/model-viewer.min.js"></script>
   <script defer src="js/firebase-auth-gate.js?v=1"></script>
-  <script defer src="app.js?v=4.4"></script>
+  <script defer src="app.js?v=4.5"></script>
 <style>html{overflow-x:clip}</style></head>
 <body>
   <a class="skip-link" href="#main">انتقل إلى المحتوى الرئيسي</a>
@@ -133,7 +133,7 @@
               <div class="hero-3d-wrapper" id="hero-3d-box">
                 <model-viewer
                   id="hero-model-viewer"
-                  src="assets/models/allam_tree_master_v2.glb"
+                  src="assets/models/allam-tree-native-eight.glb"
                   poster="assets/renders/render_01_front.png"
                   alt="مجسم ثلاثي الأبعاد لشجرة بأوراق خضراء وجذور ظاهرة"
                   camera-controls
@@ -428,7 +428,7 @@
             <!-- ② model-viewer fallback (hidden once Three.js loads) -->
             <model-viewer
               id="tree-3d-model-viewer"
-              src="assets/models/allam_tree_master_v2.glb"
+              src="assets/models/allam-tree-native-eight.glb"
               poster="assets/renders/render_01_front.png"
               alt="مجسم ثلاثي الأبعاد لشجرة بأوراق خضراء وجذور ظاهرة"
               camera-controls

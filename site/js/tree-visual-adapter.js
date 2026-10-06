@@ -43,7 +43,7 @@
       this.THREE = THREE;
       this.scene = scene;
       this.options = {
-        defaultModelUrl: 'assets/models/allam_tree_master_v2.glb',
+        defaultModelUrl: 'assets/models/allam-tree-native-eight.glb',
         dracoDecoderPath: 'https://www.gstatic.com/draco/versioned/decoders/1.5.7/',
         style: 'woven',
         ...options

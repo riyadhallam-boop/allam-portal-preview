@@ -138,7 +138,7 @@
     // 5. Initialize Subsystem 3: TreeVisualAdapter
     const VisualClass = window.TreeVisualAdapter || (typeof TreeVisualAdapter !== 'undefined' ? TreeVisualAdapter : null);
     visualAdapter = new VisualClass(THREE, scene, {
-      defaultModelUrl: 'assets/models/allam_tree_master_v2.glb',
+      defaultModelUrl: 'assets/models/allam-tree-native-eight.glb',
       style: 'source'
     });
     visualAdapter.loadModel(null, GLTFLoader, DRACOLoader, (pct) => {

@@ -3,7 +3,7 @@
 // يعمل محلياً بالكامل لتخزين ملفات البوابة، والمجسمات والرندرات للتشغيل بدون إنترنت
 // ==============================================================================
 
-const CACHE_NAME = 'allam-portal-v4.4-google-sign-in-preview';
+const CACHE_NAME = 'allam-portal-v4.6-native-eight-tree';
 const STATIC_ASSETS = [
   './',
   './index.html',
@@ -21,7 +21,7 @@ const STATIC_ASSETS = [
   './assets/icon.svg',
   './assets/model-viewer.min.js',
   './assets/vendor/utils/BufferGeometryUtils.js',
-  './assets/models/allam_tree_master_v2.glb',
+  './assets/models/allam-tree-native-eight.glb',
   './assets/renders/render_01_front.png',
   './assets/renders/render_02_three_quarter_left.png',
   './assets/renders/render_03_three_quarter_right.png',
