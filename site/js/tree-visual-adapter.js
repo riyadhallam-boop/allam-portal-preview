@@ -360,7 +360,8 @@
 
             this._applyMaterialsAndShadows(this.treeRoot);
 
-            this.treeRoot.scale.set(1.0, 1.0, 1.0);
+            const treeScale = targetUrl.includes('allam-tree-native-eight.glb') ? 0.42 : 1.0;
+            this.treeRoot.scale.setScalar(treeScale);
             this.treeRoot.position.set(0, 0, 0);
             this.scene.add(this.treeRoot);
 

@@ -33,24 +33,78 @@
     initialized = true;
     authSdk.onAuthStateChanged(auth, async user => {
       if (!user) return onState({ user: null });
-      if (!user.emailVerified) return onState({ user, membership: 'unverified' });
+      onState({ user, membership: 'checking', roster: null });
+      if (!user.emailVerified || !user.providerData?.some(provider => provider.providerId === 'google.com')) {
+        return onState({ user, membership: 'unverified' });
+      }
       try {
-        const profileSnap = await storeSdk.getDoc(storeSdk.doc(db, 'users_public', user.uid));
-        if (!profileSnap.exists()) return onState({ user, membership: 'pending' });
-        const profile = profileSnap.data();
-        if (profile.status !== 'active' || typeof profile.memberId !== 'string') return onState({ user, membership: 'pending' });
-        const [linkSnap, memberSnap] = await Promise.all([
-          storeSdk.getDoc(storeSdk.doc(db, 'member_account_links', profile.memberId)),
-          storeSdk.getDoc(storeSdk.doc(db, 'family_members', profile.memberId))
+        const [profileSnap, grantSnap] = await Promise.all([
+          storeSdk.getDoc(storeSdk.doc(db, 'users_public', user.uid)),
+          storeSdk.getDoc(storeSdk.doc(db, 'family_governance', user.uid))
         ]);
-        const link = linkSnap.exists() ? linkSnap.data() : null;
-        const member = memberSnap.exists() ? memberSnap.data() : null;
-        const membership = link?.uid === user.uid && link?.role === profile.role && link?.branch === profile.branch &&
-          member?.verified === true && member?.tier === profile.role && member?.branch === profile.branch
-          ? 'active' : 'pending';
-        onState({ user, membership });
+        const profile = profileSnap.exists() ? profileSnap.data() : {};
+        let memberActive = false;
+        if (profile.status === 'active' && typeof profile.memberId === 'string') {
+          const [linkSnap, memberSnap] = await Promise.all([
+            storeSdk.getDoc(storeSdk.doc(db, 'member_account_links', profile.memberId)),
+            storeSdk.getDoc(storeSdk.doc(db, 'family_members', profile.memberId))
+          ]);
+          const link = linkSnap.exists() ? linkSnap.data() : null;
+          const member = memberSnap.exists() ? memberSnap.data() : null;
+          memberActive = link?.uid === user.uid && link?.role === profile.role && link?.branch === profile.branch &&
+            member?.verified === true && member?.tier === profile.role && member?.branch === profile.branch;
+        }
+        const grant = grantSnap.exists() ? grantSnap.data() : null;
+        const governanceActive = grant?.active === true && ['founder', 'uncle', 'delegate'].includes(grant.kind);
+        const membership = memberActive || governanceActive ? 'active' : 'pending';
+        if (membership !== 'active') return onState({ user, membership, roster: null });
+
+        let treeProfilesSnap, registrySnap;
+        try {
+          const profileCollection = storeSdk.collection(db, 'family_tree_profiles');
+          const registryCollection = storeSdk.collection(db, 'family_members');
+          const allBranches = memberActive || grant?.kind === 'founder';
+          const branches = [...new Set(Array.isArray(grant?.branches) ? grant.branches.filter(value => typeof value === 'string' && value) : [])];
+          if (!allBranches && !branches.length) return onState({ user, membership, roster: null, rosterUnavailable: true });
+          const profilesQuery = allBranches ? profileCollection : storeSdk.query(profileCollection, storeSdk.where('branch', 'in', branches));
+          const registryQuery = allBranches ? registryCollection : storeSdk.query(registryCollection, storeSdk.where('branch', 'in', branches));
+          [treeProfilesSnap, registrySnap] = await Promise.all([
+            storeSdk.getDocs(profilesQuery),
+            storeSdk.getDocs(registryQuery)
+          ]);
+        } catch {
+          return onState({ user, membership, roster: null, rosterUnavailable: true });
+        }
+        const registry = new Map(registrySnap.docs.map(item => [item.id, item.data()]));
+        const slotByZone = { 1: 1, 2: 8, 3: 7, 4: 6, 5: 5, 6: 4, 7: 3, 8: 2 };
+        const candidates = [];
+        for (const item of treeProfilesSnap.docs) {
+          const row = item.data();
+          const canonical = registry.get(item.id);
+          const zone = /^B0([1-8])_[0-9]{3}$/.exec(String(row.anchorId || ''));
+          if (row.memberId !== item.id || !canonical?.verified || canonical.branch !== row.branch ||
+              canonical.generation !== row.generation || typeof row.name !== 'string' || !row.name.trim() ||
+              !['MALE', 'FEMALE', 'UNKNOWN'].includes(row.gender) || !zone ||
+              !Number.isInteger(Number(row.generation)) || Number(row.generation) < 1 || Number(row.generation) > 20) continue;
+          candidates.push({
+            id: item.id,
+            name: row.name.trim(),
+            branch: `الفرع ${slotByZone[Number(zone[1])]}`,
+            gen: Number(row.generation),
+            gender: row.gender === 'MALE' ? 'M' : row.gender === 'FEMALE' ? 'F' : 'UNKNOWN',
+            parentCandidateId: typeof canonical.parentId === 'string' ? canonical.parentId : null,
+            status: 'موثق',
+            authorizedRoster: true
+          });
+        }
+        const validIds = new Set(candidates.map(member => member.id));
+        const roster = candidates.map(({ parentCandidateId, ...member }) => {
+          const parentId = parentCandidateId && validIds.has(parentCandidateId) ? parentCandidateId : null;
+          return { ...member, parentId, parentLinkStatus: parentId ? 'CONFIRMED' : 'UNRESOLVED' };
+        });
+        onState({ user, membership, roster });
       } catch {
-        onState({ user, membership: 'pending' });
+        onState({ user, membership: 'pending', roster: null });
       }
     });
   }

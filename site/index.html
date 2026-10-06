@@ -23,7 +23,7 @@
   <!-- Architectural 3D Genealogy Subsystems -->
   <script defer src="js/genealogy-graph.js?v=4.3"></script>
   <script defer src="js/member-layout-engine.js?v=4.3"></script>
-  <script defer src="js/tree-visual-adapter.js?v=4.4"></script>
+  <script defer src="js/tree-visual-adapter.js?v=4.5"></script>
   <script defer src="js/member-node-renderer.js?v=4.3"></script>
   <script defer src="js/tree-leaf-label-overlay.js?v=4.3"></script>
   <script defer src="js/camera-navigation-controller.js?v=4.3"></script>
@@ -95,7 +95,7 @@
           <b id="page-crumb">الرئيسية</b>
         </div>
         <div class="top-actions">
-          <button class="button button-primary" id="btn-user-account-top" type="button" title="تسجيل الدخول غير مفعّل في نسخة المعاينة" style="padding:6px 13px; font-size:12px; border-radius:999px;">👤 <span id="topbar-user-label">الحساب (غير مفعّل)</span></button>
+          <button class="button button-primary" id="btn-user-account-top" type="button" title="تسجيل الدخول الآمن بحساب Google" style="padding:6px 13px; font-size:12px; border-radius:999px;">👤 <span id="topbar-user-label">دخول Google</span></button>
           <button class="demo-pill" id="btn-drive-archive-top" type="button" hidden style="cursor:pointer; border:1px solid rgba(234,134,0,0.45); background:rgba(234,134,0,0.08); color:#b06000; font-weight:700;" title="أرشيف ومستودع وثائق العائلة الافتراضية في Google Drive">📁 <span>أرشيف Drive</span></button>
           <button class="demo-pill" id="btn-cloud-sync-top" type="button" hidden style="cursor:pointer; border:1px solid rgba(180,83,9,0.38); background:rgba(180,83,9,0.07); color:#92400e; font-weight:700;" title="المزامنة السحابية متوقفة في نسخة العرض"><span id="cloud-sync-dot" style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#b45309; margin-left:5px;"></span>☁️ <span id="cloud-sync-status-text">المزامنة متوقفة</span></button>
           <button class="demo-pill" id="btn-family-vault-gate" type="button" style="cursor:pointer; border:1px solid rgba(191,161,95,0.45);" title="السجل التفصيلي غير متاح في نسخة العرض"><i></i> <span id="vault-status-text">معاينة رمزية</span></button>
@@ -104,14 +104,14 @@
       </header>
 
       <main id="main" tabindex="-1">
-        <div role="status" class="preview-safety-banner" style="margin:10px 0;padding:10px 14px;border:1px solid #d7c79e;border-radius:12px;background:#fff9e9;color:#3e392c;font-size:13px;font-weight:700;text-align:center">نسخة تجريبية ببيانات رمزية — التسجيل غير متاح حاليًا</div>
+        <div role="status" class="preview-safety-banner" style="margin:10px 0;padding:10px 14px;border:1px solid #d7c79e;border-radius:12px;background:#fff9e9;color:#3e392c;font-size:13px;font-weight:700;text-align:center">معاينة رمزية — سجلات الأنساب تظهر للحسابات المرتبطة بعضوية معتمدة فقط</div>
         <!-- 1. HOME PAGE -->
         <section class="page active" id="page-home" aria-labelledby="welcome-title">
           <div class="welcome-row">
             <div>
               <div class="eyebrow"><span class="eyebrow-line"></span> معاينة بوابة العائلة الافتراضية</div>
               <h1 id="welcome-title">مرحبًا بكم في المعاينة الرمزية <span class="wave">✦</span></h1>
-              <p class="lead">معاينة محلية لتصميم البوابة ومساراتها؛ لا تتضمن حسابات أو مزامنة أو سجلات نسب معتمدة.</p>
+              <p class="lead">سجّل بحساب Google؛ وتظهر الأسماء وسجلات النسب فقط بعد التحقق من العضوية المعتمدة.</p>
             </div>
             <button class="button button-primary" data-page="meetings"><span>📅</span> تفاصيل اللقاء التأسيسي القادم</button>
           </div>
@@ -140,9 +140,9 @@
                   shadow-intensity="1.5"
                   shadow-softness="0.5"
                   exposure="1.2"
-                  camera-orbit="0deg 75deg 9.5m"
-                  min-camera-orbit="auto auto 2.2m"
-                  max-camera-orbit="auto auto 8.5m"
+                  camera-orbit="0deg 75deg 12m"
+                  min-camera-orbit="auto auto 6m"
+                  max-camera-orbit="auto auto 22m"
                   style="width: 100%; height: 100%; background: transparent;">
                 </model-viewer>
                 <canvas id="hero-3d-canvas" style="display:none;" aria-label="مجسم شجرة العائلة الافتراضية ثلاثية الأبعاد"></canvas>
@@ -435,9 +435,9 @@
               shadow-intensity="1.5"
               shadow-softness="0.5"
               exposure="1.2"
-              camera-orbit="0deg 75deg 6m"
-              min-camera-orbit="auto auto 3.8m"
-              max-camera-orbit="auto auto 9m"
+              camera-orbit="0deg 75deg 12m"
+              min-camera-orbit="auto auto 6m"
+              max-camera-orbit="auto auto 22m"
               style="width: 100%; height: 100%; background: transparent; display: none; position: absolute; top:0; left:0;">
               
               <!-- 8 Master Branch 3D Hotspot Pins Floating in 3D Space -->

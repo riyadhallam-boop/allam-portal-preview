@@ -514,6 +514,7 @@
   // ==========================================
   let baseVerifiedMembers = MOCK_TREE_DATA.slice(1).map(m => ({ ...m }));
   let activeMembersData = [...MOCK_TREE_DATA];
+  let authorizedTreeMembers = null;
   // Personal User Accounts & Live Tree Delta Persistence
   // Browser storage and typed names are not proof of identity or registration.
   // Authentication remains unavailable until a trusted server-backed flow exists.
@@ -524,7 +525,7 @@
 
   function isMemberRegistered(member) {
     // No server-verified registration signal is wired into this static build.
-    return false;
+    return member?.authorizedRoster === true;
   }
 
   function isSymbolicRecord(member) {
@@ -532,9 +533,23 @@
   }
 
   function getTreeDisplayMembers() {
+    if (Array.isArray(authorizedTreeMembers)) return [MOCK_TREE_DATA[0], ...authorizedTreeMembers];
     // This static preview exposes only the root and named main branches.
     // Individual nodes require trusted membership, reviewed lineage, and explicit display consent.
     return activeMembersData.filter(member => member.id === 'root' || member.recordType === 'main_branch');
+  }
+
+  function setAuthorizedTreeMembers(records) {
+    authorizedTreeMembers = Array.isArray(records) ? records : null;
+    baseVerifiedMembers = authorizedTreeMembers ? authorizedTreeMembers.map(member => ({ ...member })) : MOCK_TREE_DATA.slice(1).map(member => ({ ...member }));
+    activeMembersData = authorizedTreeMembers ? [MOCK_TREE_DATA[0], ...authorizedTreeMembers.map(member => ({ ...member }))] : [...MOCK_TREE_DATA];
+    renderMembers();
+    renderAccessibleTable();
+    renderBranchHierarchy(currentTreeBranch);
+    if (window.AllamTreeEngine) {
+      if (window.AllamTreeEngine.getGraph()) window.AllamTreeEngine.loadMembers(getTreeDisplayMembers());
+      else if (document.querySelector('#page-tree')?.classList.contains('active')) initThreeFamilyTree();
+    }
   }
 
   function getMemberTreeDisplayName(member, shortForm = false) {
@@ -4252,10 +4267,10 @@ ${speechesDoc}
       if ($('#dash-edit-edu')) $('#dash-edit-edu').value = (liveMember.edu && liveMember.edu !== '==') ? liveMember.edu : '';
       if ($('#dash-edit-bio')) $('#dash-edit-bio').value = liveMember.bio || '';
     } else {
-      if (topLabel) topLabel.textContent = 'الحساب (غير مفعّل)';
+      if (topLabel) topLabel.textContent = 'دخول Google';
       if (sidebarAvatar) sidebarAvatar.textContent = '👤';
       if (sidebarName) sidebarName.textContent = 'تسجيل الدخول بحسابك';
-      if (sidebarRole) sidebarRole.textContent = 'نسخة عرض — تسجيل الدخول غير متاح';
+      if (sidebarRole) sidebarRole.textContent = 'Google متاح؛ الأنساب للحسابات المعتمدة';
       if (inlineBadge) inlineBadge.textContent = 'النشر باسم مستخدم غير مفعّل';
     }
   }
@@ -4309,6 +4324,11 @@ ${speechesDoc}
     const signIn = $('#allam-google-sign-in');
     const signOut = $('#allam-google-sign-out');
     const setAccountState = (account) => {
+      if (!account?.user || account.membership !== 'active' || !Array.isArray(account.roster)) {
+        setAuthorizedTreeMembers(null);
+      } else {
+        setAuthorizedTreeMembers(account.roster);
+      }
       if (!status) return;
       if (!account?.user) {
         status.textContent = account?.error || 'لم تسجل الدخول بعد. سجّل بحساب Google للمتابعة.';
@@ -4318,9 +4338,13 @@ ${speechesDoc}
       }
       if (signIn) signIn.hidden = true;
       if (signOut) signOut.hidden = false;
-      status.textContent = account.membership === 'active'
-        ? 'تم التحقق من الحساب والعضوية. عرض شجرة الأسماء غير مفعّل في هذه المعاينة بعد.'
-        : 'تم تسجيل الدخول، لكن الحساب غير مرتبط بعضوية عائلية معتمدة. لن تظهر أسماء أو سجلات خاصة قبل مراجعة الربط.';
+      status.textContent = account.membership === 'active' && Array.isArray(account.roster) && account.roster.length
+        ? `تم التحقق من العضوية وتحميل ${account.roster.length} سجلًا معتمدًا إلى الشجرة.`
+        : account.membership === 'active'
+          ? 'العضوية معتمدة، لكن سجل الأنساب المحمي غير متاح حاليًا لهذا الحساب.'
+          : account.membership === 'checking'
+            ? 'جارٍ التحقق من العضوية وتحميل السجلات المسموح بها…'
+            : 'تم تسجيل الدخول، لكن الحساب غير مرتبط بعضوية عائلية معتمدة. لن تظهر أسماء أو سجلات خاصة قبل مراجعة الربط.';
     };
     if (window.AllamAuthGate) {
       window.AllamAuthGate.init(setAccountState).catch(() => setAccountState({ error: 'تعذر الاتصال بخدمة تسجيل الدخول. تحقق من إعداد Firebase والنطاق المسموح.' }));

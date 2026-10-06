@@ -3,7 +3,7 @@
 // يعمل محلياً بالكامل لتخزين ملفات البوابة، والمجسمات والرندرات للتشغيل بدون إنترنت
 // ==============================================================================
 
-const CACHE_NAME = 'allam-portal-v4.6-native-eight-tree';
+const CACHE_NAME = 'allam-portal-v4.7-native-eight-tree-fit';
 const STATIC_ASSETS = [
   './',
   './index.html',
