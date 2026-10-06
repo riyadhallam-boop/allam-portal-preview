@@ -4301,10 +4301,43 @@ ${speechesDoc}
   function initUserAccountPortal() {
     const authView = $('#user-auth-view');
     if (authView) {
-      authView.innerHTML = '<div role="status" style="padding:18px;border:1px solid #d8c8a4;border-radius:12px;background:#fffdf7;color:#493d26;line-height:1.8"><strong>تسجيل الدخول موقوف مؤقتًا</strong><br>النسخة الحالية للعرض الرمزي فقط. لن نربط اسمًا أو بريدًا أو رقمًا بسجل نسب قبل تجهيز مصادقة موثوقة ومراجعة الربط يدويًا.</div>';
+      authView.innerHTML = '<section style="padding:18px;border:1px solid #d8c8a4;border-radius:12px;background:#fffdf7;color:#493d26;line-height:1.8"><strong>دخول العائلة الآمن</strong><p>سجّل بحساب Google. لا تظهر سجلات الأنساب إلا للحسابات المرتبطة بعضوية معتمدة.</p><button id="allam-google-sign-in" class="button button-primary" type="button">الدخول بحساب Google</button><button id="allam-google-sign-out" class="button button-quiet" type="button" hidden>تسجيل الخروج</button><p id="allam-auth-status" role="status" aria-live="polite">جارٍ التحقق من إعداد تسجيل الدخول…</p></section>';
     }
     $('#user-dashboard-view') && ($('#user-dashboard-view').style.display = 'none');
     $('#btn-close-user-account')?.addEventListener('click', () => $('#user-account-dialog')?.close());
+    const status = $('#allam-auth-status');
+    const signIn = $('#allam-google-sign-in');
+    const signOut = $('#allam-google-sign-out');
+    const setAccountState = (account) => {
+      if (!status) return;
+      if (!account?.user) {
+        status.textContent = account?.error || 'لم تسجل الدخول بعد. سجّل بحساب Google للمتابعة.';
+        if (signIn) signIn.hidden = false;
+        if (signOut) signOut.hidden = true;
+        return;
+      }
+      if (signIn) signIn.hidden = true;
+      if (signOut) signOut.hidden = false;
+      status.textContent = account.membership === 'active'
+        ? 'تم التحقق من الحساب والعضوية. عرض شجرة الأسماء غير مفعّل في هذه المعاينة بعد.'
+        : 'تم تسجيل الدخول، لكن الحساب غير مرتبط بعضوية عائلية معتمدة. لن تظهر أسماء أو سجلات خاصة قبل مراجعة الربط.';
+    };
+    if (window.AllamAuthGate) {
+      window.AllamAuthGate.init(setAccountState).catch(() => setAccountState({ error: 'تعذر الاتصال بخدمة تسجيل الدخول. تحقق من إعداد Firebase والنطاق المسموح.' }));
+    } else {
+      setAccountState({ error: 'تعذر تحميل تسجيل Google. حدّث الصفحة أو تحقق من اتصال الإنترنت.' });
+    }
+    signIn?.addEventListener('click', async () => {
+      signIn.disabled = true;
+      status.textContent = 'جارٍ فتح نافذة تسجيل Google…';
+      const result = await window.AllamAuthGate?.signIn();
+      if (!result?.ok) status.textContent = result?.message || 'تعذر تسجيل الدخول. تأكد من تفعيل Google وإضافة نطاق الموقع في Firebase.';
+      signIn.disabled = false;
+    });
+    signOut?.addEventListener('click', async () => {
+      await window.AllamAuthGate?.signOut();
+      setAccountState(null);
+    });
     syncLoggedInUserUI();
   }
   function initCloudSyncPortal() {
