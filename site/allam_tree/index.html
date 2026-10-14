@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ar" dir="rtl" data-theme="night" data-mode="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" href="data:," />
+  <title>آل علام — الشجرة</title>
+  <script>
+    // فرض الوضع الليلي الملكي ومنع الوضع الفاتح نهائياً
+    try {
+      localStorage.setItem('allam-tree-mode', 'dark');
+    } catch(e) {}
+    document.documentElement.setAttribute('data-theme', 'night');
+    document.documentElement.setAttribute('data-mode', 'dark');
+  </script>
+  <script type="module" crossorigin src="./static/index-CrTuc4pM.js"></script>
+  <link rel="stylesheet" crossorigin href="./static/index-DKlbyEA9.css">
+  <style>
+    /* إخفاء خيار الوضع الفاتح نهائياً */
+    #mode-toggle, .mode-toggle {
+      display: none !important;
+      visibility: hidden !important;
+      pointer-events: none !important;
+    }
+  </style>
+</head>
+<body data-mode="dark">
+  <button id="mode-toggle" class="mode-toggle" type="button" aria-hidden="true" style="display: none !important;" aria-label="الوضع الليلي" aria-pressed="true">
+    <span class="mode-text">الوضع الليلي</span>
+  </button>
+  <main id="main" class="outlet" tabindex="-1"></main>
+</body>
+</html>
