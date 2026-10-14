@@ -679,15 +679,18 @@
         }
 
         .auth-modal-card {
-            background: #ffffff;
-            color: #202124;
+            background: #090f1d;
+            color: #f8fafc;
+            border: 1px solid rgba(212, 175, 55, 0.45);
             border-radius: 16px;
-            width: 90%;
-            max-width: 440px;
-            padding: 28px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            width: 92%;
+            max-width: 520px;
+            padding: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7);
             text-align: right;
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         /* نقاش وتطوير أهداف اللقاءات */
@@ -1653,7 +1656,7 @@
                             <span>💻</span><span>بث Meet</span>
                         </button>
                     </div>
-                    <button class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="alert('جدول مواعيد وأماكن اللقاءات الشهرية سيرسل لجميع المسجلين عبر الواتساب والبريد.')">
+                    <button class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="openMonthlyScheduleModal()">
                         <span>مواعيد الأشهر القادمة &larr;</span>
                     </button>
                 </div>
@@ -1674,7 +1677,7 @@
                             <span>📍</span><span>خريطة القاعة</span>
                         </button>
                     </div>
-                    <button class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="alert('برنامج العيد القادم يجري إعداده حالياً من قبل لجنة الفعاليات.')">
+                    <button class="btn-secondary" style="width: 100%; justify-content: center; margin-top: 8px;" onclick="openEidProgramModal()">
                         <span>برنامج احتفال العيد &larr;</span>
                     </button>
                 </div>
@@ -1702,19 +1705,22 @@
                                 <span style="font-size: 24px;">🎥</span>
                                 <span class="badge-emerald">بث مباشر تفاعلي HD</span>
                             </div>
-                            <h4 style="font-size: 17px; color: #fff; margin-bottom: 8px;">قاعة Google Meet الافتراضية الموحدة</h4>
+                            <h4 style="font-size: 17px; color: #fff; margin-bottom: 8px;">قاعة Google Meet الافتراضية المعتمدة</h4>
                             <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
-                                قاعة فيديو مخصصة ومحمية للقاءات آل علام، تمكّن كبار السن والمقيمين خارج منطقة اللقاء من التفاعل والمشاركة بالصوت والصورة مباشرة.
+                                قاعة فيديو رسمية ومحمية للقاءات آل علام، تمكّن كبار السن والمقيمين خارج منطقة اللقاء من التفاعل والمشاركة بالصوت والصورة مباشرة.
                             </p>
-                            <div style="background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #6ee7b7; margin-bottom: 16px; word-break: break-all; direction: ltr; text-align: left;">
-                                https://meet.google.com/alm-allam-ksa
+                            <div style="background: rgba(0,0,0,0.3); padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 13px; color: #6ee7b7; margin-bottom: 16px; word-break: break-all; direction: ltr; text-align: left;" id="active-meet-url-display">
+                                https://meet.google.com/new
                             </div>
                         </div>
-                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                            <a href="https://meet.google.com/alm-allam-ksa" target="_blank" rel="noopener noreferrer" class="btn-google btn-google-meet" style="flex: 1; justify-content: center;">
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button type="button" class="btn-google btn-google-meet" style="flex: 1; justify-content: center;" onclick="joinGoogleMeet('inaugural')">
                                 <span>🚀</span><span>دخول قاعة الاجتماع</span>
-                            </a>
-                            <button class="btn-secondary" style="padding: 9px 14px;" onclick="copyGoogleMeetLink()">
+                            </button>
+                            <button type="button" class="btn-secondary" style="padding: 9px 12px; font-size: 12px;" onclick="openGoogleMeetModal()">
+                                <span>⚙️</span><span>إدارة الغرفة</span>
+                            </button>
+                            <button type="button" class="btn-secondary" style="padding: 9px 12px; font-size: 12px;" onclick="copyGoogleMeetLink()">
                                 <span>📋</span><span>نسخ الرابط</span>
                             </button>
                         </div>
@@ -1756,9 +1762,9 @@
                                 قاعة مناسبات آل علام الكبرى — الرياض / الشرقية (مع إمكانية الملاحة الدقيقة المباشرة).
                             </p>
                         </div>
-                        <div style="display: flex; gap: 10px;">
-                            <a href="https://www.google.com/maps/search/?api=1&query=24.7136,46.6753" target="_blank" rel="noopener noreferrer" class="btn-google btn-google-map">
-                                <span>🗺️</span><span>فتح تطبيق الخرائط والملاحة</span>
+                        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                            <a href="https://www.google.com/maps/dir/?api=1&destination=24.7136,46.6753" target="_blank" rel="noopener noreferrer" class="btn-google btn-google-map">
+                                <span>🗺️</span><span>الملاحة المباشرة عبر Google Maps</span>
                             </a>
                             <button class="btn-secondary" style="padding: 9px 14px;" onclick="shareMapLocation()">
                                 <span>📲</span><span>مشاركة الموقع</span>
@@ -1833,7 +1839,7 @@
                 <p style="color: var(--text-secondary); max-width: 760px; margin: 0 auto 20px; font-size: 15px;">
                     صندوق عائلي تأسس لتعميق الترابط، ومساندة من يحتاج من أسر العائلة، ودعم المتفوقين دراسياً، وتمويل برامج اللقاءات والأنشطة المشتركة.
                 </p>
-                <button class="btn-primary" onclick="alert('رقم الحساب المصرفي المعتمد للصندوق سيُعلن رسميًا في أول لقاء برعاية العم محمد علام.')">
+                <button class="btn-primary" onclick="openFundModal()">
                     <span>💳</span>
                     <span>تفاصيل المساهمة والاشتراك بالصندوق</span>
                 </button>
@@ -2127,7 +2133,7 @@
                         <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px;">
                             حين نعود إلى وثائق الأجداد عام 1335هـ، نكتشف البصيرة العميقة التي كان يمتلكها الجد عوض حين قرن محبته لأولاده بوقف لا ينقطع ثوابه..
                         </p>
-                        <a href="#" style="color: var(--gold-primary); font-size: 12.5px; font-weight: 700;" onclick="alert('سيتم فتح المقال بالكامل قريباً.')">قراءة المقال كاملاً &larr;</a>
+                        <a href="javascript:void(0)" style="color: var(--gold-primary); font-size: 12.5px; font-weight: 700;" onclick="openArticleReader(1)">قراءة المقال كاملاً &larr;</a>
                     </div>
 
                     <div style="background: rgba(30,41,59,0.5); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px;">
@@ -2137,7 +2143,7 @@
                         <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px;">
                             سوق العمل اليوم يحتاج مهارات ناعمة وشبكة علاقات متينة، ومن واجبنا كأبناء عمومة أن نفتح الأبواب ونقدم الإرشاد الصادق لكل خريج..
                         </p>
-                        <a href="#" style="color: var(--gold-primary); font-size: 12.5px; font-weight: 700;" onclick="alert('سيتم فتح المقال بالكامل قريباً.')">قراءة المقال كاملاً &larr;</a>
+                        <a href="javascript:void(0)" style="color: var(--gold-primary); font-size: 12.5px; font-weight: 700;" onclick="openArticleReader(2)">قراءة المقال كاملاً &larr;</a>
                     </div>
 
                 </div>
@@ -2418,15 +2424,7 @@
             window.open(whatsappUrl, '_blank');
         }
 
-        // تأكيد الحضور للقاء الأول
-        function rsvpMeeting() {
-            const attendee = prompt('أهلاً بك يا ابن العم! اكتب اسمك الكريم لتأكيد حضورك اللقاء التأسيسي الأول:');
-            if (attendee && attendee.trim() !== '') {
-                alert(`تم تأكيد حضورك بنجاح يا ابن العم (${attendee.trim()})! نسعد بلقياك قريباً في هذا الاجتماع المبارك.`);
-            }
-        }
-
-        // إرسال فكرة ومقترح للقاءات
+        // إرسال فكرة ومقترح للقاءات مع الحفظ في Google Cloud
         function submitFamilyIdea() {
             const input = document.getElementById('new-idea-input');
             const idea = input.value.trim();
@@ -2436,18 +2434,26 @@
             }
 
             const list = document.getElementById('ideas-list');
-            const newIdeaBox = document.createElement('div');
-            newIdeaBox.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: 10px; padding: 14px; margin-bottom: 10px; animation: fadeIn 0.4s;';
-            newIdeaBox.innerHTML = `
-                <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--gold-primary); margin-bottom: 4px;">
-                    <span>مقترح جديد: أحد أفراد العائلة</span>
-                    <span>الآن</span>
-                </div>
-                <p style="font-size: 13px; color: var(--text-secondary);">${idea}</p>
-            `;
-            list.prepend(newIdeaBox);
+            if (list) {
+                const newIdeaBox = document.createElement('div');
+                newIdeaBox.style.cssText = 'background: var(--bg-card); border: 1px solid var(--border-gold); border-radius: 10px; padding: 14px; margin-bottom: 10px; animation: fadeIn 0.4s;';
+                newIdeaBox.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--gold-primary); margin-bottom: 4px;">
+                        <span>مقترح جديد: أحد أفراد العائلة</span>
+                        <span>الآن</span>
+                    </div>
+                    <p style="font-size: 13px; color: var(--text-secondary);">${idea}</p>
+                `;
+                list.prepend(newIdeaBox);
+            }
+
+            // حفظ سحابي في Google Cloud Firestore
+            if (typeof window.saveIdeaToGoogleCloud === 'function') {
+                window.saveIdeaToGoogleCloud({ idea: idea });
+            }
+
             input.value = '';
-            alert('تم استلام فكرتك ومقترحك الثمين! سيتم إدراجه في محاور نقاش اللقاء القادم بإذن الله.');
+            alert('تم استلام فكرتك ومقترحك الثمين بنجاح! سيتم إدراجه في محاور نقاش اللقاء القادم بإذن الله.');
         }
 
         // ========================================================
@@ -2659,64 +2665,58 @@
             renderDirectoryView();
         }
 
-        function openArticleModal() {
-            const title = prompt('أدخل عنوان المقال أو الخاطرة:');
-            if (title) {
-                alert(`شكراً لك! يمكنك إرسال مسودة المقال بعنوان: "${title}" عبر البريد وسيتم نشرها في ركن كتابات العائلة بعد مراجعتها.`);
-            }
-        }
-
         // ==========================================
         // وظائف خدمات Google (Meet, Calendar, Maps)
         // ==========================================
-        
-        // 1. إضافة الفعالية لتقويم Google (Google Calendar Sync)
-        function addToGoogleCalendar(type) {
-            let title = '';
-            let details = '';
-            let location = 'قاعة مناسبات آل علام الكبرى - الرياض / وعبر Google Meet: https://meet.google.com/alm-allam-ksa';
-            
-            // حساب تواريخ تقديرية متوافقة مع Google Calendar (UTC Format: YYYYMMDDTHHmmssZ)
-            const now = new Date();
-            let startDt, endDt;
 
-            function fmtGCal(dt) {
-                return dt.toISOString().replace(/-|:|\.\d\d\d/g, "");
-            }
-
-            if (type === 'inaugural') {
-                title = 'اللقاء التأسيسي الأول لآل علام بالمملكة العربية السعودية';
-                details = 'برعاية رئيس مجلس العائلة العم محمد علام ونائبه، بحضور كبار أبناء العم الأجلاء وتدشين شجرة النسب وصندوق العائلة.\\n\\nرابط قاعة البث المباشر (Google Meet):\\nhttps://meet.google.com/alm-allam-ksa';
-                startDt = new Date(now.getFullYear(), now.getMonth() + 1, 15, 18, 0, 0);
-                endDt = new Date(now.getFullYear(), now.getMonth() + 1, 15, 22, 0, 0);
-            } else if (type === 'monthly') {
-                title = 'اللقاء الشهري الدوري لآل علام';
-                details = 'اللقاء الأخوي الدوري لتفقد الأحوال واستضافة كفاءات العائلة وتبادل الخبرات.\\n\\nرابط Google Meet المباشر:\\nhttps://meet.google.com/alm-allam-ksa';
-                startDt = new Date(now.getFullYear(), now.getMonth() + 1, 1, 18, 30, 0);
-                endDt = new Date(now.getFullYear(), now.getMonth() + 1, 1, 21, 30, 0);
-            } else if (type === 'eid') {
-                title = 'حفل لقاء العيد السنوي لآل علام';
-                details = 'حفل ومعايدة عيد آل علام السنوي، الفعاليات الترفيهية، هدايا وعيديات الأطفال، وتكريم رواد العائلة.\\n\\nموقع القاعة على خرائط جوجل:\\nhttps://www.google.com/maps/search/?api=1&query=24.7136,46.6753';
-                startDt = new Date(now.getFullYear(), 3, 10, 8, 30, 0);
-                endDt = new Date(now.getFullYear(), 3, 10, 14, 0, 0);
-            }
-
-            const startStr = fmtGCal(startDt);
-            const endStr = fmtGCal(endDt);
-
-            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${startStr}/${endStr}&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
-            window.open(gcalUrl, '_blank');
+        // رابط Google Meet المعتمد
+        function getActiveMeetUrl() {
+            return localStorage.getItem('allam_active_meet_url') || 'https://meet.google.com/new';
         }
 
-        // 2. الدخول المباشر لقاعة Google Meet
+        function updateMeetDisplay() {
+            const el = document.getElementById('active-meet-url-display');
+            if (el) el.textContent = getActiveMeetUrl();
+        }
+
+        // 1. الدخول المباشر لغرفة Google Meet
         function joinGoogleMeet(type) {
-            const meetUrl = 'https://meet.google.com/alm-allam-ksa';
+            const meetUrl = getActiveMeetUrl();
             window.open(meetUrl, '_blank');
         }
 
-        // 3. نسخ رابط Google Meet للمشاركة عبر الواتساب
+        // نافذة إدارة غرفة Google Meet
+        function openGoogleMeetModal() {
+            const modal = document.getElementById('google-meet-modal');
+            const input = document.getElementById('meet-url-input');
+            if (input) input.value = getActiveMeetUrl();
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeGoogleMeetModal() {
+            const modal = document.getElementById('google-meet-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function saveCustomMeetUrl() {
+            const input = document.getElementById('meet-url-input');
+            if (!input || !input.value.trim()) {
+                alert('يرجى إدخال رابط أو رمز Google Meet صالح.');
+                return;
+            }
+            let url = input.value.trim();
+            if (!url.startsWith('http://') && !url.startsWith('https://')) {
+                url = 'https://meet.google.com/' + url.replace(/^https?:\/\/meet\.google\.com\//, '');
+            }
+            localStorage.setItem('allam_active_meet_url', url);
+            updateMeetDisplay();
+            closeGoogleMeetModal();
+            alert('تم اعتماد وتحديث رابط قاعة Google Meet بنجاح:\n' + url);
+        }
+
+        // نسخ رابط Google Meet للمشاركة عبر الواتساب
         function copyGoogleMeetLink() {
-            const meetUrl = 'https://meet.google.com/alm-allam-ksa';
+            const meetUrl = getActiveMeetUrl();
             if (navigator.clipboard) {
                 navigator.clipboard.writeText(meetUrl).then(() => {
                     alert('تم نسخ رابط غرفة Google Meet بنجاح! يمكنك الآن لصقه ومشاركته في مجموعات العائلة على WhatsApp:\n' + meetUrl);
@@ -2728,10 +2728,35 @@
             }
         }
 
-        // 4. مشاركة إحداثيات Google Maps
+        // 2. إضافة الفعالية لتقويم Google (Google Calendar Sync مع ضبط توقيت المملكة)
+        function addToGoogleCalendar(type) {
+            let title = '';
+            let details = '';
+            let location = 'قاعة مناسبات آل علام الكبرى - الرياض / وعبر Google Meet: ' + getActiveMeetUrl();
+            let dates = '';
+
+            if (type === 'inaugural') {
+                title = 'اللقاء التأسيسي الأول لآل علام بالمملكة العربية السعودية';
+                details = 'برعاية رئيس مجلس العائلة العم محمد علام ونائبه، بحضور كبار أبناء العم الأجلاء وتدشين شجرة النسب وصندوق العائلة.\\n\\nرابط قاعة البث المباشر (Google Meet): ' + getActiveMeetUrl();
+                dates = '20261120T180000/20261120T220000';
+            } else if (type === 'monthly') {
+                title = 'اللقاء الشهري الدوري لآل علام';
+                details = 'اللقاء الأخوي الدوري لتفقد الأحوال واستضافة كفاءات العائلة وتبادل الخبرات.\\n\\nرابط Google Meet المباشر: ' + getActiveMeetUrl();
+                dates = '20261204T183000/20261204T213000';
+            } else if (type === 'eid') {
+                title = 'حفل لقاء العيد السنوي لآل علام';
+                details = 'حفل ومعايدة عيد آل علام السنوي، الفعاليات الترفيهية، هدايا وعيديات الأطفال، وتكريم رواد العائلة.\\n\\nموقع القاعة على خرائط جوجل:\\nhttps://www.google.com/maps/dir/?api=1&destination=24.7136,46.6753';
+                dates = '20260321T090000/20260321T140000';
+            }
+
+            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${dates}&ctz=Asia/Riyadh&details=${encodeURIComponent(details)}&location=${encodeURIComponent(location)}`;
+            window.open(gcalUrl, '_blank');
+        }
+
+        // 3. مشاركة إحداثيات Google Maps
         function shareMapLocation() {
-            const mapUrl = 'https://www.google.com/maps/search/?api=1&query=24.7136,46.6753';
-            const shareText = `موقع مقر قاعة لقاءات عائلة آل علام على Google Maps:\n${mapUrl}`;
+            const mapUrl = 'https://www.google.com/maps/dir/?api=1&destination=24.7136,46.6753';
+            const shareText = `موقع مقر قاعة لقاءات عائلة آل علام للملاحة على Google Maps:\n${mapUrl}`;
             if (navigator.share) {
                 navigator.share({
                     title: 'موقع لقاء عائلة آل علام',
@@ -2740,21 +2765,260 @@
                 }).catch(() => {});
             } else if (navigator.clipboard) {
                 navigator.clipboard.writeText(mapUrl).then(() => {
-                    alert('تم نسخ رابط موقع Google Maps بنجاح للمشاركة:\n' + mapUrl);
+                    alert('تم نسخ رابط موقع Google Maps بنجاح للمشاركة عبر WhatsApp:\n' + mapUrl);
                 });
             } else {
                 prompt('رابط الموقع على خرائط جوجل:', mapUrl);
             }
         }
 
-        // 5. التوجيه لخريطة القاعة
+        // 4. التوجيه لخريطة القاعة
         function openVenueMap() {
             const el = document.getElementById('meeting-map-section');
             if (el) {
                 el.scrollIntoView({ behavior: 'smooth' });
             } else {
-                window.open('https://www.google.com/maps/search/?api=1&query=24.7136,46.6753', '_blank');
+                window.open('https://www.google.com/maps/dir/?api=1&destination=24.7136,46.6753', '_blank');
             }
+        }
+
+        // ==========================================
+        // نوافذ التفاعل الحقيقية للقاءات والصندوق والمقالات
+        // ==========================================
+
+        // أ) نافذة تأكيد الحضور للقاء التأسيسي الأول (RSVP)
+        function rsvpMeeting() {
+            const modal = document.getElementById('rsvp-modal');
+            const stored = localStorage.getItem('allam_google_user');
+            if (stored) {
+                try {
+                    const u = JSON.parse(stored);
+                    const nameInput = document.getElementById('rsvp-name');
+                    if (nameInput && !nameInput.value) nameInput.value = u.name;
+                } catch(e) {}
+            }
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeRsvpModal() {
+            const modal = document.getElementById('rsvp-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function submitRsvpForm(e) {
+            e.preventDefault();
+            const name = document.getElementById('rsvp-name').value.trim();
+            const phone = document.getElementById('rsvp-phone').value.trim();
+            const branch = document.getElementById('rsvp-branch').value;
+            const mode = document.getElementById('rsvp-mode').value;
+            const guests = document.getElementById('rsvp-guests').value || '0';
+
+            const rsvpObj = {
+                id: 'rsvp_' + Date.now(),
+                name: name,
+                phone: phone,
+                branch: branch,
+                mode: mode,
+                guests: guests,
+                confirmedAt: new Date().toISOString()
+            };
+
+            // حفظ في التخزين المحلي
+            let list = JSON.parse(localStorage.getItem('allam_rsvps') || '[]');
+            list.unshift(rsvpObj);
+            localStorage.setItem('allam_rsvps', JSON.stringify(list));
+
+            // حفظ سحابي في Firestore
+            if (typeof window.saveRsvpToGoogleCloud === 'function') {
+                window.saveRsvpToGoogleCloud(rsvpObj);
+            }
+
+            closeRsvpModal();
+
+            const msg = `السلام عليكم ورحمة الله، تم تأكيد حضور ابن العم (${name}) للقاء التأسيسي الأول لآل علام (${mode === 'حضوري' ? 'حضور شخصي في القاعة' : 'مشاركة عن بعد عبر Google Meet'}) برفقة (${guests}) مرافقين.`;
+            const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            
+            if (confirm(`بارك الله فيك يا ابن العم (${name})! تم تأكيد تسجيل حضورك بنجاح.\nهل تود إرسال تأكيد الحضور لمنسق اللقاء عبر WhatsApp؟`)) {
+                window.open(waUrl, '_blank');
+            }
+        }
+
+        // ب) نافذة جدول اللقاءات الشهرية
+        function openMonthlyScheduleModal() {
+            const modal = document.getElementById('monthly-schedule-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeMonthlyScheduleModal() {
+            const modal = document.getElementById('monthly-schedule-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // ج) نافذة برنامج احتفال العيد
+        function openEidProgramModal() {
+            const modal = document.getElementById('eid-program-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeEidProgramModal() {
+            const modal = document.getElementById('eid-program-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // د) نافذة المساهمة في صندوق العائلة
+        function openFundModal() {
+            const modal = document.getElementById('fund-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeFundModal() {
+            const modal = document.getElementById('fund-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function sendFundInquiry(planName) {
+            const msg = `السلام عليكم ورحمة الله، أود الاستفسار والمساهمة في صندوق عائلة آل علام التكافلي عبر (${planName})، يرجى تزويدي ببيانات التحويل المعتمدة.`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // هـ) قارئ المقالات الكاملة
+        const ALLAM_ARTICLES_DATA = {
+            1: {
+                title: '«وقف عوض ورحمة: مئة عام من البر والإحسان»',
+                author: 'خالد بن كمال علام',
+                date: 'قبل 3 أيام',
+                category: 'تاريخ وتراث عائلي',
+                content: `بسم الله الرحمن الرحيم، والصلاة والسلام على رسول الله الكريم..
+
+حين نعود إلى وثائق الأجداد عام 1335هـ، نكتشف البصيرة العميقة التي كان يمتلكها الجد عوض حين قرن محبته لأولاده بوقف لا ينقطع ثوابه. لم يكن الوقف مجرد أصول عقارية أو مادية، بل كان وثيقة محبة وتضامن عائلي تُرسّخ أن آل علام يد واحدة عبر العصور.
+
+من هذه المبادئ، تتأسس اليوم بوابتنا ومجلسنا ليكون استمراراً لهذه المسيرة المباركة. إن رعاية الأسر الثمانية (حسين، خالد، كمال، جمال، محمد، مستورة، ناجية، هدى) تحت سقف واحد هي وفاء لعهد الآباء والأجداد، ورسالة محبة نورثها لأبنائنا وأحفادنا ليظل اسم آل علام عنواناً للتكافل والعطاء والسمعة الطيبة في أرجاء الوطن.`
+            },
+            2: {
+                title: '«كيف نساعد خريجي العائلة على بناء مسارهم المهني؟»',
+                author: 'نوف بنت جمال علام',
+                date: 'قبل أسبوع',
+                category: 'ريادة وإلهام مهني',
+                content: `أبناء وبنات العم الأعزاء،،
+
+يشهد سوق العمل اليوم تحولات متسارعة تتطلب من شبابنا وشاباتنا تسليحاً بالمهارات المتقدمة، وبناء شبكة علاقات مهنية قوية. ومن أعظم بركات العائلة الكبيرة أن نكون لبعضنا سنداً ومرشداً.
+
+أقترح عبر بوابة العائلة ومجلسها تأسيس "لجنة التوجيه المهني (Mentorship)"، بحيث يتطوع أصحاب الخبرة من مدراء ومهندسين وأطباء وقانونيين من أبناء العم لمراجعة سير الخريجين الذاتية، ومساعدتهم في التدريب والتأهيل، وفتح آفاق الفرص لهم في كبرى الهيئات والشركات. قوتنا في ترابطنا، ونجاح أي فرد من آل علام هو فخر للعائلة كلها.`
+            }
+        };
+
+        function openArticleReader(id) {
+            const art = ALLAM_ARTICLES_DATA[id];
+            if (!art) return;
+            const modal = document.getElementById('article-reader-modal');
+            const titleEl = document.getElementById('reader-title');
+            const metaEl = document.getElementById('reader-meta');
+            const bodyEl = document.getElementById('reader-body');
+
+            if (titleEl) titleEl.textContent = art.title;
+            if (metaEl) metaEl.textContent = `بقلم: ${art.author} • ${art.date} • ${art.category}`;
+            if (bodyEl) bodyEl.innerHTML = art.content.split('\n\n').map(p => `<p style="margin-bottom: 14px; line-height: 1.8;">${p}</p>`).join('');
+
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeArticleReader() {
+            const modal = document.getElementById('article-reader-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        // و) محرر إضافة مقال جديد
+        function openArticleModal() {
+            const modal = document.getElementById('article-editor-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeArticleModal() {
+            const modal = document.getElementById('article-editor-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function submitNewArticle(e) {
+            e.preventDefault();
+            const title = document.getElementById('new-art-title').value.trim();
+            const author = document.getElementById('new-art-author').value.trim();
+            const category = document.getElementById('new-art-cat').value;
+            const content = document.getElementById('new-art-content').value.trim();
+
+            if (!title || !author || !content) {
+                alert('يرجى تعبئة العنوان والاسم ونص المقال.');
+                return;
+            }
+
+            const artId = Date.now();
+            ALLAM_ARTICLES_DATA[artId] = {
+                title: title,
+                author: author,
+                date: 'اليوم',
+                category: category,
+                content: content
+            };
+
+            // إضافة الكرت للواجهة
+            const container = document.getElementById('articles-container');
+            if (container) {
+                const card = document.createElement('div');
+                card.style.cssText = 'background: rgba(30,41,59,0.5); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 20px; animation: fadeIn 0.4s;';
+                card.innerHTML = `
+                    <span class="badge-gold" style="margin-bottom: 8px; display: inline-block;">${category}</span>
+                    <h4 style="font-size: 17px; color: var(--gold-light); margin-bottom: 6px;">${title}</h4>
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">بقلم: ${author} • اليوم</div>
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px;">
+                        ${content.substring(0, 140)}...
+                    </p>
+                    <a href="javascript:void(0)" style="color: var(--gold-primary); font-size: 12.5px; font-weight: 700;" onclick="openArticleReader(${artId})">قراءة المقال كاملاً &larr;</a>
+                `;
+                container.prepend(card);
+            }
+
+            // حفظ سحابي
+            if (typeof window.saveArticleToGoogleCloud === 'function') {
+                window.saveArticleToGoogleCloud({ title, author, category, content });
+            }
+
+            closeArticleModal();
+            document.getElementById('new-article-form').reset();
+            alert(`بارك الله فيك يا ابن العم (${author})! تم نشر مقالك بنجاح في ركن كتابات العائلة.`);
+        }
+
+        // ز) تصدير سجلات الدليل كاملة لـ Google Sheets (CSV Export)
+        function exportDirectoryToGoogleSheets() {
+            if (typeof ALLAM_FAMILY_MEMBERS === 'undefined' || !ALLAM_FAMILY_MEMBERS.length) {
+                alert('لا توجد سجلات متاحة للتصدير حالياً.');
+                return;
+            }
+
+            const headers = ['رقم القيد', 'الاسم الكامل', 'الفرع', 'الجيل', 'الجنس', 'سنة الميلاد', 'المدينة', 'المؤهل التعليمي', 'الوظيفة', 'الجوال', 'البريد الإلكتروني'];
+            const rows = ALLAM_FAMILY_MEMBERS.map(m => [
+                m.id || '',
+                `"${(m.name || '').replace(/"/g, '""')}"`,
+                `"${(m.branch || '').replace(/"/g, '""')}"`,
+                m.gen_label || ('ج' + m.gen) || '',
+                m.gender || '',
+                m.birth_date || '',
+                `"${(m.residence || '').replace(/"/g, '""')}"`,
+                `"${(m.education || '').replace(/"/g, '""')}"`,
+                `"${(m.job || '').replace(/"/g, '""')}"`,
+                m.phone || '',
+                m.email || ''
+            ]);
+
+            const csvContent = '\uFEFF' + [headers.join(','), ...rows.map(r => r.join(','))].join('\r\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `دليل_عائلة_آل_علام_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            alert('تم تحميل ملف بيانات العائلة (CSV) المتوافق 100% مع Google Sheets و Excel.\nيمكنك الآن استيراده مباشرة في Google Drive أو Google Sheets.');
         }
 
         // ==========================================
@@ -2938,12 +3202,13 @@
     </script>
 
     <!-- ========================================================
-         نافذة تسجيل الدخول الرسمية عبر Google (Real Google Sign-In)
+         النوافذ التفاعلية والمنبثقة المعتمدة (Royal Night Theme Modals)
          ======================================================== -->
-    <div id="google-auth-modal" class="auth-modal-overlay" onclick="handleAuthModalBackdrop(event)">
+
+    <!-- 1. نافذة تسجيل الدخول الرسمية عبر Google (Real Google Sign-In) -->
+    <div id="google-auth-modal" class="auth-modal-overlay">
         <div class="auth-modal-card">
-            <!-- رأس النافذة -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid #f3f4f6; padding-bottom: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 14px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
@@ -2951,23 +3216,23 @@
                         <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
                         <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                     </svg>
-                    <span style="font-weight: 700; font-size: 16px; color: #1f2937;">المصادقة والتوثيق عبر Google الرسمي</span>
+                    <span style="font-weight: 700; font-size: 16px; color: var(--gold-light);">المصادقة والتوثيق عبر Google الرسمي</span>
                 </div>
-                <button type="button" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1;" onclick="closeGoogleAuthModal()">&times;</button>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeGoogleAuthModal()">&times;</button>
             </div>
 
-            <p style="font-size: 13.5px; color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
-                مرحباً بك في <strong>بوابة مجلس آل علام</strong>؛ يتيح لك تسجيل الدخول توثيق هويتك وتعبئة بياناتك تلقائياً وبأمان:
+            <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 20px;">
+                مرحباً بك في <strong>بوابة مجلس عائلة آل علام بالمملكة</strong>؛ يتيح لك تسجيل الدخول توثيق هويتك وتعبئة استمارة الدليل تلقائياً وبأمان سحابي:
             </p>
 
-            <!-- الزر الفعلي الحقيقي لتسجيل الدخول بحساب Google الرسمي -->
+            <!-- الزر الحقيقي لتسجيل الدخول بحساب Google الرسمي -->
             <div style="margin-bottom: 18px;">
                 <button type="button" 
                         id="btn-google-popup-trigger" 
                         onclick="triggerRealGoogleSignIn()"
-                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; background: #ffffff; color: #1f2937; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 13px 18px; font-size: 14.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.06); transition: all 0.2s;"
-                        onmouseover="this.style.boxShadow='0 4px 12px rgba(66,133,244,0.25)'; this.style.borderColor='#4285F4';"
-                        onmouseout="this.style.boxShadow='0 2px 5px rgba(0,0,0,0.06)'; this.style.borderColor='#d1d5db';">
+                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; background: rgba(255,255,255,0.06); color: #f8fafc; border: 1.5px solid rgba(212, 175, 55, 0.4); border-radius: 12px; padding: 14px 18px; font-size: 14.5px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.4); transition: all 0.25s;"
+                        onmouseover="this.style.borderColor='var(--gold-primary)'; this.style.background='rgba(212, 175, 55, 0.1)';"
+                        onmouseout="this.style.borderColor='rgba(212, 175, 55, 0.4)'; this.style.background='rgba(255,255,255,0.06)';">
                     <svg width="22" height="22" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
                         <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
@@ -2980,27 +3245,27 @@
             </div>
 
             <!-- خيار إدخال الحساب يدوياً -->
-            <div style="border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px;">
-                <div style="font-weight: 600; font-size: 13px; color: #374151; margin-bottom: 8px;">أو إدخال بيانات حسابك Google يدوياً:</div>
+            <div style="border-top: 1px dashed rgba(212, 175, 55, 0.25); padding-top: 16px; margin-top: 16px;">
+                <div style="font-weight: 600; font-size: 13px; color: var(--gold-light); margin-bottom: 10px;">أو إدخال بيانات حسابك Google يدوياً:</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="text" id="custom-google-name" placeholder="اسمك الكريم (رباعي)" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-family: var(--font-main);">
-                    <input type="email" id="custom-google-email" placeholder="بريدك الإلكتروني (name@gmail.com)" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-family: var(--font-main); direction: ltr; text-align: right;">
-                    <button type="button" class="btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 13.5px;" onclick="handleCustomGoogleLogin()">
+                    <input type="text" id="custom-google-name" placeholder="اسمك الكريم (رباعي)" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.35); background: #0c1427; color: #f8fafc; font-size: 13px; font-family: var(--font-main);">
+                    <input type="email" id="custom-google-email" placeholder="بريدك الإلكتروني (name@gmail.com)" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.35); background: #0c1427; color: #f8fafc; font-size: 13px; font-family: var(--font-main); direction: ltr; text-align: right;">
+                    <button type="button" class="btn-primary" style="width: 100%; justify-content: center; padding: 11px; font-size: 13.5px;" onclick="handleCustomGoogleLogin()">
                         <span>مزامنة وتوثيق الحساب بالبوابة</span>
                     </button>
                 </div>
             </div>
 
-            <div style="margin-top: 16px; text-align: center; font-size: 11.5px; color: #9ca3af;">
+            <div style="margin-top: 16px; text-align: center; font-size: 11.5px; color: #94a3b8;">
                 🔒 توثيق مشفر عبر خدمات Google Identity السحابية المعتمدة
             </div>
         </div>
     </div>
 
-    <!-- نافذة استمارة Google Forms الرسمية -->
-    <div id="google-form-modal" class="auth-modal-overlay" onclick="handleFormModalBackdrop(event)" style="display: none;">
+    <!-- 2. نافذة استمارة Google Forms الرسمية -->
+    <div id="google-form-modal" class="auth-modal-overlay" style="display: none;">
         <div class="auth-modal-card" style="max-width: 560px;">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <path fill="#7248B9" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/>
@@ -3010,16 +3275,16 @@
                         <circle cx="9" cy="16" r="1" fill="#fff"/>
                         <rect x="11.5" y="15.5" width="5" height="1" fill="#fff"/>
                     </svg>
-                    <span style="font-weight: 700; font-size: 16px; color: #1f2937;">استمارة Google Forms المعتمدة</span>
+                    <span style="font-weight: 700; font-size: 16px; color: var(--gold-light);">استمارة Google Forms المعتمدة</span>
                 </div>
-                <button type="button" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1;" onclick="closeGoogleFormModal()">&times;</button>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeGoogleFormModal()">&times;</button>
             </div>
-            <p style="font-size: 13.5px; color: #4b5563; line-height: 1.6; margin-bottom: 16px;">
+            <p style="font-size: 13.5px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
                 تتيح لك هذه الخدمة تعبئة وتحديث بياناتك مباشرة عبر استبيان <strong>Google Forms الرسمي</strong> المرتبط تلقائياً بجدول بيانات Google Sheets الخاص بأمانة مجلس عائلة آل علام.
             </p>
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
-                <div style="font-weight: 600; font-size: 13.5px; color: #1e293b; margin-bottom: 6px;">تشمل الاستمارة الحقول العشرة المطلوبة:</div>
-                <ul style="font-size: 12.5px; color: #64748b; line-height: 1.8; padding-right: 18px; margin: 0;">
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13.5px; color: var(--gold-light); margin-bottom: 6px;">تشمل الاستمارة الحقول العشرة المطلوبة:</div>
+                <ul style="font-size: 12.5px; color: var(--text-secondary); line-height: 1.8; padding-right: 18px; margin: 0;">
                     <li>الاسم الرباعي، الجوال، البريد، وسنة الميلاد</li>
                     <li>المؤهل التعليمي، التخصص، وجهة العمل</li>
                     <li>الزوج/الزوجة، الأبناء، الهوايات، وأخرى</li>
@@ -3030,10 +3295,401 @@
                     <span>↗ فتح نموذج Google Forms في نافذة مستقلة</span>
                 </button>
             </div>
-            <div style="margin-top: 14px; text-align: center; font-size: 11.5px; color: #9ca3af;">
+            <div style="margin-top: 14px; text-align: center; font-size: 11.5px; color: #94a3b8;">
                 📊 البيانات تودع فورياً في Google Sheets المخصص لأمانة المجلس
             </div>
         </div>
     </div>
+
+    <!-- 3. نافذة إدارة وتنسيق قاعة Google Meet -->
+    <div id="google-meet-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 540px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">🎥</span>
+                    <span style="font-weight: 700; font-size: 16px; color: var(--gold-light);">إدارة وتنسيق قاعة Google Meet الرسمية</span>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeGoogleMeetModal()">&times;</button>
+            </div>
+            
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 14px;">
+                تضمن قاعة Google Meet بثاً مرئياً ومسموعاً فائق الوضوح (HD) للقاءات آل علام. يرجى استخدام رابط صالح من Google Meet (مثل الرابط النشط أو إنشاء قاعة جديدة مباشرة):
+            </p>
+
+            <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                <label style="display: block; font-size: 12.5px; color: var(--gold-light); font-weight: 600; margin-bottom: 6px;">رابط قاعة اللقاء المعتمد حالياً:</label>
+                <input type="text" id="meet-url-input" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.4); color: #6ee7b7; font-family: monospace; direction: ltr; text-align: left; padding: 10px 12px; border-radius: 8px; width: 100%; margin-bottom: 10px;" placeholder="https://meet.google.com/xxx-yyyy-zzz">
+                
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button type="button" class="btn-primary" style="flex: 1; justify-content: center; padding: 9px 12px; font-size: 13px;" onclick="saveCustomMeetUrl()">
+                        <span>💾 حفظ واعتماد الرابط في البوابة</span>
+                    </button>
+                    <button type="button" class="btn-secondary" style="padding: 9px 12px; font-size: 12px;" onclick="copyGoogleMeetLink()">
+                        <span>📋 نسخ</span>
+                    </button>
+                </div>
+            </div>
+
+            <div style="border-top: 1px dashed rgba(212, 175, 55, 0.25); padding-top: 14px; margin-bottom: 16px;">
+                <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 8px;">هل ترغب في إنشاء غرفة فورية جديدة لأي لقاء عائلي طارئ؟</div>
+                <button type="button" class="btn-google btn-google-meet" style="width: 100%; justify-content: center; padding: 11px;" onclick="window.open('https://meet.google.com/new', '_blank')">
+                    <span>🚀 فتح غرفة جديدة فوراً عبر Google Meet (meet.google.com/new)</span>
+                </button>
+            </div>
+
+            <div style="text-align: center; font-size: 11.5px; color: #94a3b8;">
+                💡 ملاحظة: الروابط العشوائية غير المسجلة تسبب خطأً في Google، لذلك نعتمد الغرف النشطة الرسمية.
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. نافذة تأكيد حضور اللقاء التأسيسي الأول (RSVP Modal) -->
+    <div id="rsvp-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 520px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">✍️</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; color: var(--gold-light);">تأكيد الحضور للقاء التأسيسي الأول</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted);">الجمعة 20 نوفمبر 2026م — الرياض</div>
+                    </div>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeRsvpModal()">&times;</button>
+            </div>
+
+            <form onsubmit="submitRsvpForm(event)">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">الاسم الكريم (رباعي) <span class="req">*</span></label>
+                        <input type="text" id="rsvp-name" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;" placeholder="الاسم الكامل" required>
+                    </div>
+
+                    <div>
+                        <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">رقم الجوال <span class="req">*</span></label>
+                        <input type="tel" id="rsvp-phone" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;" placeholder="05XXXXXXXX" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">فرع الأسرة</label>
+                            <select id="rsvp-branch" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;">
+                                <option value="أسرة حسين علام">أسرة حسين علام</option>
+                                <option value="أسرة خالد علام">أسرة خالد علام</option>
+                                <option value="أسرة كمال علام">أسرة كمال علام</option>
+                                <option value="أسرة جمال علام">أسرة جمال علام</option>
+                                <option value="أسرة محمد علام">أسرة محمد علام</option>
+                                <option value="أسرة مستورة علام">أسرة مستورة علام</option>
+                                <option value="أسرة ناجية علام">أسرة ناجية علام</option>
+                                <option value="أسرة هدى علام">أسرة هدى علام</option>
+                                <option value="مسجل حديثاً بالبوابة">مسجل حديثاً بالبوابة</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">طريقة الحضور</label>
+                            <select id="rsvp-mode" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;">
+                                <option value="حضوري">حضور شخصي بالقاعة</option>
+                                <option value="عن بعد">عن بُعد عبر Google Meet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">عدد المرافقين من أبناء وبنات العائلة</label>
+                        <select id="rsvp-guests" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;">
+                            <option value="0">بدون مرافقين (شخصي)</option>
+                            <option value="1">مرافق واحد</option>
+                            <option value="2">مرافقان (2)</option>
+                            <option value="3">3 مرافقين</option>
+                            <option value="4+">4 مرافقين فأكثر</option>
+                        </select>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="submit" class="btn-primary" style="flex: 1; justify-content: center; padding: 12px;">
+                            <span>تأكيد الحضور وتوثيق السجل</span>
+                        </button>
+                        <button type="button" class="btn-secondary" style="padding: 12px 18px;" onclick="closeRsvpModal()">إلغاء</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 5. نافذة جدول ومواعيد اللقاءات الشهرية الدورية -->
+    <div id="monthly-schedule-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 620px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">🗓️</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; color: var(--gold-light);">جدول اللقاءات الشهرية الدورية (2026 - 2027م)</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted);">تنعقد أول جمعة من كل شهر هجري/ميلادي</div>
+                    </div>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeMonthlyScheduleModal()">&times;</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; max-height: 55vh; overflow-y: auto; padding-left: 6px;">
+                
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.35); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="color: var(--gold-light); font-weight: 700; font-size: 14px;">اللقاء التأسيسي الأول (الافتتاح الكبير)</span>
+                        <span class="badge-emerald">الجمعة 20 نوفمبر 2026</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">تدشين شجرة النسب، وإعلان مجلس العائلة، ومناقشة صندوق التكافل.</p>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-google btn-google-cal" style="padding: 5px 10px; font-size: 11.5px;" onclick="addToGoogleCalendar('inaugural')">📅 أضف للتقويم</button>
+                        <button type="button" class="btn-google btn-google-meet" style="padding: 5px 10px; font-size: 11.5px;" onclick="joinGoogleMeet('inaugural')">💻 قاعة Meet</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="color: var(--gold-light); font-weight: 700; font-size: 14px;">لقاء ديسمبر: ريادة الأعمال والاستثمار</span>
+                        <span style="color: #94a3b8; font-size: 12px;">الجمعة 4 ديسمبر 2026</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">استضافة كفاءات العائلة في الاستثمار وريادة الأعمال وعرض تجارب ناجحة.</p>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-google btn-google-cal" style="padding: 5px 10px; font-size: 11.5px;" onclick="addToGoogleCalendar('monthly')">📅 أضف للتقويم</button>
+                        <button type="button" class="btn-google btn-google-meet" style="padding: 5px 10px; font-size: 11.5px;" onclick="joinGoogleMeet('monthly')">💻 قاعة Meet</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="color: var(--gold-light); font-weight: 700; font-size: 14px;">لقاء يناير: ملتقى خريجي وشباب العائلة</span>
+                        <span style="color: #94a3b8; font-size: 12px;">الجمعة 1 يناير 2027</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">برنامج الإرشاد المهني للحديثي التخرج وورش التدريب والتأهيل الوظيفي.</p>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-google btn-google-cal" style="padding: 5px 10px; font-size: 11.5px;" onclick="addToGoogleCalendar('monthly')">📅 أضف للتقويم</button>
+                        <button type="button" class="btn-google btn-google-meet" style="padding: 5px 10px; font-size: 11.5px;" onclick="joinGoogleMeet('monthly')">💻 قاعة Meet</button>
+                    </div>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                        <span style="color: var(--gold-light); font-weight: 700; font-size: 14px;">لقاء فبراير: صالون التراث والخط العربي</span>
+                        <span style="color: #94a3b8; font-size: 12px;">الجمعة 5 فبراير 2027</span>
+                    </div>
+                    <p style="font-size: 12.5px; color: var(--text-secondary); margin-bottom: 8px;">أمسية استذكار لوثائق الأجداد وتاريخ العائلة ومواهب الخط والتصوير.</p>
+                    <div style="display: flex; gap: 8px;">
+                        <button type="button" class="btn-google btn-google-cal" style="padding: 5px 10px; font-size: 11.5px;" onclick="addToGoogleCalendar('monthly')">📅 أضف للتقويم</button>
+                        <button type="button" class="btn-google btn-google-meet" style="padding: 5px 10px; font-size: 11.5px;" onclick="joinGoogleMeet('monthly')">💻 قاعة Meet</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div style="margin-top: 16px; text-align: left;">
+                <button type="button" class="btn-secondary" style="padding: 9px 18px;" onclick="closeMonthlyScheduleModal()">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. نافذة برنامج احتفال العيد السنوي لآل علام -->
+    <div id="eid-program-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 580px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">🎉</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; color: var(--gold-light);">البرنامج الزمني لاحتفال العيد السنوي لآل علام</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted);">قاعة مناسبات آل علام الكبرى — الرياض</div>
+                    </div>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeEidProgramModal()">&times;</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px;">
+                <div style="display: flex; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <span style="font-weight: 700; color: var(--gold-light); min-width: 65px; font-size: 13px;">08:30 ص</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 13.5px; color: #f8fafc;">استقبال المهنئين والقهوة السعودية الأصيلة</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">توافد أبناء وبنات وأحفاد العائلة وبدء المعايدة الأخوية.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <span style="font-weight: 700; color: var(--gold-light); min-width: 65px; font-size: 13px;">09:30 ص</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 13.5px; color: #f8fafc;">كلمة رئيس المجلس ومعايدة كبار العائلة</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">كلمات الأعمام الأجلاء وتبادل التهاني والدعاء بالبركة للأجيال.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <span style="font-weight: 700; color: var(--gold-light); min-width: 65px; font-size: 13px;">10:15 ص</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 13.5px; color: #f8fafc;">فعاليات الأطفال وتوزيع العيديات والهدايا</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">مسابقات ترفيهية خفيفة، هدايا تذكارية، وعيديات الأحفاد.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <span style="font-weight: 700; color: var(--gold-light); min-width: 65px; font-size: 13px;">11:30 ص</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 13.5px; color: #f8fafc;">تكريم المتميزين والمتفوقين دراسياً ومهنياً</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">الاحتفاء بحفظة كتاب الله وأصحاب الإنجازات والدرجات العلمية.</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 14px; background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 12px 14px;">
+                    <span style="font-weight: 700; color: var(--gold-light); min-width: 65px; font-size: 13px;">12:30 م</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 13.5px; color: #f8fafc;">مأدبة الغداء الكبرى وصورة العائلة السنوية</div>
+                        <div style="font-size: 12px; color: var(--text-muted);">وليمة العيد المباركة والتقاط الصورة التذكارية المجمعة.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-google btn-google-cal" style="flex: 1; justify-content: center;" onclick="addToGoogleCalendar('eid')">
+                    <span>📅 حفظ الموعد في تقويم Google</span>
+                </button>
+                <button type="button" class="btn-google btn-google-map" style="flex: 1; justify-content: center;" onclick="openVenueMap()">
+                    <span>📍 الملاحة لمقر القاعة</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 7. نافذة المساهمة في صندوق عائلة آل علام -->
+    <div id="fund-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 580px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">💳</span>
+                    <div>
+                        <div style="font-weight: 700; font-size: 16px; color: var(--gold-light);">صندوق عائلة آل علام التكافلي والوقفي</div>
+                        <div style="font-size: 11.5px; color: var(--text-muted);">عطاء مستمر، تكافل اجتماعي، ورعاية للمتفوقين</div>
+                    </div>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeFundModal()">&times;</button>
+            </div>
+
+            <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
+                تُودع اشتراكات الصندوق في حساب مصرفي معتمد بإشراف أمين الصندوق ولجنة الرقابة المالية، وتُخصص للصرف على أبواب البر والتكافل ودعم فعاليات العائلة:
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
+                
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">الباقة الأساسية</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">100 ر.س / شهرياً</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">سهم البركة والمشاركة التكافلية العامة</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة البركة (100 ر.س شهرياً)')">
+                        <span>📲 اشتراك عبر WhatsApp</span>
+                    </button>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">باقة التكافل</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">300 ر.س / شهرياً</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">دعم الحالات الطارئة وجوائز التفوق</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة التكافل (300 ر.س شهرياً)')">
+                        <span>📲 اشتراك عبر WhatsApp</span>
+                    </button>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
+                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">باقة الريادة</div>
+                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">500+ ر.س / شهرياً</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">تمويل برامج اللقاءات الكبرى والأنشطة</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة الريادة (500+ ر.س شهرياً)')">
+                        <span>📲 اشتراك عبر WhatsApp</span>
+                    </button>
+                </div>
+
+                <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 14px; text-align: center;">
+                    <div style="font-size: 12px; color: #6ee7b7; margin-bottom: 4px;">سهم الوقف العائلي</div>
+                    <div style="font-size: 18px; font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">مساهمة مفتوحة</div>
+                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">صدقة جارية وأصول وقفية لا تنقطع</div>
+                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center; border-color: rgba(16, 185, 129, 0.4);" onclick="sendFundInquiry('سهم الوقف العائلي السنوي (مساهمة مفتوحة)')">
+                        <span>💬 تواصل مع أمين الصندوق</span>
+                    </button>
+                </div>
+
+            </div>
+
+            <div style="text-align: center; font-size: 11.5px; color: #94a3b8;">
+                🔒 تقارير مالية دورية سنوية شفافة تُعرض في الجمعية العمومية للمجلس
+            </div>
+        </div>
+    </div>
+
+    <!-- 8. نافذة قارئ المقالات الكاملة (Article Reader Modal) -->
+    <div id="article-reader-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 650px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <h3 id="reader-title" style="font-family: var(--font-serif); font-size: 18px; color: var(--gold-light); margin: 0;"></h3>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeArticleReader()">&times;</button>
+            </div>
+            <div id="reader-meta" style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px;"></div>
+            <div id="reader-body" style="font-size: 14px; color: #e2e8f0; line-height: 1.85; max-height: 60vh; overflow-y: auto; padding-left: 8px;"></div>
+            <div style="margin-top: 18px; text-align: left; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 12px;">
+                <button type="button" class="btn-secondary" style="padding: 8px 18px;" onclick="closeArticleReader()">إغلاق القارئ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 9. نافذة إضافة ونشر مقال جديد (Article Editor Modal) -->
+    <div id="article-editor-modal" class="auth-modal-overlay" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 600px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 24px;">✍️</span>
+                    <span style="font-weight: 700; font-size: 16px; color: var(--gold-light);">نشر كتابة أو مقال جديد بركن العائلة</span>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 26px; cursor: pointer; color: #94a3b8; line-height: 1;" onclick="closeArticleModal()">&times;</button>
+            </div>
+
+            <form id="new-article-form" onsubmit="submitNewArticle(event)">
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">عنوان المقال أو الخاطرة <span class="req">*</span></label>
+                        <input type="text" id="new-art-title" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;" placeholder="مثال: من وثائق وتاريخ الأجداد" required>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div>
+                            <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">اسم الكاتب <span class="req">*</span></label>
+                            <input type="text" id="new-art-author" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;" placeholder="الاسم الكريم" required>
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">التصنيف</label>
+                            <select id="new-art-cat" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc;">
+                                <option value="تاريخ وتراث عائلي">تاريخ وتراث عائلي</option>
+                                <option value="ريادة وإلهام مهني">ريادة وإلهام مهني</option>
+                                <option value="خواطر وتجارب">خواطر وتجارب</option>
+                                <option value="تكافل واجتماعيات">تكافل واجتماعيات</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="form-label" style="font-size: 12.5px; margin-bottom: 4px; display: block;">نص المقال أو الخاطرة <span class="req">*</span></label>
+                        <textarea id="new-art-content" rows="6" class="form-control" style="background: #0c1427; border: 1px solid rgba(212, 175, 55, 0.35); color: #f8fafc; resize: vertical;" placeholder="اكتب نص المقال هنا..." required></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="submit" class="btn-primary" style="flex: 1; justify-content: center; padding: 12px;">
+                            <span>نشر المقال وتوثيقه سحابياً</span>
+                        </button>
+                        <button type="button" class="btn-secondary" style="padding: 12px 18px;" onclick="closeArticleModal()">إلغاء</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- معالج الإغلاق الشامل عند النقر خارج أي نافذة منبثقة -->
+    <script>
+        window.addEventListener('click', function(e) {
+            if (e.target && e.target.classList && e.target.classList.contains('auth-modal-overlay')) {
+                e.target.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>

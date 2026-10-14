@@ -201,6 +201,75 @@ window.saveRegistrationToGoogleCloud = async function(memberData) {
     }
 };
 
+// حفظ تأكيد حضور اللقاءات في Google Firestore
+window.saveRsvpToGoogleCloud = async function(rsvpData) {
+    try {
+        const collRef = collection(db, 'meeting_rsvps');
+        const docRef = await addDoc(collRef, {
+            ...rsvpData,
+            createdAt: serverTimestamp(),
+            authUid: auth.currentUser ? auth.currentUser.uid : null,
+            authEmail: auth.currentUser ? auth.currentUser.email : null
+        });
+        console.log('RSVP saved to Google Firestore with ID:', docRef.id);
+        return { ok: true, id: docRef.id };
+    } catch (err) {
+        console.warn('Notice: Firestore RSVP save skipped:', err);
+        return { ok: false, error: err };
+    }
+};
+
+// حفظ مقترح جديد في Google Firestore
+window.saveIdeaToGoogleCloud = async function(ideaData) {
+    try {
+        const collRef = collection(db, 'family_ideas');
+        const docRef = await addDoc(collRef, {
+            ...ideaData,
+            createdAt: serverTimestamp(),
+            authUid: auth.currentUser ? auth.currentUser.uid : null,
+            authEmail: auth.currentUser ? auth.currentUser.email : null
+        });
+        console.log('Idea saved to Google Firestore with ID:', docRef.id);
+        return { ok: true, id: docRef.id };
+    } catch (err) {
+        console.warn('Notice: Firestore idea save skipped:', err);
+        return { ok: false, error: err };
+    }
+};
+
+// حفظ مقال أو خاطرة جديدة في Google Firestore
+window.saveArticleToGoogleCloud = async function(articleData) {
+    try {
+        const collRef = collection(db, 'family_articles');
+        const docRef = await addDoc(collRef, {
+            ...articleData,
+            createdAt: serverTimestamp(),
+            authUid: auth.currentUser ? auth.currentUser.uid : null,
+            authEmail: auth.currentUser ? auth.currentUser.email : null
+        });
+        console.log('Article saved to Google Firestore with ID:', docRef.id);
+        return { ok: true, id: docRef.id };
+    } catch (err) {
+        console.warn('Notice: Firestore article save skipped:', err);
+        return { ok: false, error: err };
+    }
+};
+
+// إدارة رابط Google Meet النشط
+window.getActiveMeetUrl = function() {
+    return localStorage.getItem('allam_active_meet_url') || 'https://meet.google.com/new';
+};
+
+window.setActiveMeetUrl = function(url) {
+    if (!url || !url.trim()) return false;
+    let cleanUrl = url.trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+        cleanUrl = 'https://' + cleanUrl;
+    }
+    localStorage.setItem('allam_active_meet_url', cleanUrl);
+    return cleanUrl;
+};
+
 // مراقبة حالة جلسة Google عند فتح الصفحة
 onAuthStateChanged(auth, user => {
     if (user) {
@@ -227,3 +296,4 @@ getRedirectResult(auth).then(result => {
 }).catch(err => {
     console.warn('Google Redirect Result Notice:', err);
 });
+
