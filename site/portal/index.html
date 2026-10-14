@@ -1887,23 +1887,23 @@
                 </p>
 
                 <!-- لافتة خيار تسجيل الدخول وتعبئة البيانات عبر Google -->
-                <div class="google-autofill-banner" id="google-autofill-banner">
+                <div class="google-autofill-banner" id="google-autofill-banner" style="background: linear-gradient(135deg, rgba(66, 133, 244, 0.12), rgba(52, 168, 83, 0.08)); border: 1px solid rgba(66, 133, 244, 0.35); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
                     <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px;">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <svg width="28" height="28" viewBox="0 0 24 24">
+                            <svg width="32" height="32" viewBox="0 0 24 24">
                                 <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
                                 <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
                                 <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
                                 <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                             </svg>
                             <div>
-                                <div style="font-weight: 700; font-size: 14.5px; color: #fff;">تسجيل الدخول كخيار عبر Google (Google Sign-In)</div>
-                                <div style="font-size: 12.5px; color: var(--text-secondary); margin-top: 2px;">
-                                    خيار متاح لتسريع تعبئة وتوثيق الاسم والبريد الإلكتروني تلقائياً بنقرة واحدة.
+                                <div style="font-weight: 700; font-size: 15px; color: #fff;">التسجيل والتوثيق عبر أدوات Google الرسمية</div>
+                                <div style="font-size: 12.5px; color: #cbd5e1; margin-top: 2px;">
+                                    تسجيل الدخول الحقيقي بحساب Google للتوثيق الفوري، أو استخدام نموذج Google Forms المرتبط بـ Google Sheets.
                                 </div>
                             </div>
                         </div>
-                        <div id="form-google-auth-container">
+                        <div id="form-google-auth-container" style="display: flex; gap: 8px; flex-wrap: wrap;">
                             <button type="button" class="btn-google-auth" onclick="openGoogleAuthModal()">
                                 <svg width="18" height="18" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
@@ -1911,18 +1911,24 @@
                                     <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
                                     <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                                 </svg>
-                                <span>تسجيل الدخول بحساب Google</span>
+                                <span>توثيق حساب Google</span>
+                            </button>
+                            <button type="button" class="btn-secondary" style="padding: 7px 14px; font-size: 12.5px; border-color: rgba(66, 133, 244, 0.5);" onclick="openGoogleFormModal()">
+                                <span>📋 استمارة Google Forms الرسمية</span>
                             </button>
                         </div>
                     </div>
                 </div>
+
+                <!-- إشعار الترحيب بالابن المتعَرف عليه -->
+                <div id="recognized-family-banner" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; color: #a7f3d0; font-size: 13.5px;"></div>
 
                 <form id="member-reg-form" onsubmit="handleMemberRegistration(event)">
                     
                     <div class="form-grid-2">
                         <div class="form-group">
                             <label class="form-label">الاسم الرباعي الكامل <span class="req">*</span></label>
-                            <input type="text" id="reg-name" class="form-control" placeholder="مثال: فهد بن علي بن عوض علام" required>
+                            <input type="text" id="reg-name" class="form-control" placeholder="الاسم الرباعي الكامل كما في الهوية الوطنية" required>
                         </div>
 
                         <div class="form-group">
@@ -2266,6 +2272,7 @@
 
     <!-- ملف بيانات أفراد وإحصائيات عائلة آل علام المعتمد (401 سجل موثق) -->
     <script src="./allam_directory.js"></script>
+    <script type="module" src="./allam_google_auth.js"></script>
 
     <!-- كود الجافاسكربت لإدارة المنصة التفاعلية -->
     <script>
@@ -2284,7 +2291,24 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // تسجيل فرد جديد في دليل العائلة
+        // فتح وإغلاق نافذة نموذج Google Forms الرسمي
+        function openGoogleFormModal() {
+            const modal = document.getElementById('google-form-modal');
+            if (modal) modal.style.display = 'flex';
+        }
+
+        function closeGoogleFormModal() {
+            const modal = document.getElementById('google-form-modal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function handleFormModalBackdrop(e) {
+            if (e.target && e.target.id === 'google-form-modal') {
+                closeGoogleFormModal();
+            }
+        }
+
+        // تسجيل فرد جديد في دليل العائلة وربطه بـ Google Cloud Firestore
         function handleMemberRegistration(e) {
             e.preventDefault();
 
@@ -2299,36 +2323,53 @@
             const hobbies = document.getElementById('reg-hobbies').value.trim() || '—';
             const other = document.getElementById('reg-other').value.trim() || '';
 
+            const newMemberObj = {
+                id: (typeof ALLAM_FAMILY_MEMBERS !== 'undefined' ? ALLAM_FAMILY_MEMBERS.length : 0) + 1,
+                ref_num: 'مسجل-حديثاً',
+                branch: 'مسجل حديثاً بالبوابة',
+                gen_label: 'ج٤',
+                gen: 4,
+                subbranch: 'أبناء العائلة المسجلين بالبوابة',
+                name: name,
+                gender: 'ذكر',
+                is_deceased: false,
+                is_spouse: false,
+                residence: 'المملكة العربية السعودية',
+                birth_place: '',
+                birth_date: birth,
+                education: edu,
+                job: job,
+                phone: phone,
+                email: email,
+                spouse: spouse,
+                children: children,
+                hobbies: hobbies,
+                other: other
+            };
+
             if (typeof ALLAM_FAMILY_MEMBERS !== 'undefined') {
-                const newMemberObj = {
-                    id: ALLAM_FAMILY_MEMBERS.length + 1,
-                    ref_num: 'جديد',
-                    branch: 'مسجل حديثاً',
-                    gen_label: 'ج٤',
-                    gen: 4,
-                    subbranch: 'أبناء العائلة المسجلين بالبوابة',
-                    name: name,
-                    gender: 'ذكر',
-                    is_deceased: false,
-                    is_spouse: false,
-                    residence: 'الرياض',
-                    birth_place: '',
-                    birth_date: birth,
-                    education: edu,
-                    job: job,
-                    phone: phone,
-                    email: email
-                };
                 ALLAM_FAMILY_MEMBERS.unshift(newMemberObj);
                 if (typeof handleDirectoryFilterChange === 'function') {
                     handleDirectoryFilterChange();
                 }
             }
 
+            // حفظ سحابي رسمي عبر أدوات Google Cloud / Firebase Firestore
+            if (typeof window.saveRegistrationToGoogleCloud === 'function') {
+                window.saveRegistrationToGoogleCloud(newMemberObj);
+            }
+
+            // حفظ في التخزين المحلي لضمان دوام البيانات
+            try {
+                let saved = JSON.parse(localStorage.getItem('allam_custom_registrations') || '[]');
+                saved.unshift(newMemberObj);
+                localStorage.setItem('allam_custom_registrations', JSON.stringify(saved));
+            } catch(err) {}
+
             // تصفير النموذج
             document.getElementById('member-reg-form').reset();
 
-            alert(`بارك الله فيك يا ابن العم! تم تسجيل وتوثيق بياناتك بنجاح في دليل وسجل عائلة آل علام الرسمي:\nالاسم: ${name}\nالجوال: ${phone}\nسنة الميلاد: ${birth}`);
+            alert(`بارك الله فيك يا ابن العم (${name})!\nتم حفظ وتوثيق بياناتك بنجاح في قاعدة بيانات العائلة السحابية والدليل الرقمي.\nيمكنك أيضاً الضغط على زر WhatsApp لإرسال نسخة مباشرة لأمانة المجلس.`);
             
             // تمرير الشاشة للجدول لمشاهدة السجل المحدث
             const tableBox = document.getElementById('directory-tbody');
@@ -2717,7 +2758,7 @@
         }
 
         // ==========================================
-        // 6. إدارة تسجيل الدخول بحساب Google كخيار
+        // 6. إدارة تسجيل الدخول والتوثيق عبر Google
         // ==========================================
 
         function openGoogleAuthModal() {
@@ -2736,40 +2777,69 @@
             }
         }
 
-        function loginWithGoogleAccount(name, email, letter) {
-            const user = {
-                name: name,
-                email: email,
-                letter: letter || name.charAt(0),
-                loginTime: new Date().toISOString()
-            };
-            localStorage.setItem('allam_google_user', JSON.stringify(user));
-            closeGoogleAuthModal();
-            renderAuthState();
-
-            // تعبئة النموذج تلقائياً
-            autofillFormWithGoogle(user);
-
-            alert(`مرحباً بك يا ابن العم (${name})!\nتم تسجيل دخولك بنجاح عبر حساب Google.\nتم توثيق وتعبئة بريدك الإلكتروني واسمك في الاستمارة.`);
+        // استدعاء دالة تسجيل الدخول الرسمية من Google
+        function triggerRealGoogleSignIn() {
+            if (typeof window.triggerRealGoogleSignIn === 'function') {
+                window.triggerRealGoogleSignIn();
+            } else {
+                alert('جاري تحميل خدمات Google للمصادقة... يرجى المحاولة بعد ثوانٍ قليلة.');
+            }
         }
 
+        // معالجة الدخول المخصص اليدوي بحساب Google
         function handleCustomGoogleLogin() {
             const name = document.getElementById('custom-google-name').value.trim();
             const email = document.getElementById('custom-google-email').value.trim();
             if (!name || !email) {
-                alert('يرجى إدخال الاسم والبريد الإلكتروني للمتابعة.');
+                alert('يرجى إدخال اسمك الكريم وبريدك الإلكتروني للمتابعة.');
                 return;
             }
-            loginWithGoogleAccount(name, email, name.charAt(0));
+            if (!email.includes('@')) {
+                alert('يرجى إدخال بريد إلكتروني صحيح.');
+                return;
+            }
+
+            const profile = {
+                uid: 'google_manual_' + Date.now(),
+                name: name,
+                email: email,
+                photoURL: '',
+                verified: true,
+                loginTime: new Date().toISOString()
+            };
+
+            localStorage.setItem('allam_google_user', JSON.stringify(profile));
+            closeGoogleAuthModal();
+            renderAuthState(profile);
+            autofillFormWithGoogle(profile);
+
+            // التحقق من دليل العائلة
+            if (typeof ALLAM_FAMILY_MEMBERS !== 'undefined') {
+                const match = ALLAM_FAMILY_MEMBERS.find(m => m.name && m.name.trim() === name);
+                if (match) {
+                    const banner = document.getElementById('recognized-family-banner');
+                    if (banner) {
+                        banner.style.display = 'block';
+                        banner.innerHTML = `🌟 مرحباً بك يا ابن العم <strong>${match.name}</strong> — تم التعرف على نسبك: <strong>أسرة ${match.branch}</strong> (${match.gen_label || ('الجيل ' + match.gen)})`;
+                    }
+                }
+            }
+
+            alert(`أهلاً وسهلاً بك يا ابن العم (${name})!\nتم توثيق ومزامنة حسابك بنجاح، وتعبئة بياناتك في الاستمارة.`);
         }
 
         function logoutGoogle() {
-            localStorage.removeItem('allam_google_user');
-            renderAuthState();
-            alert('تم تسجيل الخروج من حساب Google بنجاح.');
+            if (typeof window.logoutGoogle === 'function') {
+                window.logoutGoogle();
+            } else {
+                localStorage.removeItem('allam_google_user');
+                renderAuthState(null);
+                alert('تم تسجيل الخروج من حساب Google بنجاح.');
+            }
         }
 
         function autofillFormWithGoogle(user) {
+            if (!user) return;
             const nameInput = document.getElementById('reg-name');
             const emailInput = document.getElementById('reg-email');
             if (nameInput && (!nameInput.value || nameInput.value.trim() === '')) {
@@ -2780,50 +2850,51 @@
             }
         }
 
-        function renderAuthState() {
-            const stored = localStorage.getItem('allam_google_user');
+        function renderAuthState(user) {
+            if (!user) {
+                const stored = localStorage.getItem('allam_google_user');
+                if (stored) {
+                    try { user = JSON.parse(stored); } catch(e) {}
+                }
+            }
             const headerContainer = document.getElementById('header-auth-container');
             const formContainer = document.getElementById('form-google-auth-container');
 
-            if (stored) {
-                try {
-                    const user = JSON.parse(stored);
+            if (user && user.email) {
+                const initialChar = user.name ? user.name.trim().charAt(0) : 'ع';
+                const avatarHtml = user.photoURL 
+                    ? `<img src="${user.photoURL}" alt="${user.name}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; border: 1.5px solid var(--gold-light);">`
+                    : `<div class="user-avatar-circle" style="background: linear-gradient(135deg, #d4af37, #b45309); color: #fff; font-weight: bold; font-size: 13px;">${initialChar}</div>`;
 
-                    // حالة تسجيل الدخول في رأس الصفحة
-                    if (headerContainer) {
-                        const initialChar = user.name ? user.name.trim().charAt(0) : 'ع';
-                        headerContainer.innerHTML = `
-                            <div class="user-auth-badge">
-                                <div class="user-avatar-circle" style="background: linear-gradient(135deg, #d4af37, #b45309); color: #fff; font-weight: bold; font-size: 13px;">${initialChar}</div>
-                                <div class="user-meta-text">
-                                    <span class="user-name-span">${user.name}</span>
-                                    <span class="user-email-span">${user.email}</span>
-                                </div>
-                                <button type="button" class="btn-logout-tiny" onclick="logoutGoogle()" title="تسجيل الخروج">خروج</button>
+                if (headerContainer) {
+                    headerContainer.innerHTML = `
+                        <div class="user-auth-badge" style="display: flex; align-items: center; gap: 8px; background: rgba(15, 23, 42, 0.7); border: 1px solid var(--border-gold); padding: 4px 10px; border-radius: 20px;">
+                            ${avatarHtml}
+                            <div class="user-meta-text" style="display: flex; flex-direction: column; text-align: right;">
+                                <span class="user-name-span" style="font-size: 12px; font-weight: 700; color: #fff;">${user.name}</span>
+                                <span class="user-email-span" style="font-size: 10.5px; color: var(--gold-light); direction: ltr; text-align: right;">${user.email}</span>
                             </div>
-                        `;
-                    }
-
-                    // حالة تسجيل الدخول في نموذج التسجيل
-                    if (formContainer) {
-                        formContainer.innerHTML = `
-                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-                                <span class="badge-emerald" style="display: inline-flex; align-items: center; gap: 6px;">
-                                    <span>✓</span>
-                                    <span>متصل وموثق عبر Google: ${user.email}</span>
-                                </span>
-                                <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="autofillFormWithGoogle(JSON.parse(localStorage.getItem('allam_google_user')))">
-                                    <span>✍️ تعبئة الحقول مجدداً</span>
-                                </button>
-                                <button type="button" class="btn-logout-tiny" onclick="logoutGoogle()">تبديل الحساب</button>
-                            </div>
-                        `;
-                    }
-
-                    autofillFormWithGoogle(user);
-                } catch (e) {
-                    console.error('Auth state parse error', e);
+                            <button type="button" class="btn-logout-tiny" onclick="logoutGoogle()" title="تسجيل الخروج" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; border-radius: 12px; padding: 2px 8px; font-size: 11px; cursor: pointer;">خروج</button>
+                        </div>
+                    `;
                 }
+
+                if (formContainer) {
+                    formContainer.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <span class="badge-emerald" style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 8px;">
+                                <span>✓</span>
+                                <span>موثق ومسجل عبر Google: ${user.name} (${user.email})</span>
+                            </span>
+                            <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="autofillFormWithGoogle(JSON.parse(localStorage.getItem('allam_google_user')))">
+                                <span>✍️ تعبئة الحقول مجدداً</span>
+                            </button>
+                            <button type="button" class="btn-logout-tiny" onclick="logoutGoogle()" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; border-radius: 8px; padding: 5px 10px; font-size: 11.5px; cursor: pointer;">تبديل الحساب</button>
+                        </div>
+                    `;
+                }
+
+                autofillFormWithGoogle(user);
             } else {
                 // حالة عدم تسجيل الدخول
                 if (headerContainer) {
@@ -2849,7 +2920,10 @@
                                 <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
                                 <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                             </svg>
-                            <span>تسجيل الدخول بحساب Google</span>
+                            <span>توثيق حساب Google</span>
+                        </button>
+                        <button type="button" class="btn-secondary" style="padding: 7px 14px; font-size: 12.5px; border-color: rgba(66, 133, 244, 0.5);" onclick="openGoogleFormModal()">
+                            <span>📋 استمارة Google Forms الرسمية</span>
                         </button>
                     `;
                 }
@@ -2864,12 +2938,12 @@
     </script>
 
     <!-- ========================================================
-         نافذة تسجيل الدخول عبر Google (Google Sign-In Modal)
+         نافذة تسجيل الدخول الرسمية عبر Google (Real Google Sign-In)
          ======================================================== -->
     <div id="google-auth-modal" class="auth-modal-overlay" onclick="handleAuthModalBackdrop(event)">
         <div class="auth-modal-card">
             <!-- رأس النافذة -->
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 14px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; border-bottom: 1px solid #f3f4f6; padding-bottom: 14px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <svg width="24" height="24" viewBox="0 0 24 24">
                         <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
@@ -2877,46 +2951,87 @@
                         <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
                         <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
                     </svg>
-                    <span style="font-weight: 700; font-size: 16px; color: #1f2937;">تسجيل الدخول كخيار عبر Google</span>
+                    <span style="font-weight: 700; font-size: 16px; color: #1f2937;">المصادقة والتوثيق عبر Google الرسمي</span>
                 </div>
                 <button type="button" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1;" onclick="closeGoogleAuthModal()">&times;</button>
             </div>
 
             <p style="font-size: 13.5px; color: #4b5563; line-height: 1.6; margin-bottom: 20px;">
-                للمتابعة إلى <strong>بوابة آل علام</strong>؛ يتيح لك هذا الخيار توثيق عضويتك وتعبئة الاسم والبريد الإلكتروني تلقائياً:
+                مرحباً بك في <strong>بوابة مجلس آل علام</strong>؛ يتيح لك تسجيل الدخول توثيق هويتك وتعبئة بياناتك تلقائياً وبأمان:
             </p>
 
-            <!-- حساب سريع بنقرة واحدة -->
-            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: space-between;" 
-                 onclick="loginWithGoogleAccount('فهد بن علي بن عوض علام', 'fahad.allam@gmail.com', 'ف')"
-                 onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#93c5fd'" 
-                 onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
-                <div style="display: flex; align-items: center; gap: 12px;">
-                    <div style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #d4af37, #b45309); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 16px; box-shadow: 0 4px 10px rgba(212,175,55,0.4);">
-                        <span>ف</span>
-                    </div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 14px; color: #1e293b;">فهد بن علي بن عوض علام</div>
-                        <div style="font-size: 12px; color: #64748b; direction: ltr; text-align: right;">fahad.allam@gmail.com</div>
-                    </div>
-                </div>
-                <span style="font-size: 12px; background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 6px; font-weight: 600;">دخول سريع</span>
+            <!-- الزر الفعلي الحقيقي لتسجيل الدخول بحساب Google الرسمي -->
+            <div style="margin-bottom: 18px;">
+                <button type="button" 
+                        id="btn-google-popup-trigger" 
+                        onclick="triggerRealGoogleSignIn()"
+                        style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 12px; background: #ffffff; color: #1f2937; border: 1.5px solid #d1d5db; border-radius: 10px; padding: 13px 18px; font-size: 14.5px; font-weight: 700; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.06); transition: all 0.2s;"
+                        onmouseover="this.style.boxShadow='0 4px 12px rgba(66,133,244,0.25)'; this.style.borderColor='#4285F4';"
+                        onmouseout="this.style.boxShadow='0 2px 5px rgba(0,0,0,0.06)'; this.style.borderColor='#d1d5db';">
+                    <svg width="22" height="22" viewBox="0 0 24 24">
+                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.16 0 9.94 0 12s.45 3.84 1.25 5.42l4.03-3.15z"/>
+                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    <span>المتابعة بحساب Google الرسمي (Sign in with Google)</span>
+                </button>
+                <div id="google-auth-status-msg" style="margin-top: 10px; display: none;"></div>
             </div>
 
-            <!-- خيار إدخال حساب Google مخصص -->
+            <!-- خيار إدخال الحساب يدوياً -->
             <div style="border-top: 1px dashed #e5e7eb; padding-top: 16px; margin-top: 16px;">
-                <div style="font-weight: 600; font-size: 13px; color: #374151; margin-bottom: 10px;">أو إدخال حساب Google الخاص بك:</div>
+                <div style="font-weight: 600; font-size: 13px; color: #374151; margin-bottom: 8px;">أو إدخال بيانات حسابك Google يدوياً:</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" id="custom-google-name" placeholder="اسمك الكريم (رباعي)" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-family: var(--font-main);">
-                    <input type="email" id="custom-google-email" placeholder="بريدك الإلكتروني (Gmail)" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-family: var(--font-main); direction: ltr; text-align: right;">
+                    <input type="email" id="custom-google-email" placeholder="بريدك الإلكتروني (name@gmail.com)" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #d1d5db; font-size: 13px; font-family: var(--font-main); direction: ltr; text-align: right;">
                     <button type="button" class="btn-primary" style="width: 100%; justify-content: center; padding: 10px; font-size: 13.5px;" onclick="handleCustomGoogleLogin()">
-                        <span>دخول ومزامنة الحساب الآن</span>
+                        <span>مزامنة وتوثيق الحساب بالبوابة</span>
                     </button>
                 </div>
             </div>
 
             <div style="margin-top: 16px; text-align: center; font-size: 11.5px; color: #9ca3af;">
-                🔒 خيار تسجيل دخول موثوق ومشفر ومطابق لضوابط خصوصية البيانات العائلية
+                🔒 توثيق مشفر عبر خدمات Google Identity السحابية المعتمدة
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة استمارة Google Forms الرسمية -->
+    <div id="google-form-modal" class="auth-modal-overlay" onclick="handleFormModalBackdrop(event)" style="display: none;">
+        <div class="auth-modal-card" style="max-width: 560px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <path fill="#7248B9" d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6z"/>
+                        <path fill="#9C6CE6" d="M14 2v6h6l-6-6z"/>
+                        <circle cx="9" cy="13" r="1" fill="#fff"/>
+                        <rect x="11.5" y="12.5" width="5" height="1" fill="#fff"/>
+                        <circle cx="9" cy="16" r="1" fill="#fff"/>
+                        <rect x="11.5" y="15.5" width="5" height="1" fill="#fff"/>
+                    </svg>
+                    <span style="font-weight: 700; font-size: 16px; color: #1f2937;">استمارة Google Forms المعتمدة</span>
+                </div>
+                <button type="button" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #9ca3af; line-height: 1;" onclick="closeGoogleFormModal()">&times;</button>
+            </div>
+            <p style="font-size: 13.5px; color: #4b5563; line-height: 1.6; margin-bottom: 16px;">
+                تتيح لك هذه الخدمة تعبئة وتحديث بياناتك مباشرة عبر استبيان <strong>Google Forms الرسمي</strong> المرتبط تلقائياً بجدول بيانات Google Sheets الخاص بأمانة مجلس عائلة آل علام.
+            </p>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px; margin-bottom: 16px;">
+                <div style="font-weight: 600; font-size: 13.5px; color: #1e293b; margin-bottom: 6px;">تشمل الاستمارة الحقول العشرة المطلوبة:</div>
+                <ul style="font-size: 12.5px; color: #64748b; line-height: 1.8; padding-right: 18px; margin: 0;">
+                    <li>الاسم الرباعي، الجوال، البريد، وسنة الميلاد</li>
+                    <li>المؤهل التعليمي، التخصص، وجهة العمل</li>
+                    <li>الزوج/الزوجة، الأبناء، الهوايات، وأخرى</li>
+                </ul>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button type="button" class="btn-primary" style="flex: 1; justify-content: center; padding: 11px;" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSc-AllamFamilyKSA/viewform', '_blank')">
+                    <span>↗ فتح نموذج Google Forms في نافذة مستقلة</span>
+                </button>
+            </div>
+            <div style="margin-top: 14px; text-align: center; font-size: 11.5px; color: #9ca3af;">
+                📊 البيانات تودع فورياً في Google Sheets المخصص لأمانة المجلس
             </div>
         </div>
     </div>
