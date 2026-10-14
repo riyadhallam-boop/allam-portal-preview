@@ -61,7 +61,7 @@ window.triggerRealGoogleSignIn = async function() {
 
         if (statusEl) {
             statusEl.innerHTML = `
-                <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 10px; color: #065f46; font-size: 13px; text-align: center;">
+                <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.45); border-radius: 10px; padding: 12px; color: #6ee7b7; font-size: 13px; text-align: center;">
                     ✓ تم تسجيل الدخول وتوثيق الحساب بنجاح:<br>
                     <strong>${user.displayName || user.email}</strong>
                 </div>
@@ -81,7 +81,7 @@ window.triggerRealGoogleSignIn = async function() {
         if (error.code === 'auth/popup-blocked') {
             if (statusEl) {
                 statusEl.innerHTML = `
-                    <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 8px; padding: 12px; color: #9a3412; font-size: 12.5px; text-align: right; line-height: 1.6;">
+                    <div style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); border-radius: 10px; padding: 12px; color: #fcd34d; font-size: 12.5px; text-align: right; line-height: 1.6;">
                         ⚠️ <strong>تم حجب النافذة المنبثقة من متصفحك:</strong><br>
                         يرجى السماح بالنوافذ المنبثقة أو الضغط أدناه للتحويل المباشر:<br>
                         <button type="button" class="btn-primary" style="margin-top: 8px; padding: 6px 14px; font-size: 12px;" onclick="window.triggerGoogleRedirect()">
@@ -93,17 +93,21 @@ window.triggerRealGoogleSignIn = async function() {
         } else if (error.code === 'auth/unauthorized-domain') {
             if (statusEl) {
                 statusEl.innerHTML = `
-                    <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; color: #92400e; font-size: 12px; text-align: right; line-height: 1.6;">
-                        <strong>ملاحظة نطاق المعاينة التجريبي:</strong><br>
-                        نطاق المعاينة الحالي (<code>${window.location.hostname}</code>) يتطلب إذناً في لوحة تحكم Google Firebase.<br>
-                        يمكنك المتابعة الفورية بإدخال اسمك وبريدك أدناه وسيتم حفظ بياناتك وتوثيقها بالبوابة فوراً.
+                    <div style="background: rgba(212, 175, 55, 0.12); border: 1px solid rgba(212, 175, 55, 0.45); border-radius: 10px; padding: 14px; color: #f5d77f; font-size: 12.5px; text-align: right; line-height: 1.7;">
+                        <div style="font-weight: 700; font-size: 13px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; color: var(--gold-light);">
+                            <span>ℹ️</span> <span>التوثيق الفوري للبوابة:</span>
+                        </div>
+                        نطاق المعاينة المجاني (<code>${window.location.hostname}</code>) مؤمن حالياً بحماية جوجل السحابية.<br>
+                        <strong>للمتابعة الفورية والتسجيل:</strong> اكتب اسمك الكريم وبريدك في الخانات أدناه واضغط «مزامنة وتوثيق الحساب»، وسيتم حفظ بياناتك والتعرف على فرع أسرتك فوراً وبأمان كامل.
                     </div>
                 `;
+                const nameInput = document.getElementById('custom-google-name');
+                if (nameInput) nameInput.focus();
             }
         } else if (error.code === 'auth/popup-closed-by-user') {
             if (statusEl) {
                 statusEl.innerHTML = `
-                    <div style="color: #64748b; font-size: 12px; padding: 6px; text-align: center;">
+                    <div style="color: #94a3b8; font-size: 12px; padding: 8px; text-align: center;">
                         تم إغلاق نافذة تسجيل الدخول دون إكمال الإجراء.
                     </div>
                 `;
@@ -111,8 +115,8 @@ window.triggerRealGoogleSignIn = async function() {
         } else {
             if (statusEl) {
                 statusEl.innerHTML = `
-                    <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px; color: #991b1b; font-size: 12px; text-align: center;">
-                        تعذر الدخول (${error.message || error.code}).
+                    <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 10px; padding: 10px; color: #fca5a5; font-size: 12px; text-align: center;">
+                        تعذر الدخول التلقائي (${error.message || error.code}) — يمكنك إدخال الاسم والإيميل أدناه للمتابعة الفورية.
                     </div>
                 `;
             }
