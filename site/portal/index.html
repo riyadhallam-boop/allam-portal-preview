@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>بوابة ومجلس عائلة آل علام بالمملكة العربية السعودية</title>
     
     <!-- الخطوط العربية الفاخرة المعتمدة -->
@@ -1231,7 +1231,7 @@
         }
 
         @media (max-width: 768px) {
-            /* 1. الشريط الشرفي بأعلى الصفحة */
+            /* 1. الشريط الشرفي الملكي بأعلى الصفحة */
             .council-top-banner {
                 padding: 6px 10px;
                 font-size: 11px;
@@ -1239,12 +1239,13 @@
                 gap: 2px;
                 line-height: 1.4;
                 text-align: center;
+                background: linear-gradient(180deg, #18150c 0%, #0d1322 100%);
             }
             .council-top-banner span:nth-child(3) {
-                display: none;
+                display: none; /* إخفاء النقطة الفاصلة بالجوال */
             }
 
-            /* 2. شريط التنقل العلوي وتفادي أي تداخل أفقي */
+            /* 2. شريط التنقل العلوي المدمج الخالي من أي تداخل */
             .top-navbar {
                 padding: 8px 12px;
                 gap: 8px;
@@ -1285,11 +1286,11 @@
             .user-auth-badge {
                 padding: 3px 8px;
                 gap: 6px;
-                max-width: 160px;
+                max-width: 155px;
             }
             .user-meta-text .user-name-span {
                 font-size: 11px;
-                max-width: 85px;
+                max-width: 80px;
                 white-space: nowrap;
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -1298,18 +1299,39 @@
                 display: none;
             }
 
-            /* 3. لوحة الترحيب العائلية وبداية الصفحة */
+            /* 3. الحاوية واللوحات والبطاقات الأساسية */
+            .main-container {
+                padding: 12px 10px 110px;
+            }
+            .card-box {
+                padding: 16px 12px;
+                border-radius: var(--radius-md);
+                margin-bottom: 16px;
+            }
+            .card-header-line {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+                margin-bottom: 14px;
+                padding-bottom: 10px;
+            }
+            .card-title {
+                font-size: 16px;
+                line-height: 1.35;
+            }
+
+            /* 4. لوحة الترحيب العائلية وبداية الصفحة */
             .council-banner {
                 padding: 20px 14px;
-                margin-bottom: 20px;
+                margin-bottom: 18px;
             }
             .council-banner::after {
-                display: none; /* إخفاء العلامة المائية الكبيرة لمنع تداخلها مع النصوص */
+                display: none; /* إخفاء العلامة المائية الكبيرة بالجوال لمنع تداخلها */
             }
             .council-title {
                 font-size: 19px;
                 line-height: 1.35;
-                margin-bottom: 10px;
+                margin-bottom: 8px;
             }
             .council-subtitle {
                 font-size: 13px;
@@ -1324,16 +1346,10 @@
                 font-size: 13px;
             }
 
-            .main-container {
-                padding: 12px 10px 100px;
-            }
-            .card-box {
-                padding: 16px 12px;
-                border-radius: var(--radius-md);
-                margin-bottom: 16px;
-            }
-            .card-title {
-                font-size: 16px;
+            /* 5. بطاقات كبار المجلس */
+            .leadership-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
             }
             .leader-card {
                 flex-direction: column;
@@ -1351,12 +1367,137 @@
             .elder-card {
                 padding: 14px;
             }
+
+            /* 6. تحويل جدول السجل والدليل (401 فرد) إلى كروت ذكية وسلسة بالجوال */
+            .member-table thead {
+                display: none;
+            }
+            .member-table, .member-table tbody {
+                display: block;
+                width: 100%;
+            }
+            .member-table tr {
+                display: block;
+                background: rgba(15, 23, 42, 0.85);
+                border: 1px solid rgba(212, 175, 55, 0.22);
+                border-radius: var(--radius-md);
+                padding: 14px 12px;
+                margin-bottom: 12px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.35);
+            }
+            .member-table tr:hover {
+                border-color: var(--gold-primary);
+            }
+            .member-table td {
+                display: block;
+                padding: 3px 0 !important;
+                border: none !important;
+                text-align: right;
+            }
+            .member-table td:first-child {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.06) !important;
+                padding-bottom: 6px !important;
+                margin-bottom: 6px;
+            }
+            .member-table td:nth-child(2) {
+                font-size: 15px;
+                font-weight: 700;
+                margin-bottom: 4px;
+            }
+            .member-table td:nth-child(3) {
+                margin-bottom: 6px;
+            }
+            .member-table td:nth-child(4)::before {
+                content: '📍 الإقامة: ';
+                color: var(--text-muted);
+                font-size: 11px;
+            }
+            .member-table td:nth-child(5)::before {
+                content: '💼 العمل: ';
+                color: var(--text-muted);
+                font-size: 11px;
+            }
+            .member-table td:nth-child(6) {
+                display: none;
+            }
+            .member-table td:last-child {
+                margin-top: 8px;
+                padding-top: 8px !important;
+                border-top: 1px dashed rgba(212, 175, 55, 0.2) !important;
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+
+            /* 7. شريط البحث والفلترة في الدليل */
+            .dir-filter-toolbar {
+                padding: 10px;
+                gap: 8px;
+            }
+            #dir-search-input {
+                width: 100% !important;
+                flex: none !important;
+                font-size: 14px !important;
+                padding: 10px 12px !important;
+            }
+            .dir-filter-select {
+                flex: 1 1 calc(50% - 6px);
+                min-width: 120px;
+                padding: 9px 8px;
+                font-size: 12px;
+            }
+            .dir-filter-toolbar .btn-secondary {
+                width: 100%;
+                justify-content: center;
+                padding: 9px;
+                font-size: 12.5px;
+            }
+
+            /* 8. شبكة إحصائيات الفروع (2 عمود بالجوال بدلاً من تكدس عمودي) */
+            .branch-stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .branch-stat-card {
+                padding: 9px 10px;
+            }
+            .branch-card-title {
+                font-size: 12px;
+            }
+            .branch-card-total {
+                font-size: 11px;
+            }
+            .branch-card-sub {
+                font-size: 10px;
+                gap: 4px;
+            }
+
+            /* 9. نموذج التسجيل وحقول الإدخال */
+            .form-grid-2, .form-grid-3 {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
             .form-control {
-                font-size: 16px !important;
+                font-size: 16px !important; /* يمنع تقريب الشاشة التلقائي في آيفون */
                 padding: 11px 12px;
             }
+            form button[type="submit"], 
+            form .btn-whatsapp-action {
+                width: 100% !important;
+                justify-content: center;
+                min-width: unset !important;
+            }
+
+            /* 10. فعاليات ولقاءات العائلة */
             .inaugural-meeting-card {
                 padding: 18px 14px;
+            }
+            .inaugural-meeting-card h3 {
+                font-size: 19px !important;
+                line-height: 1.35;
             }
             .inaugural-meeting-card .btn-primary,
             .inaugural-meeting-card .btn-secondary,
@@ -1366,23 +1507,91 @@
                 padding: 10px 14px;
                 font-size: 13px;
             }
+            .meetings-timeline {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            /* 11. صندوق العائلة والهوايات */
+            .fund-hero h3 {
+                font-size: 20px !important;
+                line-height: 1.4;
+            }
+            .fund-pillars {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .hobbies-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            /* 12. النوافذ المنبثقة الذكية (Modals) */
+            .auth-modal-card {
+                width: 95% !important;
+                max-width: 95% !important;
+                padding: 16px 14px !important;
+                max-height: 85vh !important;
+                border-radius: 14px !important;
+            }
+
+            /* 13. الشريط السفلي المحكم للهواتف الذكية (Mobile Dock) */
             .mobile-bottom-bar {
                 bottom: 8px;
                 width: calc(100% - 16px);
-                padding: 5px 6px;
+                max-width: 460px;
+                padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+                background: rgba(15, 23, 42, 0.96);
+                border: 1px solid var(--border-gold);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9), 0 0 1px var(--gold-primary);
             }
             .mobile-nav-btn {
-                padding: 5px 4px;
-                font-size: 10px;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 2px;
+                padding: 5px 2px;
+                border-radius: var(--radius-full);
+                color: var(--text-muted);
+                background: transparent;
+                border: none;
+                cursor: pointer;
+                transition: all 0.2s ease;
             }
-            .mobile-nav-btn span:first-child {
-                font-size: 16px;
+            .mobile-nav-btn svg {
+                width: 19px;
+                height: 19px;
+                stroke: currentColor;
             }
+            .mobile-nav-btn span {
+                font-size: 10px !important;
+                font-weight: 600;
+                line-height: 1;
+                white-space: nowrap;
+            }
+            .mobile-nav-btn.active {
+                color: var(--gold-light);
+                background: rgba(212, 175, 55, 0.16);
+            }
+            .mobile-nav-btn.active svg {
+                stroke: var(--gold-light);
+                transform: scale(1.08);
+            }
+
+            /* 14. زر الواتساب العائم */
             .floating-whatsapp-btn {
-                bottom: 74px;
+                bottom: calc(74px + env(safe-area-inset-bottom, 0px));
                 right: 14px;
                 width: 48px;
                 height: 48px;
+            }
+
+            /* 15. شاشة سدرة الأجيال 3D بالجوال */
+            .tree-iframe-container {
+                height: 480px !important;
+                max-height: 60vh !important;
             }
         }
     </style>
@@ -2232,18 +2441,21 @@
              ======================================================== -->
         <section id="tab-tree" class="tab-section">
             <div class="card-box" style="padding: 14px; background: #050811; border: 1px solid var(--border-gold);">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 6px 12px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 6px 12px; flex-wrap: wrap; gap: 10px;">
                     <div>
                         <h3 style="font-family: var(--font-serif); font-size: 20px; color: var(--gold-light);">سدرة آل علام — حديقة الأجيال ثلاثية الأبعاد</h3>
                         <p style="font-size: 12px; color: var(--text-muted);">شجرة النسب العائلية الجاهزة بمحرك Astra 3D والأغصان الثمانية</p>
                     </div>
-                    <button class="btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="window.open('../allam_tree/index.html#garden', '_blank')">
-                        <span>↗ فتح الشجرة في نافذة مستقلة</span>
+                    <button class="btn-primary" style="padding: 8px 16px; font-size: 13px;" onclick="window.open('../allam_tree/index.html#garden', '_blank')">
+                        <span>↗ فتح الشجرة بملء الشاشة</span>
                     </button>
                 </div>
 
-                <div style="width: 100%; height: 680px; border-radius: 12px; overflow: hidden;">
+                <div class="tree-iframe-container" style="width: 100%; height: 680px; border-radius: 12px; overflow: hidden; position: relative;">
                     <iframe src="../allam_tree/index.html#garden" style="width: 100%; height: 100%; border: none;"></iframe>
+                </div>
+                <div style="font-size: 11.5px; color: var(--text-muted); text-align: center; margin-top: 10px; line-height: 1.6;">
+                    💡 <strong>لأجهزة الجوال:</strong> اسحب بإصبعك لتدوير الشجرة، والمس بإصبعين للتكبير والتصغير، أو اضغط زر ملء الشاشة لتجربة تفاعلية مريحة.
                 </div>
             </div>
         </section>
