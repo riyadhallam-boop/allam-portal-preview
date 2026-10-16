@@ -2012,8 +2012,8 @@
                     صندوق عائلي تأسس لتعميق الترابط، ومساندة من يحتاج من أسر العائلة، ودعم المتفوقين دراسياً، وتمويل برامج اللقاءات والأنشطة المشتركة.
                 </p>
                 <button class="btn-primary" onclick="openFundModal()">
-                    <span>💳</span>
-                    <span>تفاصيل المساهمة والاشتراك بالصندوق</span>
+                    <span>🤝</span>
+                    <span>مبادرات الصندوق والتواصل مع الإدارة</span>
                 </button>
             </div>
 
@@ -3208,7 +3208,7 @@ ${portalUrl}
         }
 
         function sendFundInquiry(planName) {
-            const msg = `السلام عليكم ورحمة الله، أود الاستفسار والمساهمة في صندوق عائلة آل علام التكافلي عبر (${planName})، يرجى تزويدي ببيانات التحويل المعتمدة.`;
+            const msg = `السلام عليكم ورحمة الله، أود الاستفسار والمساهمة في صندوق عائلة آل علام التكافلي بخصوص (${planName}) والتنسيق معكم.`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
         }
 
@@ -3885,12 +3885,12 @@ ${portalUrl}
         </div>
     </div>
 
-    <!-- 7. نافذة المساهمة في صندوق عائلة آل علام -->
+    <!-- 7. نافذة مبادرات صندوق عائلة آل علام والتواصل -->
     <div id="fund-modal" class="auth-modal-overlay" style="display: none;">
         <div class="auth-modal-card" style="max-width: 580px;">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; border-bottom: 1px solid rgba(212, 175, 55, 0.25); padding-bottom: 12px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 24px;">💳</span>
+                    <span style="font-size: 24px;">🤝</span>
                     <div>
                         <div style="font-weight: 700; font-size: 16px; color: var(--gold-light);">صندوق عائلة آل علام التكافلي والوقفي</div>
                         <div style="font-size: 11.5px; color: var(--text-muted);">عطاء مستمر، تكافل اجتماعي، ورعاية للمتفوقين</div>
@@ -3900,51 +3900,47 @@ ${portalUrl}
             </div>
 
             <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px;">
-                تُودع اشتراكات الصندوق في حساب مصرفي معتمد بإشراف أمين الصندوق ولجنة الرقابة المالية، وتُخصص للصرف على أبواب البر والتكافل ودعم فعاليات العائلة:
+                يهدف الصندوق إلى تعزيز أواصر التكافل والتعاضد الأسري بين أفراد العائلة، ويتم التنسيق والمساهمة بالتواصل المباشر مع أمين الصندوق ولجنة الرعاية الاجتماعية دون أي معاملات أو تحويلات عبر المنصة:
             </p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px;">
                 
                 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">الباقة الأساسية</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">100 ر.س / شهرياً</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">سهم البركة والمشاركة التكافلية العامة</div>
-                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة البركة (100 ر.س شهرياً)')">
-                        <span>📲 اشتراك عبر WhatsApp</span>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--gold-light); margin-bottom: 6px;">مبادرة التكافل العام</div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px;">المشاركة في برامج العون والإحسان والمؤازرة الأسرية</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('مبادرة التكافل العام')">
+                        <span>📲 استفسار عبر WhatsApp</span>
                     </button>
                 </div>
 
                 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">باقة التكافل</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">300 ر.س / شهرياً</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">دعم الحالات الطارئة وجوائز التفوق</div>
-                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة التكافل (300 ر.س شهرياً)')">
-                        <span>📲 اشتراك عبر WhatsApp</span>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--gold-light); margin-bottom: 6px;">دعم التفوق والتعليم</div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px;">جوائز سنوية للطلبة المتفوقين ومساندة الدراسات العليا</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('دعم التفوق والتعليم')">
+                        <span>📲 استفسار عبر WhatsApp</span>
                     </button>
                 </div>
 
                 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 12px; padding: 14px; text-align: center;">
-                    <div style="font-size: 12px; color: var(--text-muted); margin-bottom: 4px;">باقة الريادة</div>
-                    <div style="font-size: 18px; font-weight: 700; color: var(--gold-light); margin-bottom: 4px;">500+ ر.س / شهرياً</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">تمويل برامج اللقاءات الكبرى والأنشطة</div>
-                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('باقة الريادة (500+ ر.س شهرياً)')">
-                        <span>📲 اشتراك عبر WhatsApp</span>
+                    <div style="font-size: 13px; font-weight: 700; color: var(--gold-light); margin-bottom: 6px;">تمويل اللقاءات والأنشطة</div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px;">رعاية برامج اللقاءات الدورية واحتفالات العيد الكبرى</div>
+                    <button type="button" class="btn-primary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center;" onclick="sendFundInquiry('تمويل اللقاءات والأنشطة')">
+                        <span>📲 استفسار عبر WhatsApp</span>
                     </button>
                 </div>
 
                 <div style="background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(16, 185, 129, 0.4); border-radius: 12px; padding: 14px; text-align: center;">
-                    <div style="font-size: 12px; color: #6ee7b7; margin-bottom: 4px;">سهم الوقف العائلي</div>
-                    <div style="font-size: 18px; font-weight: 700; color: #a7f3d0; margin-bottom: 4px;">مساهمة مفتوحة</div>
-                    <div style="font-size: 11px; color: var(--text-secondary); margin-bottom: 12px;">صدقة جارية وأصول وقفية لا تنقطع</div>
-                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center; border-color: rgba(16, 185, 129, 0.4);" onclick="sendFundInquiry('سهم الوقف العائلي السنوي (مساهمة مفتوحة)')">
+                    <div style="font-size: 13px; font-weight: 700; color: #6ee7b7; margin-bottom: 6px;">الوقف الخيري العائلي</div>
+                    <div style="font-size: 11.5px; color: var(--text-secondary); margin-bottom: 12px;">صدقة جارية ومساهمات وقفية مستدامة لصالح العائلة</div>
+                    <button type="button" class="btn-secondary" style="padding: 6px 12px; font-size: 12px; width: 100%; justify-content: center; border-color: rgba(16, 185, 129, 0.4);" onclick="sendFundInquiry('الوقف الخيري العائلي')">
                         <span>💬 تواصل مع أمين الصندوق</span>
                     </button>
                 </div>
 
             </div>
 
-            <div style="text-align: center; font-size: 11.5px; color: #94a3b8;">
-                🔒 تقارير مالية دورية سنوية شفافة تُعرض في الجمعية العمومية للمجلس
+            <div style="text-align: center; font-size: 11.5px; color: #a7f3d0; background: rgba(16, 185, 129, 0.1); border: 1px dashed rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 10px;">
+                🔒 حرصاً على الخصوصية، لا يتضمن الموقع أي آيبان بنكي أو رفع إيصالات، وكافة المساهمات تتم عبر التنسيق الشخصي المباشر مع أمين الصندوق.
             </div>
         </div>
     </div>
