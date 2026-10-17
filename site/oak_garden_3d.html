@@ -1,0 +1,2078 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>شجرة البلوط والحديقة الملكية 3D — عائلة آل علام</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    <!-- تحميل محرك Three.js ثلاثي الأبعاد (محلياً مع بديل سحابي مباشر) -->
+    <script src="./vendor/three.min.js" onerror="this.onerror=null;this.src='https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';"></script>
+    <style>
+        :root {
+            --bg-night: #040911;
+            --gold: #d4af37;
+            --gold-bright: #fde047;
+            --emerald: #10b981;
+            --emerald-bright: #34d399;
+            --leaf-dark: #064e3b;
+            --panel-bg: rgba(6, 14, 23, 0.82);
+            --panel-border: rgba(212, 175, 55, 0.38);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --font-sans: 'Tajawal', system-ui, -apple-system, sans-serif;
+            --font-serif: 'Amiri', Georgia, serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #040911;
+            color: var(--text-light);
+            font-family: var(--font-sans);
+            touch-action: none;
+        }
+
+        #webgl-container {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            cursor: grab;
+        }
+
+        #webgl-container.dragging {
+            cursor: grabbing;
+        }
+
+        /* واجهة التحكم العائمة فوق المشهد ثلاثي الأبعاد */
+        .ui-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 10;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 14px 18px;
+        }
+
+        .interactive {
+            pointer-events: auto;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .title-card {
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 9px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.65);
+        }
+
+        .title-emblem {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.35), rgba(212, 175, 55, 0.2));
+            border: 1px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.35);
+        }
+
+        .title-main {
+            font-family: var(--font-serif);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gold-bright);
+            line-height: 1.2;
+        }
+
+        .title-sub {
+            font-size: 11.5px;
+            color: #a7f3d0;
+            margin-top: 2px;
+        }
+
+        /* البحث الفوري */
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            max-width: 380px;
+            min-width: 220px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            border-radius: 14px;
+            padding: 0 14px;
+            height: 42px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-box:focus-within {
+            border-color: var(--gold-bright);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+        }
+
+        .search-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-family: var(--font-sans);
+            font-size: 13px;
+            margin-right: 8px;
+            user-select: text;
+            -webkit-user-select: text;
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .search-clear {
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 18px;
+            cursor: pointer;
+            display: none;
+        }
+
+        .search-results {
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            left: 0;
+            background: rgba(6, 14, 23, 0.96);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--gold);
+            border-radius: 14px;
+            max-height: 290px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.85);
+        }
+
+        .search-item {
+            padding: 9px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+        }
+
+        .search-item:hover {
+            background: rgba(16, 185, 129, 0.2);
+        }
+
+        /* أزرار التحكم بالعرض */
+        .view-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .pill-btn {
+            background: var(--panel-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--panel-border);
+            color: var(--text-light);
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 8px 13px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .pill-btn:hover, .pill-btn.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.35), rgba(212, 175, 55, 0.25));
+            border-color: var(--gold-bright);
+            color: var(--gold-bright);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+        }
+
+        /* أزرار التقريب والتبعيد والمدار الجانبية */
+        .side-dock {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .icon-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--panel-border);
+            color: var(--gold-bright);
+            font-size: 19px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+            transition: all 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(212, 175, 55, 0.22);
+            border-color: var(--gold-bright);
+            transform: scale(1.06);
+        }
+
+        /* بطاقة تفاصيل الورقة / الفرد */
+        .leaf-card-modal {
+            position: absolute;
+            right: 18px;
+            top: 82px;
+            width: 340px;
+            max-width: calc(100vw - 36px);
+            max-height: calc(100vh - 180px);
+            overflow-y: auto;
+            background: rgba(6, 20, 18, 0.94);
+            backdrop-filter: blur(20px);
+            border: 1.5px solid var(--gold);
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 22px 55px rgba(0,0,0,0.85), 0 0 28px rgba(16, 185, 129, 0.22);
+            z-index: 30;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .leaf-card-modal.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(25px);
+        }
+
+        .leaf-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 10px;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .leaf-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 99px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.45);
+            margin-bottom: 6px;
+        }
+
+        .leaf-person-name {
+            font-family: var(--font-serif);
+            font-size: 21px;
+            color: var(--gold-bright);
+            line-height: 1.3;
+        }
+
+        .close-btn {
+            background: rgba(255,255,255,0.08);
+            border: none;
+            color: #cbd5e1;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .lineage-chain {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            background: rgba(0,0,0,0.35);
+            padding: 10px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.07);
+            margin-bottom: 12px;
+        }
+
+        .chain-step {
+            font-size: 11.5px;
+            padding: 3px 8px;
+            border-radius: 7px;
+            background: rgba(212, 175, 55, 0.14);
+            color: #fde047;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .chain-step:hover {
+            background: rgba(212, 175, 55, 0.32);
+        }
+
+        .sub-leaves-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .sub-leaf-chip {
+            font-size: 11.5px;
+            padding: 4px 10px;
+            border-radius: 99px;
+            background: rgba(16, 185, 129, 0.16);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: #d1fae5;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .sub-leaf-chip:hover {
+            background: rgba(212, 175, 55, 0.3);
+            border-color: var(--gold-bright);
+            color: #fff;
+        }
+
+        /* شريط الأغصان الثمانية السفلي */
+        .bottom-bar {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .hint-pill {
+            font-size: 11.5px;
+            color: #d1fae5;
+            background: rgba(6, 28, 22, 0.78);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            padding: 4px 14px;
+            border-radius: 99px;
+            backdrop-filter: blur(8px);
+        }
+
+        .branches-dock {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            padding: 7px 10px;
+            border-radius: 16px;
+            max-width: 100%;
+            overflow-x: auto;
+            scrollbar-width: none;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.75);
+        }
+
+        .branches-dock::-webkit-scrollbar {
+            display: none;
+        }
+
+        .branch-btn {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #e2e8f0;
+            font-family: var(--font-sans);
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .branch-btn:hover, .branch-btn.active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.38), rgba(212, 175, 55, 0.28));
+            border-color: var(--gold-bright);
+            color: var(--gold-bright);
+            transform: translateY(-1px);
+        }
+
+        .branch-count {
+            font-size: 10.5px;
+            background: rgba(0,0,0,0.45);
+            padding: 1px 6px;
+            border-radius: 99px;
+            color: #6ee7b7;
+        }
+
+        /* تلميح الورقة عند التمرير */
+        #leaf-tooltip {
+            position: fixed;
+            pointer-events: none;
+            z-index: 50;
+            background: rgba(6, 24, 19, 0.95);
+            border: 1.5px solid var(--gold-bright);
+            border-radius: 12px;
+            padding: 7px 12px;
+            font-size: 12.5px;
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            display: none;
+            transform: translate(-50%, -125%);
+            white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+            .ui-layer { padding: 10px; }
+            .title-main { font-size: 16px; }
+            .title-sub { display: none; }
+            .search-wrap { max-width: 100%; order: 3; width: 100%; }
+            .leaf-card-modal {
+                top: auto;
+                bottom: 72px;
+                right: 10px;
+                left: 10px;
+                width: auto;
+                max-height: 46vh;
+            }
+            .side-dock { left: 10px; }
+            .hint-pill { font-size: 10.5px; padding: 3px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="webgl-container"></div>
+    <div id="leaf-tooltip"></div>
+
+    <div class="ui-layer">
+        <!-- الشريط العلوي -->
+        <header class="top-bar">
+            <div class="title-card interactive">
+                <div class="title-emblem">🌳</div>
+                <div>
+                    <div class="title-main">بلوطة الحديقة الملكية 3D — آل علام</div>
+                    <div class="title-sub">شجرة بلوط عريضة واقعية ثلاثية الأبعاد · الأغصان داخل التاج والأسماء منقوشة على الورق</div>
+                </div>
+            </div>
+
+            <div class="search-wrap interactive">
+                <div class="search-box">
+                    <span>🍃</span>
+                    <input type="text" id="search-input" class="search-input" placeholder="ابحث عن أي اسم للتحليق إلى ورقته داخل الشجرة..." autocomplete="off">
+                    <button type="button" id="search-clear" class="search-clear">&times;</button>
+                </div>
+                <div id="search-results" class="search-results"></div>
+            </div>
+
+            <div class="view-controls interactive">
+                <button class="pill-btn active" id="btn-leaf-density" title="تبديل كثافة إظهار أوراق الأسماء">🍃 إظهار كل أوراق الأسماء</button>
+                <button class="pill-btn" id="btn-auto-orbit" title="دوران سينمائي تلقائي حول الحديقة">🔄 دوران تلقائي</button>
+                <button class="pill-btn" id="btn-reset-cam" title="العودة لمنظر الحديقة والشجرة العريضة">🏞️ منظر الحديقة الكامل</button>
+            </div>
+        </header>
+
+        <!-- أزرار التحكم الجانبية -->
+        <div class="side-dock interactive">
+            <button class="icon-btn" id="btn-zoom-in" title="تقريب داخل أغصان الشجرة">+</button>
+            <button class="icon-btn" id="btn-zoom-out" title="تبعيد لرؤية الشجرة والحديقة">&minus;</button>
+            <button class="icon-btn" id="btn-top-view" title="منظور علوي لتاج الشجرة العريضة" style="font-size:15px;">🦅</button>
+        </div>
+
+        <!-- بطاقة تفاصيل الفرد عند النقر على ورقته -->
+        <aside id="leaf-modal" class="leaf-card-modal interactive hidden">
+            <div class="leaf-modal-header">
+                <div>
+                    <div class="leaf-badge" id="modal-branch-badge">🌿 غصن العائلة</div>
+                    <h2 class="leaf-person-name" id="modal-person-name">عوض علام وزوجته رحمة</h2>
+                </div>
+                <button class="close-btn" id="btn-close-modal">&times;</button>
+            </div>
+            <div id="modal-meta" style="font-size: 12.5px; color: #a7f3d0; margin-bottom: 10px;"></div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 5px;">🪵 مسار الغصن من الجذع المؤسس:</div>
+            <div class="lineage-chain" id="modal-lineage"></div>
+            <div id="modal-children-section" style="display:none;">
+                <div style="font-size: 11.5px; color: var(--text-muted); margin-bottom: 4px;" id="modal-children-label">🍃 الأوراق المتفرعة من هذا الغصن:</div>
+                <div class="sub-leaves-grid" id="modal-children"></div>
+            </div>
+        </aside>
+
+        <!-- شريط الأغصان الثمانية العريضة في الحديقة -->
+        <footer class="bottom-bar">
+            <div class="hint-pill">💡 اسحب للتدوير ثلاثي الأبعاد حول الحديقة · قرّب بعجلة الفأرة أو الإصبعين للدخول بين الأغصان وقراءة الأسماء على الورق</div>
+            <div class="branches-dock interactive">
+                <button class="branch-btn active" data-branch="all">🌳 كامل تاج الشجرة <span class="branch-count">305</span></button>
+                <button class="branch-btn" data-branch="0">👑 الجذع: عوض ورحمة</button>
+                <button class="branch-btn" data-branch="1">🌿 1. غصن حسين <span class="branch-count">71</span></button>
+                <button class="branch-btn" data-branch="2">🌿 2. غصن خالد <span class="branch-count">44</span></button>
+                <button class="branch-btn" data-branch="3">🌿 3. غصن كمال <span class="branch-count">19</span></button>
+                <button class="branch-btn" data-branch="4">🌿 4. غصن محمد <span class="branch-count">11</span></button>
+                <button class="branch-btn" data-branch="5">🌿 5. غصن فاطمة (ناجية) <span class="branch-count">77</span></button>
+                <button class="branch-btn" data-branch="6">🌿 6. غصن هدى <span class="branch-count">47</span></button>
+                <button class="branch-btn" data-branch="7">🌿 7. غصن جمال <span class="branch-count">26</span></button>
+                <button class="branch-btn" data-branch="8">🌿 8. غصن مستورة <span class="branch-count">45</span></button>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+    (function() {
+        // ============================================================================
+        // 1. البيانات الكاملة لأفراد العائلة والفروع الثمانية (مدمجة بالكامل)
+        // ============================================================================
+        // توزيع الأغصان الثمانية الرئيسية في الفضاء ثلاثي الأبعاد (X عريض جداً كشجرة البلوط المعمرة)
+        const BRANCH_CONFIGS = [
+            // الجهة اليمنى من تاج البلوط العريض (+X)
+            { id: 1, name: "أسرة حسين عوض علام", short: "غصن حسين", count: 71, color: "#10b981", leafTint: "#065f46", border: "#fde047", angle: 0.18,  spreadX: 28, liftY: 22, depthZ: 6  },
+            { id: 2, name: "أسرة خالد عوض علام", short: "غصن خالد", count: 44, color: "#059669", leafTint: "#064e3b", border: "#34d399", angle: 0.62,  spreadX: 25, liftY: 19, depthZ: -8 },
+            { id: 3, name: "أسرة كمال عوض علام", short: "غصن كمال", count: 19, color: "#d97706", leafTint: "#14532d", border: "#fbbf24", angle: -0.42, spreadX: 22, liftY: 16, depthZ: 12 },
+            { id: 4, name: "أسرة محمد عوض علام", short: "غصن محمد", count: 11, color: "#0d9488", leafTint: "#115e59", border: "#5eead4", angle: -0.88, spreadX: 18, liftY: 14, depthZ: -11},
+            // الجهة اليسرى من تاج البلوط العريض (-X)
+            { id: 5, name: "أسرة فاطمة (ناجية) علام", short: "غصن فاطمة (ناجية)", count: 77, color: "#16a34a", leafTint: "#14532d", border: "#fde047", angle: Math.PI - 0.18, spreadX: -29, liftY: 22, depthZ: 5  },
+            { id: 6, name: "أسرة هدى عوض علام",   short: "غصن هدى",  count: 47, color: "#ca8a04", leafTint: "#166534", border: "#fef08a", angle: Math.PI - 0.65, spreadX: -25, liftY: 19, depthZ: -8 },
+            { id: 7, name: "أسرة جمال عوض علام",  short: "غصن جمال", count: 26, color: "#0891b2", leafTint: "#064e3b", border: "#67e8f9", angle: Math.PI + 0.42, spreadX: -22, liftY: 16, depthZ: 12 },
+            { id: 8, name: "أسرة مستورة عوض علام",short: "غصن مستورة",count: 45, color: "#059669", leafTint: "#065f46", border: "#6ee7b7", angle: Math.PI + 0.85, spreadX: -24, liftY: 15, depthZ: -11}
+        ];
+
+        const BRANCH_MAP = {};
+        BRANCH_CONFIGS.forEach(b => BRANCH_MAP[b.id] = b);
+
+        const RAW_TREE_DATA = `-1|0|0|2|عوض علام وزوجته رحمة|عميد ومؤسس عائلة آل علام بالمملكة · الجذع المبارك
+0|1|1|2|حسين عوض علام|الفرع الأول
+1|1|2|2|سليمان حسين عوض علام|الرياض
+1|1|2|2|زكي حسين عوض علام
+1|1|2|0|حسان حسين عوض علام|متقاعد · الرياض
+1|1|2|1|صفاء حسين عوض علام|استشاري طب اسرة · الرياض
+1|1|2|0|سامي حسين عوض علام|مدير إدارة التجهيزات الأمنية بوزارة الخارجيه · الرياض
+1|1|2|0|صادق حسين عوض علام|موظف بالاتصالات السعودية · الرياض
+2|1|3|0|رياض سليمان حسين علام|اداري بمجموعة بن لادن · الرياض
+2|1|3|0|راكان سليمان حسين علام|الرياض
+2|1|3|1|ريما سليمان حسين علام|طالبة انتساب · الطائف
+2|1|3|1|داليا سليمان حسين علام|طب اطفال · الرياض
+2|1|3|0|عبدالرحمن سليمان حسين علام|طالب · الرياض
+2|1|3|0|عبدالله سليمان حسين علام|طالب · الرياض
+2|1|3|1|دلال سليمان حسين علام|طالبه · الرياض
+3|1|3|0|حسين زكي حسين علام|مدخل بيانات بمجموعة بن لادن السعودية · مكة
+3|1|3|1|سهى زكي حسين علام|مساعدة ادارية في شركة دار الهندسة بجامعة الاميرة نورة · الرياض
+3|1|3|0|حاتم زكي حسين علام|طالب / امريكا · امريكا
+3|1|3|0|خالد زكي حسين علام|طالب / امريكا · امريكا
+4|1|3|1|رحاب حسان حسين علام|طبيبة اسنان اطفال جامعة الملك سعود هيئة التدريس · الرياض
+4|1|3|1|رباب حسان حسين علام|مساعدة ابحاث مستشفى الملك فيصل التخصصي · الرياض
+4|1|3|1|رنا حسان حسين علام|بكالريوس احياء دقيقه · الرياض
+4|1|3|1|ريم حسان حسين علام|طبيبة اخصائي اشعه · الرياض
+4|1|3|0|خالد حسان حسين علام|استشاري جراحة شبكية والسائل الزجاجي · الرياض
+4|1|3|0|ياسر حسان حسين علام|طالب · الرياض
+5|1|3|1|يارا أحمد أبو زيد|طالبة · الرياض
+5|1|3|1|ريناد أحمد ابو زيد|مدارس رياض نجد · الرياض
+5|1|3|0|فهد أحمد أبو زيد|مدارس رياض نجد · الرياض
+5|1|3|1|روان أحمد ابو زيد|طالبة · الرياض
+5|1|3|0|تالا أحمد أبو زيد
+5|1|3|1|تاله أحمد أبو زيد|مدارس رياض نجد · الرياض
+6|1|3|0|عبدالرحمن سامي حسين علام|طبيب مدينة الملك فهد الطبيه · الرياض
+6|1|3|0|أحمد سامي حسين علام|طالب · الرياض
+6|1|3|1|مودة سامي حسين علام|طالبه · الرياض
+6|1|3|0|عمر سامي حسين علام|طفل · الرياض
+6|1|3|1|ميّار سامي حسين علام|طفله · الرياض
+7|1|3|0|فيصل صادق حسين علام|موظف قنوات الاتصالات السعودية - إدارة المنتجات
+7|1|3|0|فراس صادق حسين علام|موظف بنك STC - دعم تطبيقات المؤسسات
+7|1|3|0|البراء صادق حسين علام|خريج هندسة أمن وشبكات
+8|1|4|1|لين رياض سليمان علام|مدرسة 225 · الرياض
+8|1|4|0|سليمان رياض سليمان علام|مدرسة الامين · الرياض
+8|1|4|0|عبدالإله رياض سليمان علام|مدرسة الامين · الرياض
+8|1|4|1|لمى رياض سليمان علام|طفلة · الرياض
+9|1|4|0|سلطان راكان سليمان علام|الرياض
+9|1|4|1|دانا راكان سليمان علام|الرياض
+9|1|4|0|فهد راكان سليمان علام|الرياض
+10|1|4|1|سامية فواز الهذلي|ثالث متوسط · الطائف
+10|1|4|1|أريام فواز الهذلي|الطائف
+10|1|4|1|لامار فواز الهذلي|الطائف
+10|1|4|1|لارين فواز الهذلي|الطائف
+10|1|4|1|ليان فواز الهذلي|الطائف
+16|1|4|0|خالد فهد الضويان|متوسطة سمرقند · الرياض
+16|1|4|0|فارس فهد الضويان|متوسطة سمرقند · الرياض
+19|1|4|1|نور صالح نصر أبودف|طالبة · الرياض
+19|1|4|0|عمر صالح نصر أبودف|طالب · الرياض
+20|1|4|0|فيصل ممدوح طويلي|الرياض
+20|1|4|1|يارا ممدوح طويلي|الرياض
+21|1|4|0|ريان أحمد أبو الخير|الرياض
+21|1|4|1|سارة أحمد أبو الخير|الرياض
+21|1|4|0|سلطان احمد أبو الخير
+23|1|4|0|جنى خالد حسان علام|صف سادس - مدارس الفارس
+23|1|4|0|جودي خالد حسان علام|صف ثاني - مدارس الفارس
+23|1|4|0|حسان بن خالد بن حسان علام
+24|1|4|0|ليلى ياسر حسان علام
+24|1|4|0|لانا ياسر حسان علام
+31|1|4|0|يوسف عبدالرحمن سامي علام
+0|2|1|2|خالد عوض علام|الفرع الثاني
+66|2|2|2|عبدالرحمن خالد عوض علام
+66|2|2|0|عبدالإله خالد عوض علام|الرياض
+66|2|2|0|عبدالمجيد خالد عوض علام|متقاعد · الرياض
+66|2|2|3|فايزة خالد عوض علام
+66|2|2|0|وليد خالد عوض علام|متقاعد · الرياض
+67|2|3|1|خلود عبدالرحمن خالد علام|الرياض
+67|2|3|0|خالد عبدالرحمن علام|Sr. Banker · الولايات المتحدة
+67|2|3|1|سارة عبدالرحمن خالد علام|الرياض
+67|2|3|1|سمية خالد عبدالرحمن علام|الرياض
+68|2|3|1|جوهرة عبدالإله خالد علام|الرياض
+68|2|3|0|خالد عبدالإله خالد علام|الرياض
+68|2|3|1|البندري عبدالإله خالد علام|الرياض
+68|2|3|0|بندر عبدالإله خالد علام|طالب · الرياض
+68|2|3|0|محمد عبدالإله خالد علام|طالب · الرياض
+69|2|3|1|روان عبدالمجيد خالد علام|حاسب آلي جامعة الملك سعود · الرياض
+69|2|3|0|خالد عبدالمجيد خالد علام|مهندس ميكانيكي UK · الرياض
+69|2|3|0|فيصل عبدالمجيد خالد علام|طالب · الرياض
+69|2|3|1|جواهر عبدالمجيد خالد علام|Graphic Designer · الرياض
+70|2|3|1|عفاف عثمان دوبي
+70|2|3|0|حاتم زكي علام
+70|2|3|0|خالد زكي علام
+71|2|3|0|خالد وليد خالد علام|بكالريوس إدارة اعمال جامعة ميري ماونت · الرياض
+71|2|3|0|زياد وليد خالد علام|بكالريوس إدارة اعمال جامعة كاثوليك · الرياض
+71|2|3|0|سلمان وليد خالد علام|بكالريوس إدارة اعمال جامعة ميري ماونت · امريكا
+71|2|3|1|جواهر وليد خالد علام|طالبة · الرياض
+71|2|3|1|هند وليد خالد علام|طالبه · الرياض
+71|2|3|0|فارس وليد خالد علام|طالب · الرياض
+72|2|4|0|عبدالرحمن حبيب السليماني|الرياض
+72|2|4|1|تاله حبيب السليماني|الرياض
+76|2|4|0|خالد فارس الحازمي|الرياض
+76|2|4|0|عبدالإله فارس الحازمي|الرياض
+76|2|4|1|رزان فارس الحازمي|الرياض
+77|2|4|0|عبدالإله خالد عبدالإله علام|الرياض
+77|2|4|0|عبدالرحمن خالد عبدالإله علام
+78|2|4|1|الجوهرة ماجد الحازمي|الرياض
+78|2|4|0|الوليد ماجد الحازمي|الرياض
+78|2|4|1|جوري ماجد الحازمي|الرياض
+79|2|4|0|ريما بندر عبدالإله علام
+79|2|4|0|خالد بندر عبدالإله علام
+81|2|4|0|سارة السلوم
+82|2|4|0|لانا خالد عبدالمجيد علام
+82|2|4|0|عبدالمجيد خالد عبدالمجيد علام
+84|2|4|0|سليمان عبدالله عبدالجليل باحميشان
+88|2|4|0|وليد خالد وليد علام
+88|2|4|0|فيصل خالد وليد علام
+88|2|4|0|رنا خالد وليد علام
+89|2|4|0|وليد زياد وليد علام
+92|2|4|0|فاتن محمد السبكي
+92|2|4|0|نجلاء محمد السبكي
+0|3|1|2|كمال عوض علام|الفرع الثالث
+116|3|2|1|نجاح كمال عوض المصري|مكة
+116|3|2|0|عادل كمال عوض المصري|مدير إدارة · مكة
+116|3|2|0|عماد كمال عوض المصري|جامعي · الطائف
+116|3|2|1|شهرزاد كمال عوض المصري|جامعية · مكة
+116|3|2|1|إيمان كمال عوض المصري|جامعية · الطائف
+116|3|2|1|إكرام كمال عوض المصري|دكتوراه · الطائف
+118|3|3|0|محمد عادل كمال المصري|جامعي · مكة
+118|3|3|1|مرام عادل كمال المصري|جامعية · مكة
+118|3|3|1|مروة عادل كمال المصري|طالبة جامعية · مكة
+118|3|3|1|ماريا عادل كمال المصري|طالبة جامعية · مكة
+118|3|3|1|ميار عادل كمال المصري|طالبة ثانوي · مكة
+118|3|3|0|معاذ عادل كمال المصري|طالب ابتدائي · مكة
+119|3|3|0|زياد عماد كمال المصري|جامعي طب أسنان · مكة
+119|3|3|1|ربى عماد كمال المصري|جامعية · مكة
+119|3|3|1|ريما عماد كمال المصري|جامعية · مكة
+119|3|3|1|جوري عماد كمال المصري|جامعية · مكة
+119|3|3|1|جود عماد كمال المصري|طالبة · مكة
+119|3|3|1|لين عماد كمال المصري|طالبة · مكة
+121|3|3|1|شذى عادل البغدادي|طالبة · مكة
+0|4|1|0|محمد عوض علام المصري|رئيس مجلس العائلة · جدة
+136|4|2|1|تهاني محمد عوض المصري|مشرف تموين-العمليات الجراحية-مستشفى الملك خالد للعيون · جدة
+136|4|2|1|عايدة|جدة
+136|4|2|1|رندة محمد عوض المصري|جدة
+136|4|2|2|علاء محمد عوض المصري|جدة
+136|4|2|0|حسام محمد عوض المصري|بريطانيا
+138|4|3|0|محمد عبدالقادر عالم|جدة
+138|4|3|0|حسن عبدالقادر عالم|جدة
+138|4|3|1|شهد عبدالقادر عالم|جدة
+0|5|1|3|فاطمة (ناجية) عوض علام|الفرع الخامس
+145|5|2|2|أبوبكر محمد نور دوبي
+145|5|2|0|عمر محمد نور دوبي|جدة
+145|5|2|0|عثمان محمد نور دوبي|الرياض
+145|5|2|0|علي محمد نور دوبي|الرياض
+145|5|2|0|أمين محمد نور دوبي|الرياض
+145|5|2|0|أسامة محمد نور دوبي|الرياض
+145|5|2|0|معاوية محمد نور دوبي|الرياض
+147|5|3|0|سلطان عمر دوبي|جدة
+147|5|3|0|شادي عمر دوبي|جدة
+147|5|3|1|نوف عمر دوبي|جدة
+147|5|3|1|دانية عمر دوبي|جدة
+147|5|3|1|سمر عمر دوبي|جدة
+147|5|3|0|محمد عمر دوبي|جدة
+148|5|3|1|عفاف عثمان دوبي|ربة منزل · الرياض
+148|5|3|0|عبدالله عثمان دوبي|الرياض
+148|5|3|0|عبدالرحمن عثمان دوبي|الرياض
+148|5|3|0|عبدالرحيم عثمان دوبي|ينبع
+148|5|3|0|عبدالعزيز عثمان دوبي|الرياض
+148|5|3|1|عزيزة عثمان دوبي|الرياض
+148|5|3|1|عبير عثمان دوبي|الرياض
+149|5|3|1|نورا علي دوبي|الرياض
+149|5|3|0|مراد علي دوبي|الرياض
+149|5|3|0|محمد علي دوبي|تبوك
+149|5|3|0|معاوية علي دوبي|الرياض
+149|5|3|0|معن علي دوبي|الرياض
+149|5|3|0|ممدوح علي دوبي|الرياض
+149|5|3|0|مروان علي دوبي|الرياض
+149|5|3|1|ناجيه علي دوبي|الرياض
+149|5|3|1|نجوى علي دوبي|الرياض
+150|5|3|1|سارة أمين دوبي|الرياض
+150|5|3|0|يوسف أمين دوبي|الرياض
+150|5|3|1|نورا أمين دوبي|الرياض
+150|5|3|1|لولوه أمين دوبي|الرياض
+150|5|3|1|سوسن أمين دوبي|الرياض
+150|5|3|0|عبدالمحسن أمين دوبي|شركة تأمين قسم الموافقات والمطالبات الطبيه · الرياض
+150|5|3|0|خالد أمين دوبي|الرياض
+151|5|3|0|معاذ أسامة دوبي|الرياض
+151|5|3|1|ألاء أسامة دوبي|الرياض
+151|5|3|0|مصعب أسامة دوبي|الرياض
+151|5|3|0|خالد أسامة دوبي|سابك · الرياض
+151|5|3|0|مهند أسامة دوبي|الرياض
+151|5|3|1|أسيل أسامة دوبي|الرياض
+151|5|3|0|معتز أسامة دوبي|الرياض
+151|5|3|0|معتصم أسامة دوبي|الرياض
+151|5|3|0|أحمد أسامة دوبي|الرياض
+152|5|3|0|اليزيد|امريكا
+152|5|3|1|الياسمين|امريكا
+152|5|3|1|مياده|الرياض
+152|5|3|0|المنصور|الرياض
+153|5|4|1|صباح سلطان عمر دوبي|جدة
+153|5|4|1|هدى سلطان عمر دوبي|جدة
+153|5|4|0|عمر سلطان عمر دوبي|جدة
+159|5|4|1|هبة وليد عويضة|علاج وظيفي مستوى سابع · الرياض
+159|5|4|0|محمد وليد عويضة|خريج ثانوي · الرياض
+159|5|4|0|صالح وليد عويضة|مدرسة الشورى · الرياض
+159|5|4|1|سارة وليد عويضة|ثاني متوسط · الرياض
+159|5|4|0|ابراهيم وليد عويضة|اول ابتدائي · الرياض
+160|5|4|0|عثمان عبدالله عثمان دوبي|الرياض
+160|5|4|1|شهد عبدالله عثمان دوبي|الرياض
+160|5|4|0|مشاري عبدالله عثمان دوبي|الرياض
+161|5|4|0|أصيل عبدالرحمن عثمان دوبي|الرياض
+161|5|4|1|غلا عبدالرحمن عثمان دوبي|الرياض
+186|5|4|0|يوسف مهند أسامة دوبي|الرياض
+0|6|1|1|هدى عوض علام|الفرع السادس · الرياض
+209|6|2|0|محمد رفعت بن عيسى بخاري|جدة
+209|6|2|1|خيرية عيسى بخاري|الرياض
+209|6|2|1|إنعام عيسى بخاري|الرياض
+209|6|2|0|عبدالباسط عيسى بخاري|الرياض
+209|6|2|1|إلهام عيسى بخاري|الرياض
+209|6|2|0|حاتم عيسى بخاري|الرياض
+209|6|2|0|أيمن عيسى بخاري|الرياض
+212|6|3|0|طارق محمد فرج القحطاني|مهندس ومدرس بشركة ناس للطيران · الرياض
+212|6|3|1|هدى محمد فرج القحطاني|الرياض
+212|6|3|1|عناية محمد فرج القحطاني|اكادمية الأميرة نورة · الرياض
+212|6|3|0|عبدالرحمن محمد فرج القحطاني|تخصص افيونيكس الكترونيات الطائرة · امريكا
+212|6|3|0|عبدالله محمد فرج القحطاني|هندسة الكترونية · بريطانيا
+212|6|3|1|لجين محمد فرج القحطاني|طالبة · الرياض
+212|6|3|1|جمان محمد فرج القحطاني|طالبه · الرياض
+213|6|3|0|عبدالرحمن عبدالباسط عيسى بخاري|الرياض
+213|6|3|0|عبدالمجيد عبدالباسط عيسى بخاري|الرياض
+213|6|3|1|هدى عبدالباسط عيسى بخاري|الرياض
+213|6|3|0|عبدالملك عبدالباسط عيسى بخاري|الرياض
+214|6|3|0|عبدالرحمن خالد الظاهري|الرياض
+214|6|3|1|تالا خالد الظاهري|الرياض
+215|6|3|1|هدى حاتم عيسى بخاري|الرياض
+215|6|3|1|هديل حاتم عيسى بخاري|الرياض
+215|6|3|1|بشرى حاتم عيسى بخاري|الرياض
+215|6|3|0|راكان حاتم عيسى بخاري|الرياض
+215|6|3|0|ريان حاتم عيسى بخاري|الرياض
+215|6|3|1|جواهر حاتم عيسى بخاري|الرياض
+215|6|3|0|عبدالكريم حاتم عيسى بخاري|الرياض
+216|6|3|1|هدى أيمن عيسى بخاري|الرياض
+216|6|3|0|عيسى أيمن عيسى بخاري|الرياض
+216|6|3|1|حلا أيمن عيسى بخاري|الرياض
+217|6|4|1|ليلى طارق محمد القحطاني|الرياض
+0|7|1|0|جمال عوض علام|الفرع السابع · الرياض
+241|7|2|1|نجود جمال عوض المصري|الرياض
+241|7|2|0|عبدالله جمال عوض المصري|جدة
+241|7|2|0|نضال جمال عوض المصري|أخصائي طب مجتمع-ادارة الصحة العامة-وزارة الصحة · جدة
+241|7|2|0|خالد جمال عوض المصري|اخصائي زراعه جامعة الملك سعود · الرياض
+241|7|2|1|رشا جمال عوض المصري|الرياض
+241|7|2|0|ريان جمال عوض المصري|موظف بالارصاد وحماية البيئة · الرياض
+241|7|2|2|رائد جمال عوض المصري|الرياض
+241|7|2|0|محمد جمال عوض المصري|طالب-جامعة الملك سعود · الرياض
+243|7|3|1|هبه عبدالله جمال المصري|جدة
+244|7|3|0|عبدالرحمن نضال جمال المصري|مدارس اليسر العالمية · جدة
+244|7|3|0|أحمد نضال جمال المصري|مدارس اليسر العالمية · جدة
+244|7|3|0|نور نضال جمال المصري|طفل · جدة
+245|7|3|1|لجين خالد جمال المصري|طالبة- ثانوية 104 · الرياض
+245|7|3|1|لين خالد جمال المصري|طالبه- المتوسطة 2 لتحفيظ القرآن · الرياض
+245|7|3|1|جوري خالد جمال المصري|طالبه-الإبتدائية الثانية لتحفيظ القرآن · الرياض
+245|7|3|0|محمد خالد جمال المصري|طالب -مدارس الحصاد الاهلية · الرياض
+245|7|3|0|يوسف خالد جمال المصري|طفل · الرياض
+245|7|3|0|إبراهيم خالد جمال المصري|طفل · الرياض
+245|7|3|0|سعد خالد جمال المصري|طفل · الرياض
+247|7|3|0|اويس ريان جمال المصري|طفل · الرياض
+0|8|1|3|مستورة عوض علام|الفرع الثامن
+262|8|2|0|غازي محمد سعيد فالودة|الرياض
+262|8|2|0|فوزي محمد سعيد فالودة|جدة
+262|8|2|1|أميرة محمد سعيد فالودة|الرياض
+262|8|2|1|منيرة محمد سعيد فالودة|مستشفى خالد الجامعي · الرياض
+262|8|2|0|سمير محمد سعيد فالودة|جدة
+262|8|2|0|منير محمد سعيد فالودة|الرياض
+262|8|2|1|أحلام محمد سعيد فالودة|الرياض
+264|8|3|1|علا فوزي فالودة|جدة
+264|8|3|1|آلاء فوزي فالودة|جدة
+264|8|3|1|ولاء فوزي فالودة|جدة
+264|8|3|0|فراس فوزي فالودة|جدة
+264|8|3|0|عمرو فوزي فالودة|جدة
+265|8|3|1|شيم محمد الألمعي|الرياض
+266|8|3|1|جود غياث الدرسوني|بكالريوس طب وجراحه الملك سعود · الرياض
+266|8|3|0|صهيب غياث الدرسوني|سنة رابعة هندسة مدنية جامعة الملك سعود · الرياض
+266|8|3|1|إسراء غياث الدرسوني|لغات وترجمه انجليزي جامعة الملك سعود · الرياض
+266|8|3|1|رغد غياث الدرسوني|طالبه · الرياض
+267|8|3|0|أنس سمير فالودة|الظهران
+267|8|3|0|البراء سمير فالودة|جدة
+267|8|3|0|أسامة سمير فالودة|جدة
+267|8|3|0|حسام سمير فالودة|جدة
+267|8|3|0|عمار سمير فالودة|جدة
+267|8|3|1|سيرين سمير فالودة|جدة
+267|8|3|0|الحسن سمير فالودة|جدة
+269|8|3|1|نجلاء محمد السويح|الرياض
+269|8|3|0|صالح محمد السويح|الرياض
+270|8|4|0|رائف رامي مصلي|جدة
+270|8|4|1|ريماس رامي مصلي|جدة
+270|8|4|1|رهف رامي مصلي|جدة
+271|8|4|0|رواف سلطان منشي|جدة
+271|8|4|1|ليان سلطان منشي|جدة
+272|8|4|0|وسيم سلطان منشي|جدة
+272|8|4|0|مازن علاء سندي|جدة
+280|8|4|1|بلسم أنس سمير فالودة|الظهران
+23|1|4|1|جوانا خالد حسان علام|تمهيدي - مدارس الفارس
+31|1|4|1|الين عبدالرحمن سامي علام
+120|3|3|1|أمل بسام العويمري
+210|6|3|1|سارة محمد رفعت بن عيسى بخاري|جدة
+210|6|3|1|الهنوف محمد رفعت بن عيسى بخاري|جدة
+210|6|3|1|نورة محمد رفعت بن عيسى بخاري|جدة
+210|6|3|0|يوسف محمد رفعت بن عيسى بخاري|جدة
+210|6|3|1|الهام محمد رفعت بن عيسى بخاري|جدة
+210|6|3|0|بدر محمد رفعت بن عيسى بخاري|جدة
+210|6|3|1|هدى محمد رفعت بن عيسى بخاري|جدة
+210|6|3|0|عبدالرحمن محمد رفعت بن عيسى بخاري|جدة
+210|6|3|0|عبدالاله محمد رفعت بن عيسى بخاري|جدة
+192|5|4|1|جنا أحمد رضوان|الرياض`;
+
+        const nodes = RAW_TREE_DATA.trim().split('\n').map((line, idx) => {
+            const p = line.split('|');
+            const parentIndex = parseInt(p[0], 10);
+            const branchId = parseInt(p[1], 10);
+            const gen = parseInt(p[2], 10);
+            const flags = parseInt(p[3], 10);
+            const name = p[4];
+            const meta = p[5] || '';
+            const words = name.split(' ');
+            const shortName = idx === 0
+                ? 'عوض علام وزوجته رحمة'
+                : (words.length >= 2 ? words.slice(0, 2).join(' ') : name);
+            return {
+                index: idx,
+                parentIndex,
+                branchId,
+                gen,
+                gender: (flags & 1) ? 'أنثى' : 'ذكر',
+                name,
+                shortName,
+                meta,
+                children: [],
+                pos3D: new THREE.Vector3(0, 5, 0)
+            };
+        });
+
+        nodes.forEach(n => {
+            if (n.parentIndex >= 0 && nodes[n.parentIndex]) {
+                nodes[n.parentIndex].children.push(n);
+            }
+        });
+
+        // ============================================================================
+        // 2. تهيئة المشهد ثلاثي الأبعاد (Three.js WebGL Scene)
+        // ============================================================================
+        const container = document.getElementById('webgl-container');
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.FogExp2(0x040b14, 0.0052);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.5, 450);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.15;
+        container.appendChild(renderer.domElement);
+
+        // الإضاءة الملكية للحديقة والشجرة
+        const ambientLight = new THREE.AmbientLight(0x1e3a4c, 1.35);
+        scene.add(ambientLight);
+
+        const hemiLight = new THREE.HemisphereLight(0x38bdf8, 0x064e3b, 0.85);
+        hemiLight.position.set(0, 60, 0);
+        scene.add(hemiLight);
+
+        // ضوء القمر الساقط على تاج شجرة البلوط العريضة
+        const moonLight = new THREE.DirectionalLight(0xe0f2fe, 1.25);
+        moonLight.position.set(-35, 65, 40);
+        moonLight.castShadow = true;
+        scene.add(moonLight);
+
+        // إضاءة ذهبية دافئة في قلب جذع البلوط وتحت الأغصان
+        const trunkGlowLight = new THREE.PointLight(0xf59e0b, 3.2, 48, 1.5);
+        trunkGlowLight.position.set(0, 9, 6);
+        scene.add(trunkGlowLight);
+
+        const canopyLeftLight = new THREE.PointLight(0x10b981, 2.2, 55, 1.4);
+        canopyLeftLight.position.set(-24, 22, 8);
+        scene.add(canopyLeftLight);
+
+        const canopyRightLight = new THREE.PointLight(0x10b981, 2.2, 55, 1.4);
+        canopyRightLight.position.set(24, 22, 8);
+        scene.add(canopyRightLight);
+
+        // ============================================================================
+        // 3. توليد الخامات الواقعية (Bark, Grass, Water, & Realistic Oak Leaf Sprites)
+        // ============================================================================
+        function createBarkTexture() {
+            const c = document.createElement('canvas');
+            c.width = 512; c.height = 512;
+            const g = c.getContext('2d');
+            g.fillStyle = '#3b2416';
+            g.fillRect(0, 0, 512, 512);
+            // شقوق اللحاء الواقعية لشجرة البلوط المعمرة
+            for (let i = 0; i < 420; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const h = 40 + Math.random() * 140;
+                const w = 2 + Math.random() * 6;
+                g.fillStyle = i % 3 === 0 ? '#1f1209' : (i % 2 === 0 ? '#4d301e' : '#2b190e');
+                g.fillRect(x, y, w, h);
+            }
+            // عروق ذهبية خفيفة داخل لحاء الشجرة
+            g.strokeStyle = 'rgba(212, 175, 55, 0.25)';
+            g.lineWidth = 2;
+            for (let i = 0; i < 18; i++) {
+                g.beginPath();
+                let sx = Math.random() * 512;
+                g.moveTo(sx, 0);
+                for (let y = 64; y <= 512; y += 64) {
+                    sx += (Math.random() - 0.5) * 30;
+                    g.lineTo(sx, y);
+                }
+                g.stroke();
+            }
+            const tex = new THREE.CanvasTexture(c);
+            tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+            tex.repeat.set(2, 4);
+            return tex;
+        }
+
+        function createGrassGardenTexture() {
+            const c = document.createElement('canvas');
+            c.width = 1024; c.height = 1024;
+            const g = c.getContext('2d');
+            const grad = g.createRadialGradient(512, 512, 30, 512, 512, 512);
+            grad.addColorStop(0, '#291a0d');     // تربة الجذع المبارك
+            grad.addColorStop(0.11, '#1e2f18');  // حافة التربة
+            grad.addColorStop(0.16, '#0d472a');  // عشب الحديقة الزمردي المضاء
+            grad.addColorStop(0.55, '#072e1c');  // عشب البستان
+            grad.addColorStop(1, '#03120d');     // أفق الحديقة الليلي
+            g.fillStyle = grad;
+            g.fillRect(0, 0, 1024, 1024);
+
+            // تفاصيل أعشاب الحديقة
+            for (let i = 0; i < 6000; i++) {
+                const x = Math.random() * 1024;
+                const y = Math.random() * 1024;
+                const dist = Math.hypot(x - 512, y - 512);
+                if (dist > 68) {
+                    g.fillStyle = Math.random() > 0.5 ? 'rgba(16, 185, 129, 0.08)' : 'rgba(132, 204, 22, 0.06)';
+                    g.fillRect(x, y, 2, 4);
+                }
+            }
+            return new THREE.CanvasTexture(c);
+        }
+
+        const barkTexture = createBarkTexture();
+        const barkMaterial = new THREE.MeshStandardMaterial({
+            map: barkTexture,
+            bumpMap: barkTexture,
+            bumpScale: 0.35,
+            roughness: 0.88,
+            metalness: 0.08
+        });
+
+        // دالة بناء غصن خشبي ثلاثي الأبعاد متدرج السماكة (Tapered 3D Oak Branch)
+        function createTaperedBranchMesh(curve, rStart, rEnd, radialSegs, tubularSegs, mat) {
+            const geom = new THREE.TubeGeometry(curve, tubularSegs, 1, radialSegs, false);
+            const pos = geom.attributes.position;
+            const v = new THREE.Vector3();
+            const cPt = new THREE.Vector3();
+
+            for (let i = 0; i <= tubularSegs; i++) {
+                const t = i / tubularSegs;
+                // تدرج طبيعي في سماكة الغصن الخشبي مع عقد البلوط الطبيعية
+                const gnarl = 1.0 + 0.07 * Math.sin(t * Math.PI * 5);
+                const radius = (rStart * (1 - t) + rEnd * t) * gnarl;
+                curve.getPointAt(t, cPt);
+                for (let j = 0; j <= radialSegs; j++) {
+                    const idx = i * (radialSegs + 1) + j;
+                    if (idx < pos.count) {
+                        v.fromBufferAttribute(pos, idx);
+                        v.sub(cPt).multiplyScalar(radius).add(cPt);
+                        pos.setXYZ(idx, v.x, v.y, v.z);
+                    }
+                }
+            }
+            geom.computeVertexNormals();
+            const mesh = new THREE.Mesh(geom, mat || barkMaterial);
+            mesh.castShadow = true;
+            mesh.receiveShadow = true;
+            return mesh;
+        }
+
+        // ============================================================================
+        // 4. بناء الحديقة الملكية ثلاثية الأبعاد (العشب، النهر، الممشى الرخامي، الفوانيس)
+        // ============================================================================
+        const gardenGroup = new THREE.Group();
+        scene.add(gardenGroup);
+
+        // أ) أرضية البستان العشبي والتلة الترابية تحت الشجرة
+        const groundGeo = new THREE.CircleGeometry(115, 72);
+        groundGeo.rotateX(-Math.PI / 2);
+        const groundMat = new THREE.MeshStandardMaterial({
+            map: createGrassGardenTexture(),
+            roughness: 0.92,
+            metalness: 0.05
+        });
+        const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+        groundMesh.receiveShadow = true;
+        gardenGroup.add(groundMesh);
+
+        // تلة التربة الخصبة تحت جذع البلوط
+        const moundGeo = new THREE.ConeGeometry(11.5, 2.2, 48, 4, true);
+        const moundMat = new THREE.MeshStandardMaterial({ color: 0x2c1b0e, roughness: 0.95 });
+        const moundMesh = new THREE.Mesh(moundGeo, moundMat);
+        moundMesh.position.set(0, 0.95, 0);
+        gardenGroup.add(moundMesh);
+
+        // طوق حجري رخامي يحيط بأحواض الحديقة
+        const ringGeo = new THREE.TorusGeometry(28, 0.35, 12, 96);
+        ringGeo.rotateX(Math.PI / 2);
+        const marbleMat = new THREE.MeshStandardMaterial({
+            color: 0xe2e8f0,
+            roughness: 0.3,
+            metalness: 0.15
+        });
+        const gardenRing = new THREE.Mesh(ringGeo, marbleMat);
+        gardenRing.position.y = 0.15;
+        gardenGroup.add(gardenRing);
+
+        // ب) الممشى الرخامي المنحني (Marble Stepping Stones) كما في التصميم الفني
+        for (let i = 0; i < 16; i++) {
+            const t = i / 15;
+            const angle = 0.35 + t * 1.15;
+            const rad = 13.5 + t * 28;
+            const sx = -Math.cos(angle) * rad * 0.85;
+            const sz = Math.sin(angle) * rad;
+            const stoneGeo = new THREE.BoxGeometry(3.4, 0.22, 1.45);
+            const stone = new THREE.Mesh(stoneGeo, marbleMat);
+            stone.position.set(sx, 0.12, sz);
+            stone.rotation.y = -angle + Math.PI * 0.5;
+            stone.receiveShadow = true;
+            gardenGroup.add(stone);
+        }
+
+        // ج) جدول الماء الرقراق المتدفق في الحديقة (3D Flowing Water Stream)
+        const streamPoints = [
+            new THREE.Vector3(7, 0.08, 12),
+            new THREE.Vector3(11, 0.08, 19),
+            new THREE.Vector3(9.5, 0.08, 28),
+            new THREE.Vector3(14, 0.08, 39),
+            new THREE.Vector3(20, 0.08, 52)
+        ];
+        const streamCurve = new THREE.CatmullRomCurve3(streamPoints);
+        const streamGeo = new THREE.TubeGeometry(streamCurve, 48, 2.35, 16, false);
+        streamGeo.scale(1, 0.06, 1);
+        const streamMat = new THREE.MeshStandardMaterial({
+            color: 0x38bdf8,
+            emissive: 0x0284c7,
+            emissiveIntensity: 0.45,
+            roughness: 0.12,
+            metalness: 0.75,
+            transparent: true,
+            opacity: 0.88
+        });
+        const streamMesh = new THREE.Mesh(streamGeo, streamMat);
+        gardenGroup.add(streamMesh);
+
+        // د) فوانيس الحديقة الملكية المضيئة (الأرضية والمعلقة على الأغصان)
+        function createLantern3D(x, y, z, isHanging = false) {
+            const g = new THREE.Group();
+            g.position.set(x, y, z);
+
+            const frameMat = new THREE.MeshStandardMaterial({ color: 0xb45309, metalness: 0.8, roughness: 0.25 });
+            const glassMat = new THREE.MeshBasicMaterial({ color: 0xfef08a });
+
+            if (isHanging) {
+                // سلسلة التعليق بالغصن
+                const chainGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.8, 6);
+                const chain = new THREE.Mesh(chainGeo, frameMat);
+                chain.position.y = 1.25;
+                g.add(chain);
+            }
+
+            // جسم الفانوس الإسلامي
+            const bodyGeo = new THREE.CylinderGeometry(0.42, 0.34, 1.1, 6);
+            const body = new THREE.Mesh(bodyGeo, glassMat);
+            g.add(body);
+
+            const capGeo = new THREE.ConeGeometry(0.55, 0.5, 6);
+            const cap = new THREE.Mesh(capGeo, frameMat);
+            cap.position.y = 0.78;
+            g.add(cap);
+
+            const baseGeo = new THREE.CylinderGeometry(0.46, 0.52, 0.2, 6);
+            const base = new THREE.Mesh(baseGeo, frameMat);
+            base.position.y = -0.62;
+            g.add(base);
+
+            // هالة ضوئية حول الفانوس
+            const haloCanvas = document.createElement('canvas');
+            haloCanvas.width = 128; haloCanvas.height = 128;
+            const hCtx = haloCanvas.getContext('2d');
+            const hGrad = hCtx.createRadialGradient(64, 64, 4, 64, 64, 64);
+            hGrad.addColorStop(0, 'rgba(254, 240, 138, 1)');
+            hGrad.addColorStop(0.35, 'rgba(245, 158, 11, 0.55)');
+            hGrad.addColorStop(1, 'rgba(245, 158, 11, 0)');
+            hCtx.fillStyle = hGrad;
+            hCtx.fillRect(0, 0, 128, 128);
+
+            const haloSprite = new THREE.Sprite(new THREE.SpriteMaterial({
+                map: new THREE.CanvasTexture(haloCanvas),
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            }));
+            haloSprite.scale.set(4.5, 4.5, 1);
+            g.add(haloSprite);
+
+            return g;
+        }
+
+        // فوانيس أرضية بمحاذاة جدول الماء والممشى الرخامي
+        [
+            [6.2, 0.75, 14.5],
+            [8.2, 0.75, 21.0],
+            [13.2, 0.75, 19.5],
+            [-8.5, 0.75, 16.5],
+            [11.5, 0.75, 31.0]
+        ].forEach(([lx, ly, lz]) => {
+            gardenGroup.add(createLantern3D(lx, ly, lz, false));
+        });
+
+        // ============================================================================
+        // 5. بناء شجرة البلوط العريضة الواقعية (الجذع، الجذور، الأغصان، ومظلة الورق)
+        // ============================================================================
+        const treeGroup = new THREE.Group();
+        scene.add(treeGroup);
+
+        // أ) الجذور البارزة الضخمة لشجرة البلوط (10 جذور ممتدة في التربة)
+        for (let i = 0; i < 10; i++) {
+            const ang = (i / 10) * Math.PI * 2 + (i % 2) * 0.15;
+            const rCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(Math.cos(ang) * 1.4, 7.5, Math.sin(ang) * 1.4),
+                new THREE.Vector3(Math.cos(ang) * 3.2, 3.8, Math.sin(ang) * 3.2),
+                new THREE.Vector3(Math.cos(ang) * 6.2, 1.4, Math.sin(ang) * 6.2),
+                new THREE.Vector3(Math.cos(ang) * 9.8, 0.25, Math.sin(ang) * 9.8)
+            ]);
+            treeGroup.add(createTaperedBranchMesh(rCurve, 1.55, 0.28, 10, 20, barkMaterial));
+        }
+
+        // ب) الجذع الرئيسي الضخم والمهيب لشجرة البلوط (يتكون من قلب الجذع + أضلاع خشبية ملتفة)
+        const mainTrunkCurve = new THREE.CatmullRomCurve3([
+            new THREE.Vector3(0, 0.5, 0),
+            new THREE.Vector3(0.2, 4.5, 0.15),
+            new THREE.Vector3(-0.15, 8.8, -0.1),
+            new THREE.Vector3(0, 12.8, 0)
+        ]);
+        treeGroup.add(createTaperedBranchMesh(mainTrunkCurve, 3.8, 2.55, 20, 28, barkMaterial));
+
+        // أضلاع الجذع والعروق الذهبية المضيئة (كما في صورة الشجرة الملكية)
+        const goldVeinMat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
+        for (let i = 0; i < 6; i++) {
+            const a0 = (i / 6) * Math.PI * 2;
+            const ribCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(Math.cos(a0) * 4.2, 1.0, Math.sin(a0) * 4.2),
+                new THREE.Vector3(Math.cos(a0 + 0.25) * 2.9, 5.2, Math.sin(a0 + 0.25) * 2.9),
+                new THREE.Vector3(Math.cos(a0 + 0.45) * 2.4, 9.5, Math.sin(a0 + 0.45) * 2.4),
+                new THREE.Vector3(Math.cos(a0 + 0.6) * 2.6, 12.6, Math.sin(a0 + 0.6) * 2.6)
+            ]);
+            treeGroup.add(createTaperedBranchMesh(ribCurve, 1.15, 0.72, 10, 22, barkMaterial));
+
+            // عرق ذهبي رفيع يلمع بين أخاديد لحاء البلوط
+            const veinCurve = new THREE.CatmullRomCurve3([
+                new THREE.Vector3(Math.cos(a0 + 0.12) * 4.0, 1.2, Math.sin(a0 + 0.12) * 4.0),
+                new THREE.Vector3(Math.cos(a0 + 0.32) * 2.95, 5.5, Math.sin(a0 + 0.32) * 2.95),
+                new THREE.Vector3(Math.cos(a0 + 0.52) * 2.52, 10.2, Math.sin(a0 + 0.52) * 2.52)
+            ]);
+            const veinGeo = new THREE.TubeGeometry(veinCurve, 20, 0.06, 6, false);
+            treeGroup.add(new THREE.Mesh(veinGeo, goldVeinMat));
+        }
+
+        // موقع عقدة الجذع المؤسس (عوض علام وزوجته رحمة)
+        nodes[0].pos3D.set(0, 7.2, 3.8);
+
+        // ============================================================================
+        // 6. حساب التوزيع العضوي داخل تاج شجرة البلوط وبناء الأغصان الخشبية والورق
+        // ============================================================================
+        const branchMeshesByNode = new Map();
+
+        BRANCH_CONFIGS.forEach((bCfg, bIdx) => {
+            const branchHead = nodes.find(n => n.branchId === bCfg.id && n.parentIndex === 0);
+            if (!branchHead) return;
+
+            const sideSign = bCfg.spreadX >= 0 ? 1 : -1;
+            // مسار الغصن الرئيسي العريض الممتد من الجذع نحو مظلة البلوط
+            const p0 = new THREE.Vector3(sideSign * 1.4, 11.2, 0);
+            const p1 = new THREE.Vector3(bCfg.spreadX * 0.36, 13.2 + (bIdx % 2) * 1.4, bCfg.depthZ * 0.35);
+            const p2 = new THREE.Vector3(bCfg.spreadX * 0.68, bCfg.liftY - 1.5, bCfg.depthZ * 0.75);
+            const p3 = new THREE.Vector3(bCfg.spreadX * 0.88, bCfg.liftY, bCfg.depthZ);
+
+            const mainBoughCurve = new THREE.CatmullRomCurve3([p0, p1, p2, p3]);
+            const boughMesh = createTaperedBranchMesh(mainBoughCurve, 1.55, 0.52, 12, 26, barkMaterial);
+            treeGroup.add(boughMesh);
+
+            // وضع ورقة/وسام الفرع الرئيسي في منتصف الغصن الرئيسي الواضح
+            const headPos = mainBoughCurve.getPointAt(0.58);
+            branchHead.pos3D.copy(headPos);
+            branchHead.boughCurve = mainBoughCurve;
+
+            // تعليق فانوس ملكي مضيء أسفل كل غصن رئيسي من أغصان البلوط الثمانية
+            const lanternPt = mainBoughCurve.getPointAt(0.48);
+            treeGroup.add(createLantern3D(lanternPt.x, lanternPt.y - 1.5, lanternPt.z, true));
+
+            // توزيع أبناء الجيل الثاني (ج٢) كفروع خشبية ثانوية تنبت من الغصن الرئيسي داخل تاج الشجرة
+            const gen2List = branchHead.children || [];
+            const g2Count = Math.max(1, gen2List.length);
+
+            gen2List.forEach((g2Node, i2) => {
+                const tOnBough = 0.38 + (i2 / g2Count) * 0.58;
+                const startPt = mainBoughCurve.getPointAt(Math.min(0.95, tOnBough));
+
+                // زاوية التفرع داخل قبة البلوط العريضة
+                const fanAngle = ((i2 - (g2Count - 1) * 0.5) / Math.max(1, g2Count)) * 1.45;
+                const outDirX = sideSign * (4.2 + (i2 % 3) * 2.1);
+                const liftY = 3.2 + (i2 % 2) * 2.4 + Math.cos(fanAngle) * 2.2;
+                const shiftZ = Math.sin(fanAngle) * 7.5 + ((i2 % 2 === 0 ? 1 : -1) * 2.2);
+
+                const endPt = new THREE.Vector3(
+                    startPt.x + outDirX,
+                    Math.min(31, startPt.y + liftY),
+                    startPt.z + shiftZ
+                );
+                const midPt = startPt.clone().lerp(endPt, 0.5);
+                midPt.y += 1.2;
+
+                const subCurve = new THREE.CatmullRomCurve3([startPt, midPt, endPt]);
+                treeGroup.add(createTaperedBranchMesh(subCurve, 0.46, 0.16, 8, 14, barkMaterial));
+                g2Node.pos3D.copy(endPt);
+
+                // توزيع الجيل الثالث (ج٣) كأغصان فتية وأوراق شجر متفرعة حول غصن الأب داخل التاج
+                const gen3List = g2Node.children || [];
+                const g3Count = gen3List.length;
+                gen3List.forEach((g3Node, i3) => {
+                    const theta = (i3 / Math.max(1, g3Count)) * Math.PI * 1.65 - 0.8;
+                    const radius3 = 2.8 + (i3 % 3) * 1.35;
+                    const g3Pos = new THREE.Vector3(
+                        endPt.x + sideSign * (1.5 + Math.cos(theta) * radius3 * 0.85),
+                        Math.min(34.5, Math.max(13.5, endPt.y + 1.4 + Math.sin(theta) * 2.4 + (i3 % 2) * 1.3)),
+                        endPt.z + Math.sin(theta) * radius3 * 1.15
+                    );
+
+                    const twigCurve = new THREE.CatmullRomCurve3([
+                        endPt,
+                        endPt.clone().lerp(g3Pos, 0.5).add(new THREE.Vector3(0, 0.45, 0)),
+                        g3Pos
+                    ]);
+                    treeGroup.add(createTaperedBranchMesh(twigCurve, 0.15, 0.06, 6, 8, barkMaterial));
+                    g3Node.pos3D.copy(g3Pos);
+
+                    // توزيع الجيل الرابع (ج٤) كأوراق يانعة في أطراف الغصن
+                    const gen4List = g3Node.children || [];
+                    const g4Count = gen4List.length;
+                    gen4List.forEach((g4Node, i4) => {
+                        const phi = (i4 / Math.max(1, g4Count)) * Math.PI * 1.5 - 0.75;
+                        const g4Pos = new THREE.Vector3(
+                            g3Pos.x + sideSign * (1.3 + Math.cos(phi) * 1.8),
+                            Math.min(36.5, g3Pos.y + 0.95 + (i4 % 2) * 1.05),
+                            g3Pos.z + Math.sin(phi) * 2.1
+                        );
+                        const fineTwig = new THREE.CatmullRomCurve3([g3Pos, g4Pos]);
+                        treeGroup.add(createTaperedBranchMesh(fineTwig, 0.06, 0.025, 5, 6, barkMaterial));
+                        g4Node.pos3D.copy(g4Pos);
+                    });
+                });
+            });
+        });
+
+        // فض أي تقارب شديد بين الأوراق داخل الفضاء ثلاثي الأبعاد لضمان وضوح قراءة كل ورقة
+        for (let pass = 0; pass < 4; pass++) {
+            for (let i = 1; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const a = nodes[i].pos3D;
+                    const b = nodes[j].pos3D;
+                    const diff = a.clone().sub(b);
+                    const dist = diff.length();
+                    const minDist = (nodes[i].gen <= 2 || nodes[j].gen <= 2) ? 2.6 : 1.75;
+                    if (dist < minDist && dist > 0.001) {
+                        diff.normalize().multiplyScalar((minDist - dist) * 0.5);
+                        a.add(diff);
+                        b.sub(diff);
+                    }
+                }
+            }
+        }
+
+        // ============================================================================
+        // 7. بناء مظلة أوراق شجر البلوط الكثيفة (Lush Volumetric 3D Oak Foliage Canopy)
+        // ============================================================================
+        function createBackgroundLeafClusterTexture() {
+            const c = document.createElement('canvas');
+            c.width = 256; c.height = 256;
+            const g = c.getContext('2d');
+            // رسم عنقود أوراق بلوط خضراء مورقة
+            const leafColors = ['#052e16', '#064e3b', '#065f46', '#14532d', '#166534', '#15803d', '#10b981'];
+            for (let i = 0; i < 26; i++) {
+                const ang = (i / 26) * Math.PI * 2 + Math.random() * 0.3;
+                const rad = 20 + Math.random() * 72;
+                const lx = 128 + Math.cos(ang) * rad;
+                const ly = 128 + Math.sin(ang) * rad;
+                g.save();
+                g.translate(lx, ly);
+                g.rotate(ang + Math.PI * 0.5);
+                g.fillStyle = leafColors[i % leafColors.length];
+                g.beginPath();
+                g.ellipse(0, 0, 14 + Math.random() * 10, 24 + Math.random() * 12, 0, 0, Math.PI * 2);
+                g.fill();
+                g.strokeStyle = 'rgba(167, 243, 208, 0.18)';
+                g.lineWidth = 1.2;
+                g.stroke();
+                g.restore();
+            }
+            return new THREE.CanvasTexture(c);
+        }
+
+        const foliageSpriteMat = new THREE.SpriteMaterial({
+            map: createBackgroundLeafClusterTexture(),
+            transparent: true,
+            opacity: 0.86,
+            depthWrite: false
+        });
+
+        // توزيع 480 عنقود أوراق شجر مورق لتشكيل قبة شجرة البلوط العريضة الوارفة
+        const canopyClusterGroup = new THREE.Group();
+        treeGroup.add(canopyClusterGroup);
+
+        for (let i = 0; i < 480; i++) {
+            // قبة عريضة جداً (نصف قطر أفقي 38، وارتفاع من 13 إلى 37)
+            const u = Math.random();
+            const theta = Math.random() * Math.PI * 2;
+            const horizR = Math.pow(u, 0.55) * 37.5;
+            const x = Math.cos(theta) * horizR;
+            const z = Math.sin(theta) * (horizR * 0.68);
+            // معادلة قبة البلوط العريضة
+            const domeHeight = Math.sqrt(Math.max(0, 1 - Math.pow(horizR / 39, 2))) * 18;
+            const y = 14.5 + domeHeight + (Math.random() - 0.4) * 5.5;
+
+            const sp = new THREE.Sprite(foliageSpriteMat);
+            const sc = 4.2 + Math.random() * 4.5;
+            sp.scale.set(sc, sc, 1);
+            sp.position.set(x, y, z);
+            canopyClusterGroup.add(sp);
+        }
+
+        // ============================================================================
+        // 8. رسم أوراق الشجر الحقيقية المنقوش عليها أسماء أفراد العائلة (Named Oak Leaves)
+        // ============================================================================
+        function createPersonLeafTexture(node, isHighlighted = false) {
+            const c = document.createElement('canvas');
+            c.width = 512;
+            c.height = 220;
+            const ctx = c.getContext('2d');
+
+            const isRoot = node.index === 0;
+            const isBranchHead = node.parentIndex === 0;
+            const bCfg = BRANCH_MAP[node.branchId];
+
+            ctx.save();
+            // رسم شكل ورقة شجر البلوط/السدر العضوية مع العرق الوسطي
+            ctx.beginPath();
+            ctx.moveTo(38, 110); // عنق الورقة
+            ctx.bezierCurveTo(95, 22, 240, 14, 385, 34);
+            ctx.bezierCurveTo(445, 44, 482, 78, 498, 110); // رأس الورقة المدبب
+            ctx.bezierCurveTo(482, 142, 445, 176, 385, 186);
+            ctx.bezierCurveTo(240, 206, 95, 198, 38, 110);
+            ctx.closePath();
+
+            // تدرج لون الورقة النباتي الواقعي
+            const leafGrad = ctx.createLinearGradient(38, 20, 490, 190);
+            if (isRoot) {
+                leafGrad.addColorStop(0, '#78350f');
+                leafGrad.addColorStop(0.5, '#b45309');
+                leafGrad.addColorStop(1, '#451a03');
+            } else if (isHighlighted) {
+                leafGrad.addColorStop(0, '#fde047');
+                leafGrad.addColorStop(0.5, '#eab308');
+                leafGrad.addColorStop(1, '#ca8a04');
+            } else if (isBranchHead) {
+                leafGrad.addColorStop(0, '#065f46');
+                leafGrad.addColorStop(0.55, '#047857');
+                leafGrad.addColorStop(1, '#064e3b');
+            } else if (node.gen === 2) {
+                leafGrad.addColorStop(0, '#0f5132');
+                leafGrad.addColorStop(0.6, '#14532d');
+                leafGrad.addColorStop(1, '#052e16');
+            } else {
+                leafGrad.addColorStop(0, '#14532d');
+                leafGrad.addColorStop(0.5, '#064e3b');
+                leafGrad.addColorStop(1, '#022c22');
+            }
+
+            ctx.fillStyle = leafGrad;
+            ctx.shadowColor = isHighlighted ? '#fde047' : 'rgba(0,0,0,0.65)';
+            ctx.shadowBlur = isHighlighted ? 22 : 12;
+            ctx.fill();
+
+            // إطار الورقة وعروقها النباتية الدقيقة
+            ctx.lineWidth = isRoot || isBranchHead || isHighlighted ? 5.5 : 3.5;
+            ctx.strokeStyle = isRoot || isHighlighted
+                ? '#fde047'
+                : (isBranchHead ? '#fbbf24' : (bCfg ? bCfg.border : '#34d399'));
+            ctx.stroke();
+
+            // عنق الورقة الخشبي
+            ctx.beginPath();
+            ctx.moveTo(8, 110);
+            ctx.lineTo(42, 110);
+            ctx.lineWidth = 6;
+            ctx.strokeStyle = '#b45309';
+            ctx.stroke();
+
+            // عروق الورقة الداخلية الشفافة
+            ctx.strokeStyle = isHighlighted ? 'rgba(120, 53, 15, 0.22)' : 'rgba(167, 243, 208, 0.16)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(42, 110);
+            ctx.lineTo(475, 110);
+            ctx.stroke();
+            [140, 230, 320, 400].forEach(vx => {
+                ctx.beginPath();
+                ctx.moveTo(vx, 110);
+                ctx.lineTo(vx + 35, 52);
+                ctx.moveTo(vx, 110);
+                ctx.lineTo(vx + 35, 168);
+                ctx.stroke();
+            });
+
+            // كتابة اسم الفرد مباشرة على سطح الورقة
+            ctx.shadowBlur = 0;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
+            const displayTxt = (isRoot || isBranchHead) ? node.name : node.shortName;
+            ctx.font = `700 ${isRoot ? 34 : (isBranchHead ? 32 : 30)}px 'Amiri', 'Tajawal', serif`;
+            ctx.fillStyle = isHighlighted ? '#040911' : (isRoot || isBranchHead ? '#fef08a' : '#f8fafc');
+            ctx.fillText(displayTxt, 268, isRoot || isBranchHead ? 94 : 102);
+
+            if (isRoot) {
+                ctx.font = `700 20px 'Tajawal', sans-serif`;
+                ctx.fillStyle = '#fde047';
+                ctx.fillText('👑 الجذع المؤسس لعائلة آل علام', 268, 142);
+            } else if (isBranchHead && bCfg) {
+                ctx.font = `700 20px 'Tajawal', sans-serif`;
+                ctx.fillStyle = isHighlighted ? '#1e293b' : '#6ee7b7';
+                ctx.fillText(`غصن ${bCfg.short} (${bCfg.count} فرداً)`, 268, 142);
+            } else if (node.gen === 2) {
+                ctx.font = `600 18px 'Tajawal', sans-serif`;
+                ctx.fillStyle = isHighlighted ? '#1e293b' : '#fde047';
+                ctx.fillText(`الجيل الثاني · ${bCfg ? bCfg.short : ''}`, 268, 144);
+            }
+
+            ctx.restore();
+            const tex = new THREE.CanvasTexture(c);
+            tex.needsUpdate = true;
+            return tex;
+        }
+
+        const leafSprites = [];
+        const leavesGroup = new THREE.Group();
+        treeGroup.add(leavesGroup);
+
+        nodes.forEach(node => {
+            const normalTex = createPersonLeafTexture(node, false);
+            const mat = new THREE.SpriteMaterial({
+                map: normalTex,
+                transparent: true,
+                depthTest: true
+            });
+            const sprite = new THREE.Sprite(mat);
+            sprite.position.copy(node.pos3D);
+
+            // حجم الورقة حسب الجيل داخل الشجرة
+            let baseW = 3.2, baseH = 1.38;
+            if (node.index === 0) {
+                baseW = 7.2; baseH = 3.1;
+            } else if (node.parentIndex === 0) {
+                baseW = 5.4; baseH = 2.32;
+            } else if (node.gen === 2) {
+                baseW = 3.85; baseH = 1.65;
+            } else if (node.gen === 3) {
+                baseW = 3.05; baseH = 1.3;
+            } else {
+                baseW = 2.65; baseH = 1.14;
+            }
+
+            sprite.scale.set(baseW, baseH, 1);
+            sprite.userData = { node, baseW, baseH, normalTex, highTex: null };
+            node.sprite = sprite;
+            leafSprites.push(sprite);
+            leavesGroup.add(sprite);
+        });
+
+        // خط التوهج الذهبي لمسار النسب عند اختيار أي ورقة
+        let activeLineageMesh = null;
+        function highlightLineage3D(targetNode) {
+            if (activeLineageMesh) {
+                treeGroup.remove(activeLineageMesh);
+                activeLineageMesh.geometry.dispose();
+                activeLineageMesh = null;
+            }
+            // إعادة الأوراق لحالتها الطبيعية
+            leafSprites.forEach(sp => {
+                const nd = sp.userData.node;
+                sp.material.map = sp.userData.normalTex;
+                sp.scale.set(sp.userData.baseW, sp.userData.baseH, 1);
+            });
+
+            if (!targetNode) return;
+
+            const chain = [];
+            let cur = targetNode;
+            while (cur) {
+                chain.push(cur);
+                if (cur.sprite) {
+                    if (!cur.sprite.userData.highTex) {
+                        cur.sprite.userData.highTex = createPersonLeafTexture(cur, true);
+                    }
+                    cur.sprite.material.map = cur.sprite.userData.highTex;
+                    cur.sprite.scale.set(cur.sprite.userData.baseW * 1.28, cur.sprite.userData.baseH * 1.28, 1);
+                }
+                cur = cur.parentIndex >= 0 ? nodes[cur.parentIndex] : null;
+            }
+
+            if (chain.length >= 2) {
+                const pts = chain.map(n => n.pos3D.clone());
+                const curve = new THREE.CatmullRomCurve3(pts);
+                const geo = new THREE.TubeGeometry(curve, 36, 0.22, 8, false);
+                const mat = new THREE.MeshBasicMaterial({ color: 0xfde047 });
+                activeLineageMesh = new THREE.Mesh(geo, mat);
+                treeGroup.add(activeLineageMesh);
+            }
+        }
+
+        // ============================================================================
+        // 9. السماء الليلية، الهلال، واليراعات الضوئية السابحة (3D Stars, Moon & Fireflies)
+        // ============================================================================
+        // النجوم
+        const starsGeo = new THREE.BufferGeometry();
+        const starPositions = new Float32Array(900 * 3);
+        for (let i = 0; i < 900; i++) {
+            const r = 150 + Math.random() * 80;
+            const theta = Math.random() * Math.PI * 2;
+            const phi = Math.random() * Math.PI * 0.46;
+            starPositions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+            starPositions[i * 3 + 1] = Math.max(12, r * Math.cos(phi));
+            starPositions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
+        }
+        starsGeo.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMat = new THREE.PointsMaterial({ color: 0xfef08a, size: 0.85, transparent: true, opacity: 0.8 });
+        scene.add(new THREE.Points(starsGeo, starsMat));
+
+        // الهلال الملكي في السماء
+        const moonCanvas = document.createElement('canvas');
+        moonCanvas.width = 256; moonCanvas.height = 256;
+        const mCtx = moonCanvas.getContext('2d');
+        mCtx.fillStyle = '#fef9c3';
+        mCtx.shadowColor = '#fde047';
+        mCtx.shadowBlur = 30;
+        mCtx.beginPath();
+        mCtx.arc(128, 128, 68, 0, Math.PI * 2);
+        mCtx.fill();
+        mCtx.globalCompositeOperation = 'destination-out';
+        mCtx.beginPath();
+        mCtx.arc(154, 112, 60, 0, Math.PI * 2);
+        mCtx.fill();
+        const moonSprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(moonCanvas), transparent: true }));
+        moonSprite.scale.set(18, 18, 1);
+        moonSprite.position.set(52, 58, -75);
+        scene.add(moonSprite);
+
+        // الجزيئات المضيئة (Fireflies) حول أغصان البلوط والحديقة
+        const fireflyCount = 220;
+        const fireflyGeo = new THREE.BufferGeometry();
+        const fireflyPos = new Float32Array(fireflyCount * 3);
+        const fireflySpeeds = [];
+        for (let i = 0; i < fireflyCount; i++) {
+            fireflyPos[i * 3] = (Math.random() - 0.5) * 85;
+            fireflyPos[i * 3 + 1] = 1.5 + Math.random() * 36;
+            fireflyPos[i * 3 + 2] = (Math.random() - 0.5) * 65;
+            fireflySpeeds.push({
+                vx: (Math.random() - 0.5) * 0.04,
+                vy: (Math.random() - 0.5) * 0.025,
+                vz: (Math.random() - 0.5) * 0.04
+            });
+        }
+        fireflyGeo.setAttribute('position', new THREE.BufferAttribute(fireflyPos, 3));
+        const fireflyMat = new THREE.PointsMaterial({
+            color: 0xfde047,
+            size: 0.65,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending
+        });
+        const fireflySystem = new THREE.Points(fireflyGeo, fireflyMat);
+        scene.add(fireflySystem);
+
+        // ============================================================================
+        // 10. نظام الكاميرا ثلاثية الأبعاد (Orbit, Pan, Zoom & Smooth Fly-To)
+        // ============================================================================
+        const camState = {
+            theta: 0.0,           // زاوية الدوران الأفقية
+            phi: 1.34,            // زاوية الارتفاع الرأسية
+            radius: 72,           // المسافة من الهدف
+            target: new THREE.Vector3(0, 17.5, 0),
+            // القيم المستهدفة للحركة السلسة
+            tTheta: 0.0,
+            tPhi: 1.34,
+            tRadius: 72,
+            tTarget: new THREE.Vector3(0, 17.5, 0),
+            autoOrbit: false
+        };
+
+        function resetCameraToGarden() {
+            const isMobile = window.innerWidth < 768;
+            camState.tTheta = 0.0;
+            camState.tPhi = 1.34;
+            camState.tRadius = isMobile ? 92 : 70;
+            camState.tTarget.set(0, 17.5, 0);
+        }
+        resetCameraToGarden();
+        camState.radius = camState.tRadius;
+
+        function flyToNode3D(node) {
+            if (!node) return;
+            const p = node.pos3D;
+            camState.tTarget.copy(p);
+            const dist = node.index === 0 ? 22 : (node.parentIndex === 0 ? 20 : 12.5);
+            camState.tRadius = dist;
+            camState.tTheta = Math.atan2(p.x * 0.35, Math.max(12, p.z + 18));
+            camState.tPhi = 1.32;
+        }
+
+        // التحكم بالماوس واللمس (Drag to Orbit, Right-Drag/Two-finger to Pan, Wheel/Pinch to Zoom)
+        let isPointerDown = false;
+        let pointerMoved = false;
+        let prevX = 0, prevY = 0;
+        let pinchDist = 0;
+        let pointerButton = 0;
+
+        container.addEventListener('pointerdown', e => {
+            isPointerDown = true;
+            pointerMoved = false;
+            prevX = e.clientX;
+            prevY = e.clientY;
+            pointerButton = e.button;
+            container.classList.add('dragging');
+        });
+
+        window.addEventListener('pointermove', e => {
+            if (!isPointerDown) {
+                handleHoverRaycast(e.clientX, e.clientY);
+                return;
+            }
+            const dx = e.clientX - prevX;
+            const dy = e.clientY - prevY;
+            if (Math.hypot(dx, dy) > 4) pointerMoved = true;
+            prevX = e.clientX;
+            prevY = e.clientY;
+
+            if (pointerButton === 2 || e.shiftKey) {
+                // تحريك أفقي ورأسي (Pan)
+                const panScale = camState.radius * 0.0018;
+                camState.tTarget.x -= dx * panScale;
+                camState.tTarget.y += dy * panScale;
+            } else {
+                // دوران ثلاثي الأبعاد حول الشجرة والحديقة
+                camState.tTheta -= dx * 0.0065;
+                camState.tPhi = Math.max(0.35, Math.min(1.53, camState.tPhi - dy * 0.0055));
+            }
+        });
+
+        window.addEventListener('pointerup', e => {
+            if (isPointerDown && !pointerMoved) {
+                handleClickRaycast(e.clientX, e.clientY);
+            }
+            isPointerDown = false;
+            container.classList.remove('dragging');
+        });
+
+        container.addEventListener('contextmenu', e => e.preventDefault());
+
+        container.addEventListener('wheel', e => {
+            e.preventDefault();
+            const factor = e.deltaY > 0 ? 1.1 : 0.9;
+            camState.tRadius = Math.max(7, Math.min(135, camState.tRadius * factor));
+        }, { passive: false });
+
+        // دعم اللمس المزدوج (Pinch Zoom) على الجوال
+        container.addEventListener('touchstart', e => {
+            if (e.touches.length === 2) {
+                pinchDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: true });
+
+        container.addEventListener('touchmove', e => {
+            if (e.touches.length === 2 && pinchDist > 0) {
+                const newDist = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                const scale = pinchDist / Math.max(10, newDist);
+                camState.tRadius = Math.max(7, Math.min(135, camState.tRadius * scale));
+                pinchDist = newDist;
+            }
+        }, { passive: true });
+
+        // ============================================================================
+        // 11. التقاط النقرات والتمرير على أوراق الشجر ثلاثية الأبعاد (Raycasting)
+        // ============================================================================
+        const raycaster = new THREE.Raycaster();
+        const mouseNDC = new THREE.Vector2();
+        const tooltip = document.getElementById('leaf-tooltip');
+
+        function pickLeafSprite(clientX, clientY) {
+            mouseNDC.x = (clientX / window.innerWidth) * 2 - 1;
+            mouseNDC.y = -(clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouseNDC, camera);
+            const hits = raycaster.intersectObjects(leafSprites, false);
+            for (let i = 0; i < hits.length; i++) {
+                if (hits[i].object.visible) return hits[i].object.userData.node;
+            }
+            return null;
+        }
+
+        function handleHoverRaycast(cx, cy) {
+            const nd = pickLeafSprite(cx, cy);
+            if (nd) {
+                container.style.cursor = 'pointer';
+                tooltip.style.display = 'block';
+                tooltip.style.left = cx + 'px';
+                tooltip.style.top = cy + 'px';
+                const b = BRANCH_MAP[nd.branchId];
+                tooltip.innerHTML = `🍃 <strong>${nd.name}</strong> ${b ? `<span style="color:#6ee7b7">(${b.short})</span>` : ''}`;
+            } else {
+                container.style.cursor = isPointerDown ? 'grabbing' : 'grab';
+                tooltip.style.display = 'none';
+            }
+        }
+
+        function handleClickRaycast(cx, cy) {
+            const nd = pickLeafSprite(cx, cy);
+            if (nd) {
+                selectPersonLeaf(nd, true);
+            }
+        }
+
+        // ============================================================================
+        // 12. واجهة المستخدم: بطاقة الورقة، البحث، والفلاتر
+        // ============================================================================
+        let showAllLeafNames = true;
+        let currentBranchFilter = 'all';
+
+        function updateLeavesVisibility() {
+            leafSprites.forEach(sp => {
+                const nd = sp.userData.node;
+                const branchMatch = (currentBranchFilter === 'all' || String(currentBranchFilter) === '0' || nd.branchId === parseInt(currentBranchFilter, 10) || nd.index === 0);
+                if (!branchMatch) {
+                    sp.material.opacity = 0.14;
+                } else {
+                    sp.material.opacity = 1.0;
+                }
+                if (showAllLeafNames) {
+                    sp.visible = true;
+                } else {
+                    // إظهار الأغصان الرئيسية والجيل الثاني دائماً، وبقية الأوراق عند الاقتراب بالكاميرا
+                    sp.visible = (nd.gen <= 2 || camState.radius < 42 || !branchMatch === false && currentBranchFilter !== 'all');
+                }
+            });
+        }
+
+        function selectPersonLeaf(node, fly = true) {
+            if (!node) return;
+            highlightLineage3D(node);
+            if (fly) flyToNode3D(node);
+
+            const modal = document.getElementById('leaf-modal');
+            modal.classList.remove('hidden');
+
+            const bCfg = BRANCH_MAP[node.branchId];
+            document.getElementById('modal-branch-badge').textContent = bCfg ? `🌿 ${bCfg.name}` : '👑 الجذع المؤسس للعائلة';
+            document.getElementById('modal-person-name').textContent = node.name;
+            document.getElementById('modal-meta').textContent = node.meta || `الجيل ${node.gen} · سلالة آل علام المباركة`;
+
+            // بناء سلسلة النسب
+            const chain = [];
+            let cur = node;
+            while (cur) {
+                chain.unshift(cur);
+                cur = cur.parentIndex >= 0 ? nodes[cur.parentIndex] : null;
+            }
+            const lineageEl = document.getElementById('modal-lineage');
+            lineageEl.innerHTML = '';
+            chain.forEach((item, idx) => {
+                const span = document.createElement('span');
+                span.className = 'chain-step';
+                span.textContent = item.shortName;
+                span.onclick = () => selectPersonLeaf(item, true);
+                lineageEl.appendChild(span);
+                if (idx < chain.length - 1) {
+                    const arr = document.createElement('span');
+                    arr.style.color = '#64748b';
+                    arr.textContent = '←';
+                    lineageEl.appendChild(arr);
+                }
+            });
+
+            // الأبناء المتفرعون
+            const childrenWrap = document.getElementById('modal-children-section');
+            const childrenGrid = document.getElementById('modal-children');
+            childrenGrid.innerHTML = '';
+            if (node.children && node.children.length > 0) {
+                childrenWrap.style.display = 'block';
+                document.getElementById('modal-children-label').textContent = `🍃 الأوراق المتفرعة (${node.children.length}):`;
+                node.children.forEach(ch => {
+                    const chip = document.createElement('button');
+                    chip.className = 'sub-leaf-chip';
+                    chip.textContent = `🍃 ${ch.shortName}`;
+                    chip.onclick = () => selectPersonLeaf(ch, true);
+                    childrenGrid.appendChild(chip);
+                });
+            } else {
+                childrenWrap.style.display = 'none';
+            }
+        }
+
+        document.getElementById('btn-close-modal').onclick = () => {
+            document.getElementById('leaf-modal').classList.add('hidden');
+            highlightLineage3D(null);
+        };
+
+        // أزرار الشريط السفلي (الفروع الثمانية)
+        document.querySelectorAll('.branch-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const bVal = btn.dataset.branch;
+                currentBranchFilter = bVal;
+                updateLeavesVisibility();
+
+                if (bVal === 'all') {
+                    highlightLineage3D(null);
+                    document.getElementById('leaf-modal').classList.add('hidden');
+                    resetCameraToGarden();
+                } else if (bVal === '0') {
+                    selectPersonLeaf(nodes[0], true);
+                } else {
+                    const bId = parseInt(bVal, 10);
+                    const headNode = nodes.find(n => n.branchId === bId && n.parentIndex === 0);
+                    if (headNode) selectPersonLeaf(headNode, true);
+                }
+            };
+        });
+
+        // البحث الفوري
+        const searchInput = document.getElementById('search-input');
+        const searchClear = document.getElementById('search-clear');
+        const searchResults = document.getElementById('search-results');
+
+        searchInput.addEventListener('input', () => {
+            const q = searchInput.value.trim();
+            searchClear.style.display = q ? 'block' : 'none';
+            if (!q) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            const matches = nodes.filter(n => n.name.includes(q) || n.meta.includes(q)).slice(0, 18);
+            searchResults.innerHTML = '';
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div style="padding:12px; color:#94a3b8; font-size:12.5px;">لا توجد ورقة مطابقة لهذا الاسم</div>';
+            } else {
+                matches.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    const b = BRANCH_MAP[m.branchId];
+                    div.innerHTML = `<span>🍃 <strong>${m.name}</strong></span><span style="font-size:11px; color:#6ee7b7;">${b ? b.short : 'الجذع'}</span>`;
+                    div.onclick = () => {
+                        searchResults.style.display = 'none';
+                        searchInput.value = m.name;
+                        selectPersonLeaf(m, true);
+                    };
+                    searchResults.appendChild(div);
+                });
+            }
+            searchResults.style.display = 'block';
+        });
+
+        searchClear.onclick = () => {
+            searchInput.value = '';
+            searchClear.style.display = 'none';
+            searchResults.style.display = 'none';
+        };
+
+        // أزرار التحكم بالمنظر
+        document.getElementById('btn-leaf-density').onclick = function() {
+            showAllLeafNames = !showAllLeafNames;
+            this.classList.toggle('active', showAllLeafNames);
+            this.textContent = showAllLeafNames ? '🍃 إظهار كل أوراق الأسماء' : '🌿 إظهار الأوراق عند الاقتراب';
+            updateLeavesVisibility();
+        };
+
+        document.getElementById('btn-auto-orbit').onclick = function() {
+            camState.autoOrbit = !camState.autoOrbit;
+            this.classList.toggle('active', camState.autoOrbit);
+        };
+
+        document.getElementById('btn-reset-cam').onclick = () => {
+            currentBranchFilter = 'all';
+            document.querySelectorAll('.branch-btn').forEach(b => b.classList.toggle('active', b.dataset.branch === 'all'));
+            highlightLineage3D(null);
+            document.getElementById('leaf-modal').classList.add('hidden');
+            updateLeavesVisibility();
+            resetCameraToGarden();
+        };
+
+        document.getElementById('btn-zoom-in').onclick = () => {
+            camState.tRadius = Math.max(7, camState.tRadius * 0.78);
+        };
+
+        document.getElementById('btn-zoom-out').onclick = () => {
+            camState.tRadius = Math.min(135, camState.tRadius * 1.25);
+        };
+
+        document.getElementById('btn-top-view').onclick = () => {
+            camState.tPhi = 0.42;
+            camState.tRadius = 78;
+            camState.tTarget.set(0, 18, 0);
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // ============================================================================
+        // 13. حلقة التحريك السينمائية (Animation Loop)
+        // ============================================================================
+        const clock = new THREE.Clock();
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const elapsed = clock.getElapsedTime();
+
+            if (camState.autoOrbit && !isPointerDown) {
+                camState.tTheta += 0.0025;
+            }
+
+            // تنعيم حركة الكاميرا ثلاثية الأبعاد
+            camState.theta += (camState.tTheta - camState.theta) * 0.08;
+            camState.phi += (camState.tPhi - camState.phi) * 0.08;
+            camState.radius += (camState.tRadius - camState.radius) * 0.08;
+            camState.target.lerp(camState.tTarget, 0.08);
+
+            camera.position.x = camState.target.x + camState.radius * Math.sin(camState.phi) * Math.sin(camState.theta);
+            camera.position.y = Math.max(1.8, camState.target.y + camState.radius * Math.cos(camState.phi));
+            camera.position.z = camState.target.z + camState.radius * Math.sin(camState.phi) * Math.cos(camState.theta);
+            camera.lookAt(camState.target);
+
+            // تحريك الجزيئات المضيئة (Fireflies) في هواء الحديقة
+            const posAttr = fireflyGeo.attributes.position;
+            for (let i = 0; i < fireflyCount; i++) {
+                let fx = posAttr.getX(i) + fireflySpeeds[i].vx;
+                let fy = posAttr.getY(i) + Math.sin(elapsed * 1.5 + i) * 0.015;
+                let fz = posAttr.getZ(i) + fireflySpeeds[i].vz;
+                if (fx > 45) fx = -45; if (fx < -45) fx = 45;
+                if (fz > 35) fz = -35; if (fz < -35) fz = 35;
+                posAttr.setXYZ(i, fx, fy, fz);
+            }
+            posAttr.needsUpdate = true;
+
+            // تمايل خفيف لأوراق الشجرة مع نسيم الحديقة
+            if (!showAllLeafNames) updateLeavesVisibility();
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    })();
+    </script>
+</body>
+</html>
